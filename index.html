@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>購黑皮 V71</title>
+    <meta name="theme-color" content="#5F9EA0">
+    
+    <!-- iOS PWA Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="購黑皮">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176395.png">
+    
+    <!-- Inline Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MSIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+
+    <!-- Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --app-bg: #F4F6F8;
+            --tiffany-base: #5F9EA0;
+            --tiffany-dark: #4A8587;
+            --rose-base: #D8A1A8;
+            --rose-dark: #A6808C;
+            --morandi-blue: #6C7A89;
+            --text-primary: #2D3748;
+        }
+
+        html { height: -webkit-fill-available; }
+        body { 
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent; 
+            background: var(--app-bg); 
+            font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; 
+            height: 100vh; height: 100dvh; width: 100%; 
+            overflow: hidden; 
+            user-select: none; -webkit-user-select: none;
+            padding: 0; margin: 0;
+            overscroll-behavior-y: none;
+        }
+        
+        #root { height: 100%; display: flex; flex-direction: column; }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+        }
+        
+        input { background: transparent; border: none; outline: none; width: 100%; font-family: "SF Mono", monospace; color: var(--text-primary); }
+        
+        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
+        .pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
+        
+        .spin-anim { animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .theme-transition { transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bg-kr { background: linear-gradient(135deg, var(--tiffany-base) 0%, var(--tiffany-dark) 100%); }
+        .bg-jp { background: linear-gradient(135deg, var(--morandi-blue) 0%, #576473 100%); }
+        .bg-df { background: linear-gradient(135deg, var(--rose-base) 0%, var(--rose-dark) 100%); } 
+
+        .rate-input {
+            background: transparent;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            font-family: "SF Mono", monospace;
+            border-bottom: 2px solid rgba(255,255,255,0.25);
+            padding: 0 2px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .rate-input:focus { border-bottom: 2px solid white; transform: translateY(-1px); }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .mask-linear { -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%); mask-image: linear-gradient(to right, black 88%, transparent 100%); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
+
+        const STORAGE_KEY = 'shopping_app_v71_settings'; 
+        const RATE_STORAGE_KEY = 'shopping_app_v71_rates';
+        const RATE_CACHE_TTL = 3600 * 1000; 
+
+        const DEFAULT_SETTINGS = {
+            country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
+            taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 15, dfStore: 'lotte',
+            dfCategory: 'general', isJpDeptFee: false, jpCoupon: 5, isMobilePay: false,
+            isBankAccount: false, mobileSpread: 1.0,
+            cardPresets: [
+                { id: 1, name: '中信VISA', type: 'visa', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true },
+                { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true },
+                { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true },
+                { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true } 
+            ],
+            activePresetId: 1
+        };
+
+        const Icon = memo(({ name, size=20, className }) => {
+            const icons = {
+                plane: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20"/><path d="M13 2l9 10-9 10"/><path d="M2 12l5-5m-5 5l5 5"/></svg>,
+                shoppingBag: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+                refresh: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>,
+                settings: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><path fillRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clipRule="evenodd" /></svg>,
+                x: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
+                check: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+                wifiOff: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>,
+                receipt: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>,
+                alert: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+                thumbsUp: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>,
+                card: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>,
+                search: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+                mobile: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>,
+                share: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>,
+                swap: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10l5-5 5 5"/><path d="M17 14l-5 5-5-5"/></svg>,
+                arrowRight: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>,
+                plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
+                minus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
+                copy: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            };
+            return icons[name] || null;
+        });
+
+        const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose }) => {
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
+                    <div className="bg-white/95 w-full max-w-sm rounded-[2rem] p-5 shadow-2xl h-[85vh] overflow-y-auto flex flex-col border border-white/50" onClick={e=>e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 sticky top-0 bg-white/95 z-10">
+                            <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="card"/> 信用卡設定</h3>
+                            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><Icon name="x" size={18}/></button>
+                        </div>
+                        <div className="space-y-4 flex-1 pb-4">
+                            {settings.cardPresets.map(card => (
+                                <div key={card.id} className={`p-4 border rounded-[1.5rem] transition-all duration-300 ${card.enabled!==false ? 'border-slate-100 bg-white shadow-sm' : 'border-dashed border-slate-200 opacity-60 bg-slate-50'}`}>
+                                    <div className="flex justify-between items-center mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <input type="checkbox" checked={card.enabled!==false} onChange={e=>updatePreset(card.id, 'enabled', e.target.checked)} className="accent-slate-600 w-5 h-5 rounded cursor-pointer"/>
+                                            <input type="text" value={card.name} onChange={e=>updatePreset(card.id, 'name', e.target.value)} className="font-bold text-slate-700 w-32 border-b border-transparent focus:border-slate-300 transition-colors text-lg" placeholder="卡片名稱"/>
+                                        </div>
+                                    </div>
+                                    {card.enabled!==false && (
+                                        <div className="space-y-3 animate-fade-in">
+                                            <div className="flex gap-2">
+                                                 <div className="flex-1 bg-slate-50 p-2.5 rounded-2xl flex items-center gap-2 border border-slate-100">
+                                                    <span className="text-xs font-bold text-slate-400 whitespace-nowrap pl-1">回饋</span>
+                                                    <input type="number" step="0.1" min="0" value={card.reward} onChange={e=>updatePreset(card.id, 'reward', parseFloat(e.target.value))} className="text-xl font-bold text-center w-full bg-transparent"/>
+                                                    <span className="text-xs font-bold text-slate-400 pr-1">%</span>
+                                                 </div>
+                                                 <button onClick={()=>updatePreset(card.id, 'rewardType', card.rewardType==='cash'?'points':'cash')} className={`px-4 rounded-2xl text-xs font-bold border active:scale-95 transition-transform ${card.rewardType==='points'?'bg-emerald-50 text-emerald-600 border-emerald-100':'bg-sky-50 text-sky-600 border-sky-100'}`}>
+                                                    {card.rewardType==='points'?'LINE P':'現金'}
+                                                 </button>
+                                            </div>
+                                            {!card.isMobilePay && (
+                                                <div className="flex gap-2 bg-slate-50 p-1.5 rounded-2xl mt-1 border border-slate-100">
+                                                    {['jcb', 'visa', 'master'].map(type => (
+                                                        <button key={type} onClick={() => updatePreset(card.id, 'type', type)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold transition-all flex flex-col items-center justify-center ${card.type === type ? 'bg-white text-slate-800 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}>
+                                                            <span className="uppercase font-black tracking-wider">{type}</span>
+                                                            <span className="text-[9px] opacity-60 scale-90 mt-0.5">{type==='jcb' ? '(原始)' : (type==='visa' ? '(+1.0%)' : '(+0.8%)')}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs font-bold text-slate-500 flex items-center gap-1"><Icon name="shoppingBag" size={14}/> 行動支付/綁定</span>
+                                                    <input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)} className="accent-slate-600 w-4 h-4 cursor-pointer"/>
+                                                </div>
+                                                {card.isMobilePay && (
+                                                    <div className="mt-3 pt-2 border-t border-slate-200/60 space-y-3 animate-fade-in">
+                                                        <div className="flex justify-between items-center text-xs text-slate-500 font-bold">
+                                                            <span>綁定銀行帳戶/TWQR (免1.5%)</span>
+                                                            <input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)} className="accent-emerald-500 w-4 h-4 cursor-pointer"/>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <div className="flex justify-between text-[10px] text-slate-400 font-bold">
+                                                                <span>額外平台手續費/匯差</span>
+                                                                <span>{card.mobileSpread||1.0}%</span>
+                                                            </div>
+                                                            <input type="range" min="0" max="2" step="0.1" value={card.mobileSpread !== undefined ? card.mobileSpread : 1.0} onChange={e=>updatePreset(card.id, 'mobileSpread', parseFloat(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-slate-500"/>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm mt-2">
+                                <div className="flex justify-between mb-3 items-end">
+                                    <span className="text-sm font-bold text-slate-600">海外手續費 (通用)</span>
+                                    <span className="text-2xl font-black text-slate-800 font-sans leading-none">{settings.fee}%</span>
+                                </div>
+                                <input type="range" min="0" max="3" step="0.1" value={settings.fee} onChange={e=>updateSetting('fee', e.target.value)} className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-slate-600"/>
+                                <div className="flex justify-between mt-2 text-[10px] text-slate-300 font-bold font-sans"><span>0%</span><span>1.5%</span><span>3%</span></div>
+                            </div>
+                        </div>
+                        <button onClick={onClose} className="w-full mt-2 py-3.5 bg-slate-800 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform hover:bg-slate-900"><Icon name="check"/> 完成設定</button>
+                    </div>
+                </div>
+            );
+        });
+
+        const BreakdownPanel = memo(({ calcResult, settings, rates, tagPrice }) => {
+            const [copied, setCopied] = useState(false);
+            if (!calcResult || calcResult.twdBase <= 0) return null;
+            const { twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost } = calcResult;
+            const baseLabel = settings.mode === 'dutyfree' ? '刷卡金額' : '原始價格';
+            const refundLabel = settings.mode === 'dutyfree' 
+                ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
+                : `退稅 (${(refundTwd/twdBase*100).toFixed(1)}% | ${settings.refundMethod==='immediate'?'現場折抵':'事後退稅'})`;
+            
+            // Dynamic Error Margin & V71 Effective Rate
+            let errorTag = null;
+            let errorColor = "text-indigo-400/80";
+            
+            if (settings.country === 'KR' && settings.mode === 'general' && refundTwd > 0) {
+                if (settings.refundMethod === 'immediate') { errorTag = '精準無誤'; errorColor = "text-emerald-500/80"; } 
+                else {
+                    const amount = calcResult.targetAmount;
+                    if (calcResult.targetAmount >= 1000000) {
+                         errorTag = `保守估計 (實際可能多退 NT$${Math.round(refundTwd * 0.15).toLocaleString()})`;
+                    } else {
+                         const errVal = Math.max(1, Math.round(refundTwd * 0.05));
+                         errorTag = `預估誤差: ±NT$${errVal.toLocaleString()}`;
+                    }
+                }
+            }
+
+            // V71: Calculate Effective Rate & Original Currency Amount
+            let originalCurrencyAmount = 0;
+            let originalCurrencyCode = '';
+            if (settings.mode === 'general') {
+                 originalCurrencyAmount = calcResult.targetAmount; // KRW or JPY
+                 originalCurrencyCode = settings.country === 'KR' ? 'KRW' : 'JPY';
+            } else {
+                 // Duty Free is USD based
+                 originalCurrencyAmount = parseFloat(calcResult.targetAmount); // This was derived in App but let's calc here for display safety
+                 // Actually calcResult.targetAmount in Duty Free mode might be tricky if not passed directly.
+                 // In App logic: DutyFree Mode -> targetAmount = num * (usd/krw) or just num? 
+                 // Let's re-derive from twdBase to be safe or use props if available.
+                 // Simpler: We know inputVal is USD in Duty Free.
+                 originalCurrencyAmount = twdBase / rates.usd; // Approx USD
+                 originalCurrencyCode = 'USD';
+            }
+
+            // Re-calculate Original Amount for display based on TWD Base (more stable)
+            const displayOriginal = settings.mode === 'dutyfree' 
+                ? (twdBase / rates.usd) 
+                : (settings.country === 'KR' ? twdBase / rates.krw : twdBase / rates.jpy);
+            
+            const displayCode = settings.mode === 'dutyfree' ? 'USD' : (settings.country === 'KR' ? 'KRW' : 'JPY');
+
+            // Effective Rate
+            const effectiveRate = finalCost / displayOriginal;
+
+            // Store Discount Logic (Duty Free)
+            let storeDiscountTWD = 0;
+            let fullSavings = totalSaved;
+            if (settings.mode === 'dutyfree' && tagPrice && !isNaN(parseFloat(tagPrice))) {
+                 const tagTWD = parseFloat(tagPrice) * rates.usd;
+                 storeDiscountTWD = Math.round(tagTWD - twdBase);
+                 fullSavings += storeDiscountTWD;
+            }
+
+            const handleCopy = () => {
+                const text = `[購黑皮試算]
+原始: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${twdBase.toLocaleString()})
++ 手續費: NT$${feeAmount + spreadCost}
+- 回饋: NT$${rewardAmount}
+- 退稅/返點: NT$${refundTwd}
+----------------
+最終入手: NT$${finalCost.toLocaleString()}
+神匯率: ${effectiveRate.toFixed(4)}
+總省下: NT$${fullSavings.toLocaleString()} (${((fullSavings/(twdBase+storeDiscountTWD))*100).toFixed(1)}%)`;
+                
+                // Use execCommand for wider compatibility in WebViews/iFrames
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            };
+
+            return (
+                <div className="glass-card p-6 mb-6 animate-fade-in shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                         <div className="flex items-center gap-2">
+                             <div className="p-1.5 rounded-lg bg-slate-100 text-slate-400"><Icon name="receipt" size={14}/></div>
+                             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">成本試算明細</h3>
+                         </div>
+                         <button onClick={handleCopy} className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${copied ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
+                            {copied ? <Icon name="check" size={12}/> : <Icon name="copy" size={12}/>} {copied ? '已複製' : '複製'}
+                         </button>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                        {/* V71: Store Discount Line */}
+                        {storeDiscountTWD > 0 && (
+                            <div className="flex justify-between items-center text-slate-400 text-xs mb-2 pb-2 border-b border-dashed border-slate-100">
+                                <span>店內折扣 (Tag → Paid)</span>
+                                <span className="font-mono">-NT${storeDiscountTWD.toLocaleString()}</span>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center text-slate-500 font-medium">
+                            <div className="flex flex-col">
+                                <span>{baseLabel}</span>
+                                {/* V71: Dual Currency Display */}
+                                <span className="text-[10px] text-slate-300 font-mono">
+                                    {displayOriginal.toLocaleString(undefined, {maximumFractionDigits: 1})} {displayCode}
+                                </span>
+                            </div>
+                            <span className="font-bold font-mono text-base text-slate-800">NT${twdBase.toLocaleString()}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-[#EA580C]">
+                            <span className="font-medium">+ 刷卡手續費 {isWaived ? '(0%)' : `(${settings.fee}%)`}</span>
+                            {isWaived && spreadCost > 0 ? (
+                                <div className="flex items-center gap-1"><span className="font-mono font-bold">+${spreadCost.toLocaleString()}</span><span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold transform scale-90">(隱性匯差)</span></div>
+                            ) : (
+                                <span className={`font-mono font-bold ${isWaived ? 'text-emerald-500 line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span>
+                            )}
+                        </div>
+                        <div className="flex justify-between items-center text-[#059669]">
+                            <div className="flex items-center gap-2"><span className="font-medium">- {settings.rewardType==='points'?'LINE POINTS':'現金回饋'} ({settings.reward}%)</span><span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold">不含手續費</span></div>
+                            <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
+                        </div>
+                        {refundTwd > 0 && (
+                            <div className="flex flex-col text-[#4F46E5] bg-[#EEF2FF] px-3 py-2.5 rounded-xl border border-[#E0E7FF]">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold">- {refundLabel}</span>
+                                    <span className="font-bold font-mono">-${refundTwd.toLocaleString()}</span>
+                                </div>
+                                {errorTag && (
+                                    <div className={`text-[9px] text-right font-mono mt-0.5 tracking-wide ${errorColor}`}>
+                                        ({errorTag})
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        <div className="my-3 border-t border-dashed border-slate-200"></div>
+                        
+                        {/* V71: Effective Rate Display */}
+                        <div className="flex justify-between items-center mb-1 bg-slate-50 p-2 rounded-lg">
+                            <span className="text-[10px] font-bold text-slate-500">神級匯率 (含回饋)</span>
+                            <span className="text-slate-700 font-bold font-mono tracking-tight">
+                                {effectiveRate.toFixed(4)} <span className="text-[9px] text-slate-400 font-normal">TWD/{displayCode}</span>
+                            </span>
+                        </div>
+
+                        <div className="flex justify-between items-center mb-1 mt-3">
+                            <span className="text-[10px] text-slate-400 font-bold">總回饋價值 {storeDiscountTWD > 0 ? '(含店內折扣)' : ''}</span>
+                            <span className="text-[#10B981] font-bold text-xl font-mono tracking-tight">
+                                +${fullSavings.toLocaleString()} ({((fullSavings/(twdBase+storeDiscountTWD))*100).toFixed(1)}%)
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-end pt-1">
+                            <span className="font-bold text-slate-800 text-base mb-1">最終入手價 (TWD)</span>
+                            <span className="text-[2.8rem] font-black text-slate-900 tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+
+        const GeneralMode = memo(({ settings, inputVal, setInputVal, inputType, setInputType, calcResult, updateSetting, advice, rates }) => {
+            const clearInput = () => { setInputVal(''); };
+            const getDisplayVal = (field) => {
+                if (!inputVal || isNaN(parseFloat(inputVal))) return '';
+                if (inputType === field) return inputVal; 
+                const num = parseFloat(inputVal);
+                const rKrw = rates.krw;
+                const rJpy = rates.jpy;
+                const rUsd = rates.usd;
+                const targetRate = settings.country === 'KR' ? rKrw : rJpy;
+                let twdBase = 0;
+                if (inputType === 'usd') twdBase = num * rUsd;
+                else if (inputType === 'twd') twdBase = num;
+                else if (inputType === 'target') twdBase = num * targetRate;
+                if (field === 'usd') return (twdBase / rUsd).toFixed(2);
+                if (field === 'twd') return Math.round(twdBase).toString();
+                if (field === 'target') return Math.round(twdBase / targetRate).toString();
+                return '';
+            };
+
+            return (
+                <div className="space-y-3 animate-fade-in">
+                    {settings.country === 'KR' && (
+                        <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='usd'?'border-blue-300':''}`}>
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm bg-sky-50 text-sky-700">🇺🇸</div>
+                            <div className="flex-1 relative">
+                                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">USD</label>
+                                <div className="flex items-center">
+                                    <span className="text-lg font-bold text-slate-300 mr-2">$</span>
+                                    <input type="number" min="0" inputMode="decimal" placeholder="0" value={inputType === 'usd' ? inputVal : getDisplayVal('usd')} onChange={(e)=>{ setInputVal(e.target.value); setInputType('usd'); }} className="text-[2rem] font-bold text-slate-700 placeholder-slate-200 w-full"/>
+                                    {(inputType === 'usd' || getDisplayVal('usd')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-slate-300"><Icon name="x" size={16}/></button>}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='target'?'border-blue-300':''}`}>
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${settings.country==='KR'?'bg-teal-50 text-teal-700':'bg-indigo-50 text-indigo-700'}`}>{settings.country==='KR'?'🇰🇷':'🇯🇵'}</div>
+                        <div className="flex-1 relative">
+                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">{settings.country==='KR'?'KRW (TAX INC)':'JPY (TAX INC)'}</label>
+                            <div className="flex items-center">
+                                <span className="text-lg font-bold text-slate-300 mr-2">{settings.country==='KR'?'₩':'¥'}</span>
+                                <input type="number" min="0" inputMode="decimal" placeholder="0" value={inputType === 'target' ? inputVal : getDisplayVal('target')} onChange={(e)=>{ setInputVal(e.target.value); setInputType('target'); }} className="text-[2.2rem] font-bold text-slate-700 placeholder-slate-200 w-full"/>
+                                {(inputType === 'target' || getDisplayVal('target')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-slate-300"><Icon name="x" size={16}/></button>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='twd'?'border-blue-300':''}`}>
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm bg-orange-50 text-orange-700">🇹🇼</div>
+                        <div className="flex-1 relative">
+                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">TWD</label>
+                            <div className="flex items-center">
+                                <span className="text-lg font-bold text-slate-300 mr-2">NT</span>
+                                <input type="number" min="0" inputMode="decimal" placeholder="0" value={inputType === 'twd' ? inputVal : getDisplayVal('twd')} onChange={(e)=>{ setInputVal(e.target.value); setInputType('twd'); }} className="text-[2.2rem] font-bold text-slate-700 placeholder-slate-200 w-full"/>
+                                {(inputType === 'twd' || getDisplayVal('twd')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-slate-300"><Icon name="x" size={16}/></button>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`p-4 rounded-[2rem] space-y-3 shadow-lg border border-white/20 backdrop-blur-md transition-colors duration-500 ${settings.country==='KR'?'bg-teal-50/80 border-teal-100':'bg-indigo-50/80 border-indigo-100'}`}>
+                        <div className="flex justify-between items-center">
+                            <span className={`text-xs font-bold flex items-center gap-2 ${settings.country==='KR'?'text-teal-800':'text-indigo-800'}`}><Icon name="receipt" size={16}/> {settings.country==='KR'?'退稅設定':'免稅設定'}</span>
+                            <div className="flex bg-white/90 backdrop-blur-md rounded-xl p-1 shadow-sm border border-white/60">
+                                {['auto','manual','off'].map(m => (
+                                    <button key={m} onClick={()=>updateSetting('taxMode',m)} className={`px-3 py-1 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.taxMode===m ? (settings.country==='KR'?'bg-teal-600 text-white shadow-md':'bg-indigo-600 text-white shadow-md') : 'text-slate-400 hover:text-slate-600'}`}>{m==='auto'?'自動':m==='manual'?'手動':'關閉'}</button>
+                                ))}
+                            </div>
+                        </div>
+                        {settings.taxMode !== 'off' && (
+                            <div className="flex bg-white/90 backdrop-blur-md p-1 rounded-xl border border-white/60 shadow-sm">
+                                <button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.refundMethod==='airport' ? 'bg-white text-teal-800 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}>{settings.country==='KR'?'事後退稅':'退稅 (Tax Free)'}</button>
+                                <button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.refundMethod==='immediate'?'bg-white text-emerald-600 shadow-sm ring-1 ring-black/5':'text-slate-400 hover:text-slate-600'}`}>{settings.country==='KR'?'現場折抵':'未稅價 (Tax Free)'}</button>
+                            </div>
+                        )}
+                        {/* V66: Add explicit low threshold warning */}
+                        {calcResult.targetAmount > 0 && calcResult.targetAmount < 15000 && settings.mode === 'general' && settings.country === 'KR' && (
+                            <div className="text-[10px] p-3 rounded-xl flex items-start gap-2 border shadow-sm backdrop-blur-md bg-slate-100/50 border-slate-200/60 text-slate-600">
+                                <div className="p-1 rounded-full bg-slate-200 text-white shadow-sm"><Icon name="alert" size={12} /></div>
+                                <span className="mt-0.5 font-medium leading-relaxed">💡 未達退稅門檻：需滿 15,000 KRW 才能退稅</span>
+                            </div>
+                        )}
+                        {advice && (
+                            <div className={`text-[10px] p-3 rounded-xl flex items-start gap-2 border shadow-sm backdrop-blur-md ${advice.type==='good' ? 'bg-emerald-100/50 border-emerald-200/60 text-emerald-800' : 'bg-orange-100/50 border-orange-200/60 text-orange-800'}`}>
+                                <div className={`p-1 rounded-full ${advice.type==='good'?'bg-emerald-200':'bg-orange-200'} text-white shadow-sm`}><Icon name={advice.type==='good'?'thumbsUp':'alert'} size={12} /></div>
+                                <span className="mt-0.5 font-medium leading-relaxed">{advice.msg}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        });
+
+        // Define RateInput Component
+        const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
+            const [localVal, setLocalVal] = useState('');
+            
+            useEffect(() => {
+                if(!isEditing) setLocalVal(val);
+            }, [val, isEditing]);
+
+            const handleChange = (e) => {
+                const v = e.target.value;
+                setLocalVal(v);
+                const parsed = parseFloat(v);
+                if (!isNaN(parsed)) onChange(parsed);
+                else if(v === '') onChange('');
+            };
+
+            return (
+                <div className="flex flex-col items-center justify-center w-full">
+                    <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>
+                    <input 
+                        type="number" inputMode="decimal" 
+                        value={isEditing ? localVal : val}
+                        onFocus={()=>setIsEditing(true)}
+                        onBlur={()=>setIsEditing(false)}
+                        onChange={handleChange}
+                        className="rate-input text-center w-full"
+                    />
+                </div>
+            );
+        };
+
+        const DutyFreeMode = memo(({ settings, inputVal, setInputVal, updateSetting, calcResult, tagPrice, setTagPrice }) => {
+            const applyDiscount = (percent) => {
+                if(!tagPrice) return;
+                const original = parseFloat(tagPrice);
+                if(isNaN(original)) return;
+                const discounted = original * (percent/100);
+                setInputVal(discounted.toFixed(2).replace(/\.00$/, ''));
+            };
+            const getDiscountStatus = () => {
+                if(!tagPrice || !inputVal) return null;
+                const original = parseFloat(tagPrice);
+                const final = parseFloat(inputVal);
+                if(isNaN(original) || isNaN(final) || original === 0) return null;
+                const ratio = final / original;
+                const pct = Math.round(ratio * 100);
+                const discountText = (pct % 10 === 0) ? (pct/10) + '折' : (pct/10).toFixed(1) + '折';
+                const isSafe = ratio >= 0.7; 
+                return { isSafe, text: `${isSafe ? '安全' : '注意'} (${discountText})` };
+            };
+            const status = getDiscountStatus();
+            
+            // V70: Fine-grained Control for Rebate
+            const adjustRebate = (delta) => {
+                let newVal = (parseFloat(settings.dutyFreeRebate) || 0) + delta;
+                newVal = Math.max(0, Math.min(40, newVal));
+                updateSetting('dutyFreeRebate', newVal);
+            };
+
+            return (
+                <div className="space-y-4 animate-fade-in">
+                    <div className="glass-card p-3 space-y-2">
+                        <div className="flex gap-2">
+                            {['lotte','shinsegae','shilla'].map(s => (
+                                <button key={s} onClick={()=>updateSetting('dfStore',s)} className={`flex-1 py-3 text-[10px] font-bold rounded-2xl transition-all duration-300 flex flex-col items-center gap-1 ${settings.dfStore===s?'bg-purple-600 text-white shadow-lg scale-100':'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
+                                    <span>{s==='lotte'?'樂天':s==='shinsegae'?'新世界':'新羅'}</span><span className="opacity-70 text-[8px] capitalize">{s}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="glass-card p-5 relative">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2">吊牌原價 (USD)</label>
+                        <div className="flex items-center">
+                            <span className="text-2xl font-bold text-slate-300 mr-2">$</span>
+                            <input type="number" min="0" inputMode="decimal" placeholder="0" value={tagPrice} onChange={(e)=>setTagPrice(e.target.value)} className="text-[3rem] font-black text-slate-800 placeholder-slate-200 w-full tracking-tight"/>
+                            {tagPrice && <button onClick={()=>setTagPrice('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 bg-slate-100 rounded-full"><Icon name="x" size={16}/></button>}
+                        </div>
+                    </div>
+                    <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">
+                        {[95, 90, 85, 80].map(d => (
+                            <button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-xl bg-purple-50 text-purple-700 text-xs font-bold border border-purple-100 hover:bg-purple-100 active:bg-purple-200 transition-colors whitespace-nowrap shadow-sm active:scale-95">{d}折</button>
+                        ))}
+                    </div>
+                    <div className="glass-card p-5 relative">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2 text-purple-600">打折後實付款 (USD)</label>
+                        <div className="flex items-center">
+                            <span className="text-2xl font-bold text-slate-300 mr-2">$</span>
+                            <input type="number" min="0" inputMode="decimal" placeholder="0" value={inputVal} onChange={(e)=>setInputVal(e.target.value)} className="text-[3rem] font-black text-slate-800 placeholder-slate-200 w-full tracking-tight"/>
+                            {inputVal && <button onClick={()=>setInputVal('')} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 bg-slate-100 rounded-full"><Icon name="x" size={16}/></button>}
+                        </div>
+                        <div className="flex justify-between items-center mt-4">
+                            <span className="text-xs font-bold text-slate-500">≈ 刷卡金額 NT$ {calcResult.twdBase ? calcResult.twdBase.toLocaleString() : '0'}</span>
+                            {status && <div className={`text-[9px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1 shadow-sm ${status.isSafe ? 'bg-emerald-100/80 text-emerald-700' : 'bg-red-100/80 text-red-700'}`}><Icon name={status.isSafe ? 'check' : 'alert'} size={10}/> {status.text}</div>}
+                        </div>
+                    </div>
+                    {settings.country === 'KR' && (
+                        <div className="glass-card p-4 bg-rose-50 border-rose-100/50">
+                            <div className="flex justify-between items-center mb-3">
+                                <label className="text-xs font-bold text-purple-800 pl-1">返點設定 (Rebate %)</label>
+                                <div className="flex items-center bg-white px-3 py-1.5 rounded-xl border border-purple-200 shadow-sm">
+                                    <input 
+                                        type="number" 
+                                        min="0" 
+                                        max="40" 
+                                        step="0.5"
+                                        value={settings.dutyFreeRebate} 
+                                        onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} 
+                                        className="w-12 text-lg font-black text-purple-700 text-right bg-transparent outline-none"
+                                    />
+                                    <span className="text-sm text-purple-400 font-bold ml-1">%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={()=>adjustRebate(-0.5)} className="w-8 h-8 rounded-full bg-white border border-purple-200 text-purple-600 flex items-center justify-center shadow-sm active:scale-90 transition-all hover:bg-purple-50"><Icon name="minus" size={14}/></button>
+                                <div className="flex-1 relative h-6 flex items-center">
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="40" 
+                                        step="0.5" 
+                                        value={settings.dutyFreeRebate} 
+                                        onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} 
+                                        className="w-full h-2 bg-gradient-to-r from-purple-200 to-purple-400 rounded-full appearance-none cursor-pointer accent-purple-600"
+                                    />
+                                </div>
+                                <button onClick={()=>adjustRebate(0.5)} className="w-8 h-8 rounded-full bg-white border border-purple-200 text-purple-600 flex items-center justify-center shadow-sm active:scale-90 transition-all hover:bg-purple-50"><Icon name="plus" size={14}/></button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        });
+
+        const InstallPrompt = ({ onClose }) => (
+            <div className="fixed bottom-6 left-4 right-4 bg-slate-900/95 text-white p-4 rounded-3xl shadow-2xl backdrop-blur-lg animate-fade-in z-50 border border-white/20">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-lg">加入主畫面以獲得最佳體驗</h3>
+                    <button onClick={onClose} className="p-1 rounded-full bg-white/20 hover:bg-white/30"><Icon name="x" size={14}/></button>
+                </div>
+                <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+                    點擊下方工具列的 <span className="inline-flex align-middle mx-1 bg-white/20 p-1 rounded"><Icon name="share" size={14}/></span> 分享按鈕，<br/>然後選擇「加入主畫面」。
+                </p>
+                <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+            </div>
+        );
+
+        const App = () => {
+            const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+            const [rates, setRates] = useState({ krw: 0.023, jpy: 0.21, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
+            const [customRates, setCustomRates] = useState({ krw: '', usd: '', usdToCny: '', cny: '' }); // Added new rates
+            const [lastUpdated, setLastUpdated] = useState('載入中...');
+            const [isOffline, setIsOffline] = useState(false);
+            const [showSettings, setShowSettings] = useState(false);
+            const [isRefreshing, setIsRefreshing] = useState(false);
+            const [screenshotMode, setScreenshotMode] = useState(false);
+            const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+            
+            // Header States
+            const [isInverseRate, setIsInverseRate] = useState(false);
+            const [editingMap, setEditingMap] = useState({}); // Track editing state per input
+
+            const [inputVal, setInputVal] = useState('');
+            const [inputType, setInputType] = useState('target');
+            const [tagPrice, setTagPrice] = useState('');
+            
+            const saveTimeoutRef = useRef(null);
+
+            useEffect(() => {
+                const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+                if (!isStandalone && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                    setTimeout(() => setShowInstallPrompt(true), 2000);
+                }
+
+                const initLoad = () => {
+                    const savedS = localStorage.getItem(STORAGE_KEY);
+                    if (savedS) try { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(savedS) }); } catch(e){}
+                    const savedR = localStorage.getItem(RATE_STORAGE_KEY);
+                    const now = Date.now();
+                    let useCache = false;
+                    if (savedR) {
+                        try {
+                            const p = JSON.parse(savedR);
+                            if (p.timestamp && (now - p.timestamp < RATE_CACHE_TTL)) {
+                                setRates(p.rates); setLastUpdated(p.timeStr); useCache = true;
+                            }
+                        } catch(e) {}
+                    }
+                    if (!useCache) fetchRates();
+                };
+                initLoad();
+            }, []);
+
+            const fetchRates = useCallback(async () => {
+                setIsRefreshing(true); 
+                setLastUpdated('更新中...');
+                setCustomRates(prev => ({...prev, krw: '', usd: '', usdToCny: '', cny: ''}));
+                try {
+                    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
+                    const d = await res.json();
+                    if (d.rates.TWD) {
+                        const newRates = { 
+                            usd: d.rates.TWD, 
+                            krw: d.rates.TWD/d.rates.KRW, 
+                            jpy: d.rates.TWD/d.rates.JPY, 
+                            cny: d.rates.TWD/d.rates.CNY, // 1 CNY = ? TWD
+                            usdToCny: d.rates.CNY // 1 USD = ? CNY
+                        };
+                        const timeStr = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+                        setRates(newRates); setLastUpdated(timeStr); setIsOffline(false);
+                        localStorage.setItem(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr, timestamp: Date.now() }));
+                    }
+                } catch(e) { setIsOffline(true); setLastUpdated('離線模式'); } finally { setTimeout(()=>setIsRefreshing(false),800); }
+            }, []);
+            
+            const debouncedSave = useCallback((newSettings) => {
+                if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+                saveTimeoutRef.current = setTimeout(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings)); }, 800);
+            }, []);
+
+            const updateSetting = useCallback((key, val) => {
+                setSettings(prev => { const next = { ...prev, [key]: val }; debouncedSave(next); return next; });
+            }, [debouncedSave]);
+
+            const updatePreset = useCallback((id, field, val) => {
+                setSettings(prev => {
+                    const newPresets = prev.cardPresets.map(c => c.id === id ? { ...c, [field]: val } : c);
+                    let next = { ...prev, cardPresets: newPresets };
+                    if (prev.activePresetId === id) {
+                        const active = newPresets.find(c => c.id === id);
+                        if (active) {
+                            if(field==='type') next.cardType=val; if(field==='reward') next.reward=val;
+                            if(field==='rewardType') next.rewardType=val; if(field==='isMobilePay') next.isMobilePay=val;
+                            if(field==='isBankAccount') next.isBankAccount=val; if(field==='mobileSpread') next.mobileSpread=val;
+                        }
+                    }
+                    debouncedSave(next); return next;
+                });
+            }, [debouncedSave]);
+
+            const applyPreset = useCallback((card) => {
+                setSettings(prev => {
+                    const next = { ...prev, activePresetId: card.id, cardType: card.type, reward: card.reward, rewardType: card.rewardType, isMobilePay: card.isMobilePay||false, isBankAccount: card.isBankAccount||false, mobileSpread: card.mobileSpread??1.0 };
+                    debouncedSave(next); return next;
+                });
+            }, [debouncedSave]);
+
+            const handleCustomRate = (type, val) => {
+                setCustomRates(prev => ({ ...prev, [type]: val }));
+            };
+
+            const effectiveRates = useMemo(() => {
+                const k = customRates.krw ? parseFloat(customRates.krw) : rates.krw;
+                const u = customRates.usd ? parseFloat(customRates.usd) : rates.usd;
+                const uToC = customRates.usdToCny ? parseFloat(customRates.usdToCny) : rates.usdToCny;
+                const c = customRates.cny ? parseFloat(customRates.cny) : rates.cny;
+                
+                return { ...rates, krw: k || rates.krw, usd: u || rates.usd, usdToCny: uToC || rates.usdToCny, cny: c || rates.cny };
+            }, [rates, customRates]);
+
+            const calcResult = useMemo(() => {
+                if (!inputVal) return { twdBase: 0 };
+                const num = parseFloat(inputVal);
+                if (isNaN(num)) return { twdBase: 0 };
+                let spread = 1.0; 
+                if (settings.cardType === 'jcb') spread = 0;
+                else if (settings.cardType === 'master') spread = 0.8;
+                const bankSpread = 1 + (spread / 100);
+                
+                const rKrw = effectiveRates.krw * bankSpread;
+                const rJpy = effectiveRates.jpy * bankSpread;
+                const rUsd = effectiveRates.usd * bankSpread;
+                const targetRate = settings.country === 'KR' ? rKrw : rJpy;
+                
+                let twdBase = 0;
+                let targetAmount = 0;
+                
+                if (settings.mode === 'general') {
+                    if (inputType === 'twd') { twdBase = num; targetAmount = twdBase / targetRate; }
+                    else if (inputType === 'usd') { twdBase = num * rUsd; targetAmount = twdBase / targetRate; }
+                    else { targetAmount = num; twdBase = num * targetRate; }
+                } else {
+                    if (settings.country === 'KR') { twdBase = num * rUsd; targetAmount = num * (effectiveRates.usd/effectiveRates.krw); }
+                    else { twdBase = num * rJpy; targetAmount = num; }
+                }
+                
+                let refundNative = 0;
+                let refundTwd = 0;
+                
+                if (settings.mode === 'general') {
+                    if (settings.taxMode === 'auto') {
+                        if (settings.country === 'KR') {
+                            // V67: Enhanced High Precision Tax Table (Approximating Global Blue / Major Vendors)
+                            const a = targetAmount;
+                            if (a >= 15000) {
+                                if (a < 30000) refundNative = 1000;
+                                else if (a < 50000) refundNative = 2000;
+                                else if (a < 75000) refundNative = 3500;
+                                else if (a < 100000) refundNative = 5000;
+                                else if (a < 125000) refundNative = 7500;
+                                else if (a < 150000) refundNative = 9000;
+                                else if (a < 175000) refundNative = 10000;
+                                else if (a < 200000) refundNative = 12000;
+                                else if (a < 225000) refundNative = 13500;
+                                else if (a < 250000) refundNative = 15500;
+                                else if (a < 275000) refundNative = 17000; // Expanded range starts
+                                else if (a < 300000) refundNative = 19000;
+                                else if (a < 325000) refundNative = 20500;
+                                else if (a < 350000) refundNative = 22000;
+                                else if (a < 375000) refundNative = 24000;
+                                else if (a < 400000) refundNative = 25500;
+                                else if (a < 450000) refundNative = 28000;
+                                else if (a < 500000) refundNative = 32000;
+                                else if (a < 550000) refundNative = 35000;
+                                else if (a < 600000) refundNative = 39000;
+                                else if (a < 650000) refundNative = 42000;
+                                else if (a < 700000) refundNative = 45000;
+                                else if (a < 750000) refundNative = 48000;
+                                else if (a < 800000) refundNative = 52000;
+                                else if (a < 850000) refundNative = 55000;
+                                else if (a < 900000) refundNative = 58000;
+                                else if (a < 950000) refundNative = 61000;
+                                else if (a < 1000000) refundNative = 64000;
+                                else refundNative = Math.floor(a * 0.065 / 1000) * 1000; // Conservative above 1M
+                            }
+                        } else { 
+                            if (targetAmount >= 5500) { refundNative = targetAmount - (targetAmount/1.1); if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); }
+                        }
+                    }
+                    refundTwd = Math.round(refundNative * targetRate);
+                } else {
+                    if (settings.country === 'KR') {
+                        const rebateUsd = num * (settings.dutyFreeRebate/100);
+                        // USD -> CNY -> TWD Rebate Path
+                        const rebateCny = rebateUsd * effectiveRates.usdToCny;
+                        refundTwd = Math.round(rebateCny * effectiveRates.cny); 
+                    }
+                }
+                let effectiveFee = settings.fee;
+                let spreadCost = 0;
+                let isWaived = false;
+                if (settings.isMobilePay) {
+                    if (settings.isBankAccount) { effectiveFee = 0; isWaived = true; spreadCost = twdBase * ((settings.mobileSpread||1)/100); }
+                    else { spreadCost = twdBase * ((settings.mobileSpread||0)/100); }
+                }
+                const feeAmount = Math.round(twdBase * (effectiveFee/100));
+                const rewardAmount = Math.round(twdBase * (settings.reward/100));
+                const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
+                const totalSaved = Math.round(twdBase - finalCost);
+                return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost: Math.round(spreadCost), targetAmount };
+            }, [inputVal, inputType, settings, effectiveRates]);
+
+            const advice = useMemo(() => {
+                if (settings.country === 'KR' && settings.mode === 'general') {
+                    if (calcResult.targetAmount > 1000000 && settings.refundMethod === 'immediate') return { type: 'warn', msg: '⚠️ 金額超過 100 萬：已達現場折抵上限，請改用【事後退稅】' };
+                    let refundNative = 0;
+                    if (calcResult.targetAmount >= 15000) { if (calcResult.targetAmount >= 200000) refundNative = Math.floor(calcResult.targetAmount * 0.065 / 1000) * 1000; }
+                    if (refundNative > 75000) return { type: 'warn', msg: '🛂 退稅額超過 7.5 萬：不可使用自助機，需海關人工蓋章' };
+                }
+                if (settings.mode !== 'general' || settings.country !== 'KR' || !calcResult.twdBase) return null;
+                if (settings.refundMethod === 'immediate') return { type: 'warn', msg: '💡 省錢撇步：選【事後退稅】通常能拿回更多錢' };
+                return { type: 'good', msg: '👍 推薦：選【事後退稅】可獲得最高回饋' };
+            }, [settings.refundMethod, settings.country, calcResult.twdBase, calcResult.targetAmount, settings.mode]);
+
+            const getThemeClass = () => { if (settings.mode === 'dutyfree') return 'bg-df'; return settings.country === 'KR' ? 'bg-kr' : 'bg-jp'; };
+
+            const handleModeSwitch = (newMode) => {
+                if (newMode === 'dutyfree' && settings.mode === 'general') {
+                    let usdVal = 0;
+                    const num = parseFloat(inputVal);
+                    if (!isNaN(num)) {
+                        if (inputType === 'usd') usdVal = num;
+                        else if (inputType === 'twd') usdVal = num / effectiveRates.usd;
+                        else { 
+                            const targetRate = settings.country === 'KR' ? effectiveRates.krw : effectiveRates.jpy; 
+                            usdVal = (num * targetRate) / effectiveRates.usd; 
+                        }
+                    }
+                    if (usdVal > 0) { 
+                        const valStr = usdVal.toFixed(2).replace(/\.00$/, ''); 
+                        setTagPrice(valStr); 
+                        setInputVal(valStr); 
+                    } else { 
+                        setTagPrice(''); 
+                        setInputVal(''); 
+                    }
+                } else if (newMode === 'general' && settings.mode === 'dutyfree') {
+                    const num = parseFloat(inputVal);
+                    if (!isNaN(num) && num > 0) {
+                        setInputType('usd'); 
+                    } else {
+                        setInputVal(''); 
+                    }
+                }
+                updateSetting('mode', newMode);
+            };
+
+            const openExchangeLink = () => { if (settings.country === 'KR') window.open('https://creatrip.com/exchange', '_blank'); else window.open('https://www.google.com/search?q=JPY+TWD', '_blank'); };
+
+            // General Mode Header Logic
+            const renderGeneralHeader = () => {
+                const base = customRates.krw ? parseFloat(customRates.krw) : effectiveRates.krw;
+                const displayVal = isInverseRate ? (base ? (1/base).toFixed(2) : '') : (base ? base.toFixed(4) : '');
+                
+                return (
+                    <div className="flex justify-between items-center mb-1">
+                        <div className="flex items-center gap-2 w-1/2 justify-center border-r border-white/10 relative pr-1">
+                            <div className="flex flex-col items-end w-full pl-0">
+                                <button onClick={()=>setIsInverseRate(!isInverseRate)} className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 active:scale-95 transition-all px-2 py-0.5 rounded-full mb-1 border border-white/10 shadow-sm group w-full justify-center">
+                                    <span className="text-[10px] font-bold text-white tracking-wider truncate">{isInverseRate ? (settings.country==='KR'?'TWD ➔ KRW':'TWD ➔ JPY') : (settings.country==='KR'?'KRW ➔ TWD':'JPY ➔ TWD')}</span>
+                                    <div className={`w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-yellow-300"/></div>
+                                </button>
+                                <input type="number" inputMode="decimal" value={editingMap['gen'] ? undefined : displayVal} onFocus={()=>setEditingMap({...editingMap, gen:true})} onBlur={()=>setEditingMap({...editingMap, gen:false})} 
+                                onChange={e => {
+                                    const v=e.target.value; 
+                                    const n=parseFloat(v); 
+                                    if(!isNaN(n) && n>0) handleCustomRate('krw', isInverseRate?(1/n).toString():n.toString());
+                                    else if(v==='') handleCustomRate('krw','');
+                                }} className="rate-input text-right w-full pr-1"/>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
+                            <div className="flex flex-col items-end w-full">
+                                <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-white/70 tracking-widest">USD ➔ TWD</span></div>
+                                <input type="number" inputMode="decimal" value={customRates.usd || effectiveRates.usd.toFixed(2)} onChange={e=>handleCustomRate('usd', e.target.value)} className="rate-input text-right w-full pr-1"/>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Duty Free Mode Header Logic (3 columns)
+            const renderDutyFreeHeader = () => {
+                return (
+                    <div className="flex justify-between items-end gap-2 mb-1">
+                        <RateInput label="USD ➔ CNY" val={customRates.usdToCny || effectiveRates.usdToCny?.toFixed(2)} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
+                        <div className="w-px h-10 bg-white/10 self-center"></div>
+                        <RateInput label="CNY ➔ TWD" val={customRates.cny || effectiveRates.cny?.toFixed(2)} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
+                        <div className="w-px h-10 bg-white/10 self-center"></div>
+                        <RateInput label="USD ➔ TWD" val={customRates.usd || effectiveRates.usd?.toFixed(2)} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
+                    </div>
+                );
+            };
+
+            return (
+                <div className={`h-full flex flex-col max-w-md mx-auto bg-[#F0F2F1] shadow-2xl relative overflow-hidden ${screenshotMode?'screenshot-mode':''}`}>
+                    {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} />}
+                    {showInstallPrompt && <InstallPrompt onClose={()=>setShowInstallPrompt(false)}/>}
+                    
+                    <header className={`flex-none px-4 pt-safe pb-10 shadow-xl z-20 transition-all duration-700 theme-transition ${getThemeClass()} relative`}>
+                        <div className="flex justify-between items-center mb-3 pt-2">
+                            <h1 className="text-2xl font-black tracking-tight flex items-center gap-2 drop-shadow-md text-white"><div onClick={()=>{if(history.length>1)history.back()}} className="cursor-pointer active:opacity-50"><Icon name="plane" size={24}/></div> 購黑皮</h1>
+                            <div className="flex items-center gap-2">
+                                <button onClick={()=>updateSetting('country', settings.country==='KR'?'JP':'KR')} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full font-bold shadow-sm active:scale-90 transition-all border border-white/20 text-lg flex items-center justify-center text-white">{settings.country==='KR'?'🇰🇷':'🇯🇵'}</button>
+                                <button onClick={openExchangeLink} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/20 hover:bg-white/30 text-white"><Icon name="search"/></button>
+                                <button onClick={()=>setShowSettings(true)} className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/20 hover:bg-white/30 text-white"><Icon name="settings"/></button>
+                                <button onClick={fetchRates} className={`w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/20 hover:bg-white/30 text-white ${isRefreshing?'text-yellow-200':''}`}><Icon name="refresh" className={isRefreshing ? 'spin-anim' : ''}/></button>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 mb-1 bg-black/20 p-1 rounded-xl w-full backdrop-blur-md border border-white/10 overflow-hidden">
+                             <div className="flex shrink-0 border-r border-white/20 pr-2 mr-1">
+                                <button onClick={()=>handleModeSwitch('general')} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${settings.mode==='general'?'bg-white text-slate-800 shadow-sm':'text-white/70 hover:text-white'}`}>一般</button>
+                                <button onClick={()=>handleModeSwitch('dutyfree')} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${settings.mode==='dutyfree'?'bg-white text-slate-800 shadow-sm':'text-white/70 hover:text-white'}`}>免稅</button>
+                             </div>
+                             <div className="flex overflow-x-auto no-scrollbar gap-1 flex-1 mask-linear items-center">
+                                {settings.cardPresets.filter(c=>c.enabled!==false).map(card => (
+                                    <button key={card.id} onClick={()=>applyPreset(card)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 ${settings.activePresetId===card.id ? 'bg-white text-slate-800 shadow-sm scale-100' : 'text-white/80 hover:text-white scale-95'}`}>
+                                        {card.isMobilePay && <Icon name="mobile" size={9} className="opacity-50"/>} {card.name}
+                                    </button>
+                                ))}
+                             </div>
+                        </div>
+                        <div className="mt-2 bg-[rgba(0,0,0,0.15)] rounded-xl p-2 border border-white/10 backdrop-blur-sm">
+                            {settings.mode === 'dutyfree' ? renderDutyFreeHeader() : renderGeneralHeader()}
+                            <div className="flex justify-between items-center text-[9px] text-white/50 px-1 font-mono mt-1">
+                                <span className="flex items-center gap-1 opacity-80"><Icon name="refresh" size={8}/> 1 {settings.country==='KR'?'KRW':'JPY'} ≈ {effectiveRates.krw.toFixed(5)} TWD</span>
+                                <span className="flex items-center gap-1 opacity-80">{isOffline && <Icon name="wifiOff" size={8}/>} {lastUpdated}</span>
+                            </div>
+                        </div>
+                    </header>
+                    <main className="flex-1 rounded-t-[2.5rem] -mt-6 bg-[#F2F4F6] p-5 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/60 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)]" onClick={()=>screenshotMode && setScreenshotMode(false)}>
+                        <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[#F2F4F6] to-transparent pointer-events-none -mt-2 mb-2"></div>
+                        {settings.mode === 'general' ? (
+                            <GeneralMode settings={settings} inputVal={inputVal} setInputVal={setInputVal} inputType={inputType} setInputType={setInputType} calcResult={calcResult} updateSetting={updateSetting} advice={advice} rates={effectiveRates}/>
+                        ) : (
+                            <DutyFreeMode settings={settings} inputVal={inputVal} setInputVal={setInputVal} updateSetting={updateSetting} calcResult={calcResult} tagPrice={tagPrice} setTagPrice={setTagPrice}/>
+                        )}
+                        <BreakdownPanel calcResult={calcResult} settings={settings} rates={effectiveRates} tagPrice={tagPrice} />
+                        <div className="mt-8 mb-4 flex justify-center opacity-40 py-4 cursor-pointer" onClick={()=>setScreenshotMode(!screenshotMode)}><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{screenshotMode ? "Tap to exit Screenshot Mode" : "Tap for Screenshot Mode"}</span></div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
