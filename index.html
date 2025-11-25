@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V72</title>
+    <title>購黑皮 V73</title>
     <meta name="theme-color" content="#5F9EA0">
     
-    <!-- iOS PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="購黑皮">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176395.png">
     
-    <!-- Inline Manifest -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MiIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MyIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
 
-    <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -104,9 +101,9 @@
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
         // Storage Keys
-        const STORAGE_KEY = 'shopping_app_v72_settings'; 
-        const RATE_STORAGE_KEY = 'shopping_app_v72_rates';
-        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v72_custom_rates'; // V72: Dedicated key for custom rates
+        const STORAGE_KEY = 'shopping_app_v73_settings'; 
+        const RATE_STORAGE_KEY = 'shopping_app_v73_rates';
+        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v73_custom_rates'; 
         const RATE_CACHE_TTL = 3600 * 1000; 
 
         const DEFAULT_SETTINGS = {
@@ -147,6 +144,38 @@
             };
             return icons[name] || null;
         });
+
+        // V73: Improved RateInput - Controlled Component with Internal Buffer Removal
+        // Directly use props for value to ensure single source of truth and avoid sync issues
+        const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
+            
+            const handleChange = (e) => {
+                const v = e.target.value;
+                // Allow intermediate invalid states while typing (e.g., empty string, decimal point)
+                // But propagate changes immediately
+                onChange(v);
+            };
+            
+            const handleFocus = (e) => {
+                setIsEditing(true);
+                e.target.select();
+            };
+
+            return (
+                <div className="flex flex-col items-center justify-center w-full">
+                    {label && <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>}
+                    <input 
+                        type="number" inputMode="decimal" 
+                        value={val}
+                        onFocus={handleFocus}
+                        onBlur={()=>setIsEditing(false)}
+                        onChange={handleChange}
+                        placeholder="--"
+                        className="rate-input text-center w-full"
+                    />
+                </div>
+            );
+        };
 
         const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose }) => {
             return (
@@ -475,44 +504,6 @@
             );
         });
 
-        // RateInput Component (Stabilized for V72)
-        const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
-            const [localVal, setLocalVal] = useState('');
-            
-            useEffect(() => {
-                if(!isEditing) setLocalVal(val);
-            }, [val, isEditing]);
-
-            const handleChange = (e) => {
-                const v = e.target.value;
-                setLocalVal(v);
-                const parsed = parseFloat(v);
-                if (!isNaN(parsed)) onChange(parsed);
-                else if(v === '') onChange('');
-            };
-            
-            // V72: Select All on Focus
-            const handleFocus = (e) => {
-                setIsEditing(true);
-                e.target.select(); 
-            };
-
-            return (
-                <div className="flex flex-col items-center justify-center w-full">
-                    <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>
-                    <input 
-                        type="number" inputMode="decimal" 
-                        value={isEditing ? localVal : (val || '')}
-                        onFocus={handleFocus}
-                        onBlur={()=>setIsEditing(false)}
-                        onChange={handleChange}
-                        placeholder="--"
-                        className="rate-input text-center w-full"
-                    />
-                </div>
-            );
-        };
-
         const DutyFreeMode = memo(({ settings, inputVal, setInputVal, updateSetting, calcResult, tagPrice, setTagPrice }) => {
             const applyDiscount = (percent) => {
                 if(!tagPrice) return;
@@ -632,9 +623,7 @@
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
             const [rates, setRates] = useState({ krw: 0.023, jpy: 0.21, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
             
-            // V72: Load Custom Rates Synchronously or from Effect, but init with empty object to avoid mismatch
-            // Ideally we load from storage immediately if possible, but for React hydration safety we usually use Effect.
-            // However, for PWA, we can lazy init useState.
+            // V73 Fix: Synchronous Init for Custom Rates to prevent flickering
             const [customRates, setCustomRates] = useState(() => {
                 try {
                     const saved = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
@@ -651,7 +640,6 @@
             const [screenshotMode, setScreenshotMode] = useState(false);
             const [showInstallPrompt, setShowInstallPrompt] = useState(false);
             
-            // Header States
             const [isInverseRate, setIsInverseRate] = useState(false);
             const [editingMap, setEditingMap] = useState({}); 
 
@@ -661,7 +649,6 @@
             
             const saveTimeoutRef = useRef(null);
 
-            // V72: Persistence for Custom Rates
             useEffect(() => {
                 localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates));
             }, [customRates]);
@@ -694,7 +681,6 @@
             const fetchRates = useCallback(async () => {
                 setIsRefreshing(true); 
                 setLastUpdated('更新中...');
-                // V72: Do NOT clear customRates on fetch. Preserve them.
                 try {
                     const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
                     const d = await res.json();
@@ -746,8 +732,8 @@
             }, [debouncedSave]);
 
             const handleCustomRate = (type, val) => {
-                // V72: Handle empty string or 0 gracefully
-                const strVal = (val === '' || val === undefined) ? '' : val.toString();
+                // V73 Fix: Ensure val is always a string to prevent controlled input warnings
+                const strVal = (val === undefined || val === null) ? '' : val.toString();
                 setCustomRates(prev => ({ ...prev, [type]: strVal }));
             };
 
@@ -922,7 +908,6 @@
                                     label="" 
                                     val={customRates.krw ? (isInverseRate ? (1/parseFloat(customRates.krw)).toFixed(2) : customRates.krw) : (isInverseRate ? (1/effectiveRates.krw).toFixed(2) : effectiveRates.krw.toFixed(4))}
                                     onChange={v => {
-                                        // Handle user input from RateInput (v is number or '')
                                         if (v === '' || v === 0) {
                                             handleCustomRate('krw', '');
                                         } else {
