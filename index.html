@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V71</title>
+    <title>購黑皮 V72</title>
     <meta name="theme-color" content="#5F9EA0">
     
     <!-- iOS PWA Settings -->
@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176395.png">
     
     <!-- Inline Manifest -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MSIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MiIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
 
     <!-- Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -91,6 +91,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .rate-input:focus { border-bottom: 2px solid white; transform: translateY(-1px); }
+        .rate-input::placeholder { color: rgba(255,255,255,0.4); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .mask-linear { -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%); mask-image: linear-gradient(to right, black 88%, transparent 100%); }
@@ -102,8 +103,10 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        const STORAGE_KEY = 'shopping_app_v71_settings'; 
-        const RATE_STORAGE_KEY = 'shopping_app_v71_rates';
+        // Storage Keys
+        const STORAGE_KEY = 'shopping_app_v72_settings'; 
+        const RATE_STORAGE_KEY = 'shopping_app_v72_rates';
+        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v72_custom_rates'; // V72: Dedicated key for custom rates
         const RATE_CACHE_TTL = 3600 * 1000; 
 
         const DEFAULT_SETTINGS = {
@@ -233,7 +236,10 @@
                 ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
                 : `退稅 (${(refundTwd/twdBase*100).toFixed(1)}% | ${settings.refundMethod==='immediate'?'現場折抵':'事後退稅'})`;
             
-            // Dynamic Error Margin & V71 Effective Rate
+            // V72 Safe Math: Ensure no NaNs in display
+            const safeTwdBase = isNaN(twdBase) ? 0 : twdBase;
+            const safeFinalCost = isNaN(finalCost) ? 0 : finalCost;
+            
             let errorTag = null;
             let errorColor = "text-indigo-400/80";
             
@@ -250,54 +256,43 @@
                 }
             }
 
-            // V71: Calculate Effective Rate & Original Currency Amount
             let originalCurrencyAmount = 0;
             let originalCurrencyCode = '';
             if (settings.mode === 'general') {
-                 originalCurrencyAmount = calcResult.targetAmount; // KRW or JPY
+                 originalCurrencyAmount = calcResult.targetAmount; 
                  originalCurrencyCode = settings.country === 'KR' ? 'KRW' : 'JPY';
             } else {
-                 // Duty Free is USD based
-                 originalCurrencyAmount = parseFloat(calcResult.targetAmount); // This was derived in App but let's calc here for display safety
-                 // Actually calcResult.targetAmount in Duty Free mode might be tricky if not passed directly.
-                 // In App logic: DutyFree Mode -> targetAmount = num * (usd/krw) or just num? 
-                 // Let's re-derive from twdBase to be safe or use props if available.
-                 // Simpler: We know inputVal is USD in Duty Free.
-                 originalCurrencyAmount = twdBase / rates.usd; // Approx USD
+                 originalCurrencyAmount = safeTwdBase / rates.usd; 
                  originalCurrencyCode = 'USD';
             }
 
-            // Re-calculate Original Amount for display based on TWD Base (more stable)
             const displayOriginal = settings.mode === 'dutyfree' 
-                ? (twdBase / rates.usd) 
-                : (settings.country === 'KR' ? twdBase / rates.krw : twdBase / rates.jpy);
+                ? (safeTwdBase / (rates.usd || 1)) 
+                : (settings.country === 'KR' ? safeTwdBase / (rates.krw || 1) : safeTwdBase / (rates.jpy || 1));
             
             const displayCode = settings.mode === 'dutyfree' ? 'USD' : (settings.country === 'KR' ? 'KRW' : 'JPY');
 
-            // Effective Rate
-            const effectiveRate = finalCost / displayOriginal;
+            const effectiveRate = displayOriginal > 0 ? safeFinalCost / displayOriginal : 0;
 
-            // Store Discount Logic (Duty Free)
             let storeDiscountTWD = 0;
             let fullSavings = totalSaved;
             if (settings.mode === 'dutyfree' && tagPrice && !isNaN(parseFloat(tagPrice))) {
                  const tagTWD = parseFloat(tagPrice) * rates.usd;
-                 storeDiscountTWD = Math.round(tagTWD - twdBase);
+                 storeDiscountTWD = Math.round(tagTWD - safeTwdBase);
                  fullSavings += storeDiscountTWD;
             }
 
             const handleCopy = () => {
                 const text = `[購黑皮試算]
-原始: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${twdBase.toLocaleString()})
+原始: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${safeTwdBase.toLocaleString()})
 + 手續費: NT$${feeAmount + spreadCost}
 - 回饋: NT$${rewardAmount}
 - 退稅/返點: NT$${refundTwd}
 ----------------
-最終入手: NT$${finalCost.toLocaleString()}
+最終入手: NT$${safeFinalCost.toLocaleString()}
 神匯率: ${effectiveRate.toFixed(4)}
-總省下: NT$${fullSavings.toLocaleString()} (${((fullSavings/(twdBase+storeDiscountTWD))*100).toFixed(1)}%)`;
+總省下: NT$${fullSavings.toLocaleString()} (${twdBase>0 ? ((fullSavings/(safeTwdBase+storeDiscountTWD))*100).toFixed(1) : 0}%)`;
                 
-                // Use execCommand for wider compatibility in WebViews/iFrames
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
                 document.body.appendChild(textArea);
@@ -324,7 +319,6 @@
                          </button>
                     </div>
                     <div className="space-y-3 text-sm">
-                        {/* V71: Store Discount Line */}
                         {storeDiscountTWD > 0 && (
                             <div className="flex justify-between items-center text-slate-400 text-xs mb-2 pb-2 border-b border-dashed border-slate-100">
                                 <span>店內折扣 (Tag → Paid)</span>
@@ -335,12 +329,11 @@
                         <div className="flex justify-between items-center text-slate-500 font-medium">
                             <div className="flex flex-col">
                                 <span>{baseLabel}</span>
-                                {/* V71: Dual Currency Display */}
                                 <span className="text-[10px] text-slate-300 font-mono">
                                     {displayOriginal.toLocaleString(undefined, {maximumFractionDigits: 1})} {displayCode}
                                 </span>
                             </div>
-                            <span className="font-bold font-mono text-base text-slate-800">NT${twdBase.toLocaleString()}</span>
+                            <span className="font-bold font-mono text-base text-slate-800">NT${safeTwdBase.toLocaleString()}</span>
                         </div>
 
                         <div className="flex justify-between items-center text-[#EA580C]">
@@ -370,7 +363,6 @@
                         )}
                         <div className="my-3 border-t border-dashed border-slate-200"></div>
                         
-                        {/* V71: Effective Rate Display */}
                         <div className="flex justify-between items-center mb-1 bg-slate-50 p-2 rounded-lg">
                             <span className="text-[10px] font-bold text-slate-500">神級匯率 (含回饋)</span>
                             <span className="text-slate-700 font-bold font-mono tracking-tight">
@@ -381,12 +373,12 @@
                         <div className="flex justify-between items-center mb-1 mt-3">
                             <span className="text-[10px] text-slate-400 font-bold">總回饋價值 {storeDiscountTWD > 0 ? '(含店內折扣)' : ''}</span>
                             <span className="text-[#10B981] font-bold text-xl font-mono tracking-tight">
-                                +${fullSavings.toLocaleString()} ({((fullSavings/(twdBase+storeDiscountTWD))*100).toFixed(1)}%)
+                                +${fullSavings.toLocaleString()} ({safeTwdBase > 0 ? ((fullSavings/(safeTwdBase+storeDiscountTWD))*100).toFixed(1) : 0}%)
                             </span>
                         </div>
                         <div className="flex justify-between items-end pt-1">
                             <span className="font-bold text-slate-800 text-base mb-1">最終入手價 (TWD)</span>
-                            <span className="text-[2.8rem] font-black text-slate-900 tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span>
+                            <span className="text-[2.8rem] font-black text-slate-900 tracking-tight leading-none font-sans">${safeFinalCost.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -483,7 +475,7 @@
             );
         });
 
-        // Define RateInput Component
+        // RateInput Component (Stabilized for V72)
         const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
             const [localVal, setLocalVal] = useState('');
             
@@ -498,16 +490,23 @@
                 if (!isNaN(parsed)) onChange(parsed);
                 else if(v === '') onChange('');
             };
+            
+            // V72: Select All on Focus
+            const handleFocus = (e) => {
+                setIsEditing(true);
+                e.target.select(); 
+            };
 
             return (
                 <div className="flex flex-col items-center justify-center w-full">
                     <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>
                     <input 
                         type="number" inputMode="decimal" 
-                        value={isEditing ? localVal : val}
-                        onFocus={()=>setIsEditing(true)}
+                        value={isEditing ? localVal : (val || '')}
+                        onFocus={handleFocus}
                         onBlur={()=>setIsEditing(false)}
                         onChange={handleChange}
+                        placeholder="--"
                         className="rate-input text-center w-full"
                     />
                 </div>
@@ -632,7 +631,19 @@
         const App = () => {
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
             const [rates, setRates] = useState({ krw: 0.023, jpy: 0.21, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
-            const [customRates, setCustomRates] = useState({ krw: '', usd: '', usdToCny: '', cny: '' }); // Added new rates
+            
+            // V72: Load Custom Rates Synchronously or from Effect, but init with empty object to avoid mismatch
+            // Ideally we load from storage immediately if possible, but for React hydration safety we usually use Effect.
+            // However, for PWA, we can lazy init useState.
+            const [customRates, setCustomRates] = useState(() => {
+                try {
+                    const saved = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : { krw: '', usd: '', usdToCny: '', cny: '' };
+                } catch(e) {
+                    return { krw: '', usd: '', usdToCny: '', cny: '' };
+                }
+            });
+
             const [lastUpdated, setLastUpdated] = useState('載入中...');
             const [isOffline, setIsOffline] = useState(false);
             const [showSettings, setShowSettings] = useState(false);
@@ -642,13 +653,18 @@
             
             // Header States
             const [isInverseRate, setIsInverseRate] = useState(false);
-            const [editingMap, setEditingMap] = useState({}); // Track editing state per input
+            const [editingMap, setEditingMap] = useState({}); 
 
             const [inputVal, setInputVal] = useState('');
             const [inputType, setInputType] = useState('target');
             const [tagPrice, setTagPrice] = useState('');
             
             const saveTimeoutRef = useRef(null);
+
+            // V72: Persistence for Custom Rates
+            useEffect(() => {
+                localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates));
+            }, [customRates]);
 
             useEffect(() => {
                 const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
@@ -678,7 +694,7 @@
             const fetchRates = useCallback(async () => {
                 setIsRefreshing(true); 
                 setLastUpdated('更新中...');
-                setCustomRates(prev => ({...prev, krw: '', usd: '', usdToCny: '', cny: ''}));
+                // V72: Do NOT clear customRates on fetch. Preserve them.
                 try {
                     const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
                     const d = await res.json();
@@ -687,8 +703,8 @@
                             usd: d.rates.TWD, 
                             krw: d.rates.TWD/d.rates.KRW, 
                             jpy: d.rates.TWD/d.rates.JPY, 
-                            cny: d.rates.TWD/d.rates.CNY, // 1 CNY = ? TWD
-                            usdToCny: d.rates.CNY // 1 USD = ? CNY
+                            cny: d.rates.TWD/d.rates.CNY, 
+                            usdToCny: d.rates.CNY 
                         };
                         const timeStr = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
                         setRates(newRates); setLastUpdated(timeStr); setIsOffline(false);
@@ -730,7 +746,9 @@
             }, [debouncedSave]);
 
             const handleCustomRate = (type, val) => {
-                setCustomRates(prev => ({ ...prev, [type]: val }));
+                // V72: Handle empty string or 0 gracefully
+                const strVal = (val === '' || val === undefined) ? '' : val.toString();
+                setCustomRates(prev => ({ ...prev, [type]: strVal }));
             };
 
             const effectiveRates = useMemo(() => {
@@ -739,7 +757,13 @@
                 const uToC = customRates.usdToCny ? parseFloat(customRates.usdToCny) : rates.usdToCny;
                 const c = customRates.cny ? parseFloat(customRates.cny) : rates.cny;
                 
-                return { ...rates, krw: k || rates.krw, usd: u || rates.usd, usdToCny: uToC || rates.usdToCny, cny: c || rates.cny };
+                return { 
+                    ...rates, 
+                    krw: (k && k > 0) ? k : rates.krw, 
+                    usd: (u && u > 0) ? u : rates.usd, 
+                    usdToCny: (uToC && uToC > 0) ? uToC : rates.usdToCny, 
+                    cny: (c && c > 0) ? c : rates.cny 
+                };
             }, [rates, customRates]);
 
             const calcResult = useMemo(() => {
@@ -754,12 +778,12 @@
                 const rKrw = effectiveRates.krw * bankSpread;
                 const rJpy = effectiveRates.jpy * bankSpread;
                 const rUsd = effectiveRates.usd * bankSpread;
-                const targetRate = settings.country === 'KR' ? rKrw : rJpy;
                 
                 let twdBase = 0;
                 let targetAmount = 0;
                 
                 if (settings.mode === 'general') {
+                    const targetRate = settings.country === 'KR' ? rKrw : rJpy;
                     if (inputType === 'twd') { twdBase = num; targetAmount = twdBase / targetRate; }
                     else if (inputType === 'usd') { twdBase = num * rUsd; targetAmount = twdBase / targetRate; }
                     else { targetAmount = num; twdBase = num * targetRate; }
@@ -774,7 +798,6 @@
                 if (settings.mode === 'general') {
                     if (settings.taxMode === 'auto') {
                         if (settings.country === 'KR') {
-                            // V67: Enhanced High Precision Tax Table (Approximating Global Blue / Major Vendors)
                             const a = targetAmount;
                             if (a >= 15000) {
                                 if (a < 30000) refundNative = 1000;
@@ -787,7 +810,7 @@
                                 else if (a < 200000) refundNative = 12000;
                                 else if (a < 225000) refundNative = 13500;
                                 else if (a < 250000) refundNative = 15500;
-                                else if (a < 275000) refundNative = 17000; // Expanded range starts
+                                else if (a < 275000) refundNative = 17000; 
                                 else if (a < 300000) refundNative = 19000;
                                 else if (a < 325000) refundNative = 20500;
                                 else if (a < 350000) refundNative = 22000;
@@ -805,17 +828,16 @@
                                 else if (a < 900000) refundNative = 58000;
                                 else if (a < 950000) refundNative = 61000;
                                 else if (a < 1000000) refundNative = 64000;
-                                else refundNative = Math.floor(a * 0.065 / 1000) * 1000; // Conservative above 1M
+                                else refundNative = Math.floor(a * 0.065 / 1000) * 1000; 
                             }
                         } else { 
                             if (targetAmount >= 5500) { refundNative = targetAmount - (targetAmount/1.1); if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); }
                         }
                     }
-                    refundTwd = Math.round(refundNative * targetRate);
+                    refundTwd = Math.round(refundNative * (settings.country === 'KR' ? rKrw : rJpy));
                 } else {
                     if (settings.country === 'KR') {
                         const rebateUsd = num * (settings.dutyFreeRebate/100);
-                        // USD -> CNY -> TWD Rebate Path
                         const rebateCny = rebateUsd * effectiveRates.usdToCny;
                         refundTwd = Math.round(rebateCny * effectiveRates.cny); 
                     }
@@ -881,10 +903,12 @@
 
             const openExchangeLink = () => { if (settings.country === 'KR') window.open('https://creatrip.com/exchange', '_blank'); else window.open('https://www.google.com/search?q=JPY+TWD', '_blank'); };
 
-            // General Mode Header Logic
             const renderGeneralHeader = () => {
                 const base = customRates.krw ? parseFloat(customRates.krw) : effectiveRates.krw;
-                const displayVal = isInverseRate ? (base ? (1/base).toFixed(2) : '') : (base ? base.toFixed(4) : '');
+                // V72: Use fallback for display to prevent 'Infinity' or 'NaN' when base is 0 or invalid
+                const displayVal = isInverseRate 
+                    ? (base > 0 ? (1/base).toFixed(2) : '') 
+                    : (base > 0 ? base.toFixed(4) : '');
                 
                 return (
                     <div className="flex justify-between items-center mb-1">
@@ -894,26 +918,39 @@
                                     <span className="text-[10px] font-bold text-white tracking-wider truncate">{isInverseRate ? (settings.country==='KR'?'TWD ➔ KRW':'TWD ➔ JPY') : (settings.country==='KR'?'KRW ➔ TWD':'JPY ➔ TWD')}</span>
                                     <div className={`w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-yellow-300"/></div>
                                 </button>
-                                <input type="number" inputMode="decimal" value={editingMap['gen'] ? undefined : displayVal} onFocus={()=>setEditingMap({...editingMap, gen:true})} onBlur={()=>setEditingMap({...editingMap, gen:false})} 
-                                onChange={e => {
-                                    const v=e.target.value; 
-                                    const n=parseFloat(v); 
-                                    if(!isNaN(n) && n>0) handleCustomRate('krw', isInverseRate?(1/n).toString():n.toString());
-                                    else if(v==='') handleCustomRate('krw','');
-                                }} className="rate-input text-right w-full pr-1"/>
+                                <RateInput 
+                                    label="" 
+                                    val={customRates.krw ? (isInverseRate ? (1/parseFloat(customRates.krw)).toFixed(2) : customRates.krw) : (isInverseRate ? (1/effectiveRates.krw).toFixed(2) : effectiveRates.krw.toFixed(4))}
+                                    onChange={v => {
+                                        // Handle user input from RateInput (v is number or '')
+                                        if (v === '' || v === 0) {
+                                            handleCustomRate('krw', '');
+                                        } else {
+                                            const rate = isInverseRate ? 1/v : v;
+                                            handleCustomRate('krw', rate);
+                                        }
+                                    }}
+                                    isEditing={editingMap['gen']}
+                                    setIsEditing={s=>setEditingMap({...editingMap, gen:s})}
+                                />
                             </div>
                         </div>
                         <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
                             <div className="flex flex-col items-end w-full">
                                 <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-white/70 tracking-widest">USD ➔ TWD</span></div>
-                                <input type="number" inputMode="decimal" value={customRates.usd || effectiveRates.usd.toFixed(2)} onChange={e=>handleCustomRate('usd', e.target.value)} className="rate-input text-right w-full pr-1"/>
+                                <RateInput 
+                                    label="" 
+                                    val={customRates.usd || effectiveRates.usd.toFixed(2)}
+                                    onChange={v=>handleCustomRate('usd', v)}
+                                    isEditing={editingMap['usd']}
+                                    setIsEditing={s=>setEditingMap({...editingMap, usd:s})}
+                                />
                             </div>
                         </div>
                     </div>
                 );
             };
 
-            // Duty Free Mode Header Logic (3 columns)
             const renderDutyFreeHeader = () => {
                 return (
                     <div className="flex justify-between items-end gap-2 mb-1">
