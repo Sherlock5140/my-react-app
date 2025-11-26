@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V73</title>
+    <title>購黑皮 V79</title>
     <meta name="theme-color" content="#5F9EA0">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176395.png">
     
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3MyIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3OSIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
 
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -58,7 +58,17 @@
             width: 100%;
         }
         
-        input { background: transparent; border: none; outline: none; width: 100%; font-family: "SF Mono", monospace; color: var(--text-primary); }
+        input { 
+            background: transparent; 
+            border: none; 
+            outline: none; 
+            width: 100%; 
+            font-family: "SF Mono", monospace; 
+            color: var(--text-primary); 
+            padding: 0; margin: 0;
+            -webkit-appearance: none;
+            border-radius: 0;
+        }
         
         .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
         .pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
@@ -74,20 +84,9 @@
         .bg-jp { background: linear-gradient(135deg, var(--morandi-blue) 0%, #576473 100%); }
         .bg-df { background: linear-gradient(135deg, var(--rose-base) 0%, var(--rose-dark) 100%); } 
 
-        .rate-input {
-            background: transparent;
-            color: white;
-            font-weight: 800;
-            font-size: 1.1rem;
-            font-family: "SF Mono", monospace;
-            border-bottom: 2px solid rgba(255,255,255,0.25);
-            padding: 0 2px;
-            width: 100%;
-            text-align: center;
-            transition: all 0.2s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .rate-input:focus { border-bottom: 2px solid white; transform: translateY(-1px); }
+        .rate-input-container { position: relative; height: 32px; display: flex; align-items: flex-end; justify-content: center; }
+        .rate-input { background: transparent; color: white; font-weight: 800; font-size: 1.2rem; font-family: "SF Mono", monospace; border-bottom: 2px solid rgba(255,255,255,0.3); padding: 0; width: 100%; text-align: center; transition: all 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.1); line-height: 1.2; height: 28px; }
+        .rate-input:focus { border-bottom: 2px solid white; }
         .rate-input::placeholder { color: rgba(255,255,255,0.4); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -100,11 +99,11 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        // Storage Keys
-        const STORAGE_KEY = 'shopping_app_v73_settings'; 
-        const RATE_STORAGE_KEY = 'shopping_app_v73_rates';
-        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v73_custom_rates'; 
+        const STORAGE_KEY = 'shopping_app_v79_settings'; 
+        const RATE_STORAGE_KEY = 'shopping_app_v79_rates';
+        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v79_custom_rates'; 
         const RATE_CACHE_TTL = 3600 * 1000; 
+        const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; 
 
         const DEFAULT_SETTINGS = {
             country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
@@ -140,39 +139,49 @@
                 arrowRight: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>,
                 plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
                 minus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
-                copy: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                copy: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>,
+                diamond: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"></path></svg>,
+                lightning: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             };
             return icons[name] || null;
         });
 
-        // V73: Improved RateInput - Controlled Component with Internal Buffer Removal
-        // Directly use props for value to ensure single source of truth and avoid sync issues
         const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
-            
+            const [buffer, setBuffer] = useState(val);
+
+            useEffect(() => {
+                if (!isEditing) setBuffer(val);
+            }, [val, isEditing]);
+
             const handleChange = (e) => {
-                const v = e.target.value;
-                // Allow intermediate invalid states while typing (e.g., empty string, decimal point)
-                // But propagate changes immediately
-                onChange(v);
+                setBuffer(e.target.value);
             };
-            
+
+            const handleBlur = () => {
+                setIsEditing(false);
+                if (buffer === '' || buffer === 0) { onChange(''); } else { onChange(buffer); }
+            };
+
             const handleFocus = (e) => {
                 setIsEditing(true);
+                setBuffer(val);
                 e.target.select();
             };
 
             return (
                 <div className="flex flex-col items-center justify-center w-full">
                     {label && <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>}
-                    <input 
-                        type="number" inputMode="decimal" 
-                        value={val}
-                        onFocus={handleFocus}
-                        onBlur={()=>setIsEditing(false)}
-                        onChange={handleChange}
-                        placeholder="--"
-                        className="rate-input text-center w-full"
-                    />
+                    <div className="rate-input-container w-full">
+                        <input 
+                            type="number" inputMode="decimal" 
+                            value={isEditing ? buffer : val} 
+                            onFocus={handleFocus}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            placeholder="--"
+                            className="rate-input"
+                        />
+                    </div>
                 </div>
             );
         };
@@ -259,27 +268,27 @@
         const BreakdownPanel = memo(({ calcResult, settings, rates, tagPrice }) => {
             const [copied, setCopied] = useState(false);
             if (!calcResult || calcResult.twdBase <= 0) return null;
-            const { twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost } = calcResult;
-            const baseLabel = settings.mode === 'dutyfree' ? '刷卡金額' : '原始價格';
+            const { twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost, postRefundTwd, immRefundTwd } = calcResult;
+            const baseLabel = '付款金額'; 
+            const displayRefund = settings.refundMethod === 'immediate' ? immRefundTwd : postRefundTwd;
+            
             const refundLabel = settings.mode === 'dutyfree' 
                 ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
-                : `退稅 (${(refundTwd/twdBase*100).toFixed(1)}% | ${settings.refundMethod==='immediate'?'現場折抵':'事後退稅'})`;
+                : `退稅 (${settings.refundMethod==='immediate'?'現場折抵':'事後退稅'})`;
             
-            // V72 Safe Math: Ensure no NaNs in display
             const safeTwdBase = isNaN(twdBase) ? 0 : twdBase;
             const safeFinalCost = isNaN(finalCost) ? 0 : finalCost;
             
             let errorTag = null;
             let errorColor = "text-indigo-400/80";
             
-            if (settings.country === 'KR' && settings.mode === 'general' && refundTwd > 0) {
+            if (settings.country === 'KR' && settings.mode === 'general' && displayRefund > 0) {
                 if (settings.refundMethod === 'immediate') { errorTag = '精準無誤'; errorColor = "text-emerald-500/80"; } 
                 else {
-                    const amount = calcResult.targetAmount;
                     if (calcResult.targetAmount >= 1000000) {
-                         errorTag = `保守估計 (實際可能多退 NT$${Math.round(refundTwd * 0.15).toLocaleString()})`;
+                         errorTag = `保守估計 (實際可能多退 NT$${Math.round(displayRefund * 0.15).toLocaleString()})`;
                     } else {
-                         const errVal = Math.max(1, Math.round(refundTwd * 0.05));
+                         const errVal = Math.max(1, Math.round(displayRefund * 0.05));
                          errorTag = `預估誤差: ±NT$${errVal.toLocaleString()}`;
                     }
                 }
@@ -301,8 +310,6 @@
             
             const displayCode = settings.mode === 'dutyfree' ? 'USD' : (settings.country === 'KR' ? 'KRW' : 'JPY');
 
-            const effectiveRate = displayOriginal > 0 ? safeFinalCost / displayOriginal : 0;
-
             let storeDiscountTWD = 0;
             let fullSavings = totalSaved;
             if (settings.mode === 'dutyfree' && tagPrice && !isNaN(parseFloat(tagPrice))) {
@@ -313,26 +320,19 @@
 
             const handleCopy = () => {
                 const text = `[購黑皮試算]
-原始: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${safeTwdBase.toLocaleString()})
+付款金額: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${safeTwdBase.toLocaleString()})
 + 手續費: NT$${feeAmount + spreadCost}
 - 回饋: NT$${rewardAmount}
-- 退稅/返點: NT$${refundTwd}
+- 退稅/返點: NT$${displayRefund}
 ----------------
 最終入手: NT$${safeFinalCost.toLocaleString()}
-神匯率: ${effectiveRate.toFixed(4)}
 總省下: NT$${fullSavings.toLocaleString()} (${twdBase>0 ? ((fullSavings/(safeTwdBase+storeDiscountTWD))*100).toFixed(1) : 0}%)`;
                 
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
                 document.body.appendChild(textArea);
                 textArea.select();
-                try {
-                    document.execCommand('copy');
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
+                try { document.execCommand('copy'); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch (err) {}
                 document.body.removeChild(textArea);
             };
 
@@ -381,7 +381,7 @@
                             <div className="flex flex-col text-[#4F46E5] bg-[#EEF2FF] px-3 py-2.5 rounded-xl border border-[#E0E7FF]">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold">- {refundLabel}</span>
-                                    <span className="font-bold font-mono">-${refundTwd.toLocaleString()}</span>
+                                    <span className="font-bold font-mono">-${displayRefund.toLocaleString()}</span>
                                 </div>
                                 {errorTag && (
                                     <div className={`text-[9px] text-right font-mono mt-0.5 tracking-wide ${errorColor}`}>
@@ -391,13 +391,6 @@
                             </div>
                         )}
                         <div className="my-3 border-t border-dashed border-slate-200"></div>
-                        
-                        <div className="flex justify-between items-center mb-1 bg-slate-50 p-2 rounded-lg">
-                            <span className="text-[10px] font-bold text-slate-500">神級匯率 (含回饋)</span>
-                            <span className="text-slate-700 font-bold font-mono tracking-tight">
-                                {effectiveRate.toFixed(4)} <span className="text-[9px] text-slate-400 font-normal">TWD/{displayCode}</span>
-                            </span>
-                        </div>
 
                         <div className="flex justify-between items-center mb-1 mt-3">
                             <span className="text-[10px] text-slate-400 font-bold">總回饋價值 {storeDiscountTWD > 0 ? '(含店內折扣)' : ''}</span>
@@ -481,9 +474,53 @@
                             </div>
                         </div>
                         {settings.taxMode !== 'off' && (
-                            <div className="flex bg-white/90 backdrop-blur-md p-1 rounded-xl border border-white/60 shadow-sm">
-                                <button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.refundMethod==='airport' ? 'bg-white text-teal-800 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}>{settings.country==='KR'?'事後退稅':'退稅 (Tax Free)'}</button>
-                                <button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.refundMethod==='immediate'?'bg-white text-emerald-600 shadow-sm ring-1 ring-black/5':'text-slate-400 hover:text-slate-600'}`}>{settings.country==='KR'?'現場折抵':'未稅價 (Tax Free)'}</button>
+                            <div className="flex flex-col gap-3"> 
+                                <div className="flex bg-white/90 backdrop-blur-md p-1 rounded-xl border border-white/60 shadow-sm">
+                                    <button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 p-2 rounded-lg transition-all duration-300 flex flex-col items-center justify-center border-2 ${settings.refundMethod==='airport' ? 'bg-teal-50/80 border-teal-200 shadow-sm' : 'border-transparent opacity-60 hover:opacity-80'}`}>
+                                        <span className={`text-[11px] font-black tracking-wider ${settings.refundMethod==='airport'?'text-teal-700':'text-slate-500'}`}>事後退稅</span>
+                                        {calcResult.postRefundTwd !== calcResult.immRefundTwd && (
+                                            <span className="text-[9px] font-mono font-bold text-slate-400 mt-0.5">
+                                            {calcResult.postRefundTwd > 0 ? `≈ NT$${calcResult.postRefundTwd}` : '無退稅'}
+                                            </span>
+                                        )}
+                                    </button>
+                                    <div className="w-px h-8 bg-slate-200 mx-1"></div>
+                                    <button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 p-2 rounded-lg transition-all duration-300 flex flex-col items-center justify-center border-2 ${settings.refundMethod==='immediate' ? 'bg-emerald-50/80 border-emerald-200 shadow-sm' : 'border-transparent opacity-60 hover:opacity-80'}`}>
+                                        <span className={`text-[11px] font-black tracking-wider ${settings.refundMethod==='immediate'?'text-emerald-700':'text-slate-500'}`}>現場折抵</span>
+                                        {calcResult.postRefundTwd !== calcResult.immRefundTwd && (
+                                            <span className="text-[9px] font-mono font-bold text-slate-400 mt-0.5">
+                                                {calcResult.immRefundTwd > 0 ? `≈ NT$${calcResult.immRefundTwd}` : '無退稅'}
+                                            </span>
+                                        )}
+                                    </button>
+                                </div>
+                                
+                                {(() => {
+                                    // V79: Logic for Unified & Simplified Arbitrage Message
+                                    if (calcResult.postRefundTwd > 0 && settings.country === 'KR') {
+                                         const rewardRate = settings.reward / 100;
+                                         const feeRate = settings.fee / 100; 
+                                         // Net Gain calculation
+                                         const netGain = Math.round(calcResult.postRefundTwd * (rewardRate - (settings.isBankAccount?0:feeRate)));
+                                         
+                                         if (netGain > 0) {
+                                             return (
+                                                <div className="text-[10px] p-2.5 rounded-xl flex items-center gap-2 border bg-teal-50/80 border-teal-100 text-teal-700 shadow-sm animate-fade-in">
+                                                    <div className="p-1 rounded-full bg-teal-200 text-white"><Icon name="diamond" size={12}/></div>
+                                                    <span className="font-bold">刷卡回饋套利：選【事後退稅】可多賺約 NT${netGain}</span>
+                                                </div>
+                                             );
+                                         } else {
+                                              return (
+                                                <div className="text-[10px] p-2.5 rounded-xl flex items-center gap-2 border bg-emerald-50/80 border-emerald-100 text-emerald-700 shadow-sm animate-fade-in">
+                                                    <div className="p-1 rounded-full bg-emerald-200 text-white"><Icon name="lightning" size={12}/></div>
+                                                    <span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span>
+                                                </div>
+                                             );
+                                         }
+                                    }
+                                    return null;
+                                })()}
                             </div>
                         )}
                         {/* V66: Add explicit low threshold warning */}
@@ -525,7 +562,6 @@
             };
             const status = getDiscountStatus();
             
-            // V70: Fine-grained Control for Rebate
             const adjustRebate = (delta) => {
                 let newVal = (parseFloat(settings.dutyFreeRebate) || 0) + delta;
                 newVal = Math.max(0, Math.min(40, newVal));
@@ -623,14 +659,15 @@
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
             const [rates, setRates] = useState({ krw: 0.023, jpy: 0.21, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
             
-            // V73 Fix: Synchronous Init for Custom Rates to prevent flickering
             const [customRates, setCustomRates] = useState(() => {
                 try {
                     const saved = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
-                    return saved ? JSON.parse(saved) : { krw: '', usd: '', usdToCny: '', cny: '' };
-                } catch(e) {
-                    return { krw: '', usd: '', usdToCny: '', cny: '' };
-                }
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed && typeof parsed === 'object') return parsed;
+                    }
+                } catch(e) {}
+                return { krw: '', usd: '', usdToCny: '', cny: '' };
             });
 
             const [lastUpdated, setLastUpdated] = useState('載入中...');
@@ -652,6 +689,24 @@
             useEffect(() => {
                 localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates));
             }, [customRates]);
+
+            useEffect(() => {
+                const checkRefresh = () => {
+                    if (document.visibilityState === 'visible') {
+                         const savedR = localStorage.getItem(RATE_STORAGE_KEY);
+                         if (savedR) {
+                             try {
+                                 const p = JSON.parse(savedR);
+                                 if (Date.now() - p.timestamp > AUTO_REFRESH_INTERVAL) {
+                                     fetchRates();
+                                 }
+                             } catch(e) {}
+                         }
+                    }
+                };
+                document.addEventListener('visibilitychange', checkRefresh);
+                return () => document.removeEventListener('visibilitychange', checkRefresh);
+            }, []);
 
             useEffect(() => {
                 const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
@@ -681,6 +736,7 @@
             const fetchRates = useCallback(async () => {
                 setIsRefreshing(true); 
                 setLastUpdated('更新中...');
+                setCustomRates({ krw: '', usd: '', usdToCny: '', cny: '' });
                 try {
                     const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
                     const d = await res.json();
@@ -702,7 +758,7 @@
             const debouncedSave = useCallback((newSettings) => {
                 if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
                 saveTimeoutRef.current = setTimeout(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings)); }, 800);
-            }, []);
+            }, [debouncedSave]);
 
             const updateSetting = useCallback((key, val) => {
                 setSettings(prev => { const next = { ...prev, [key]: val }; debouncedSave(next); return next; });
@@ -732,7 +788,6 @@
             }, [debouncedSave]);
 
             const handleCustomRate = (type, val) => {
-                // V73 Fix: Ensure val is always a string to prevent controlled input warnings
                 const strVal = (val === undefined || val === null) ? '' : val.toString();
                 setCustomRates(prev => ({ ...prev, [type]: strVal }));
             };
@@ -778,13 +833,15 @@
                     else { twdBase = num * rJpy; targetAmount = num; }
                 }
                 
-                let refundNative = 0;
-                let refundTwd = 0;
+                let refundNative = 0; 
+                let postRefundTwd = 0;
+                let immRefundTwd = 0;
                 
                 if (settings.mode === 'general') {
                     if (settings.taxMode === 'auto') {
                         if (settings.country === 'KR') {
                             const a = targetAmount;
+                            // V78: Use same table logic for both Post and Immediate to avoid confusion
                             if (a >= 15000) {
                                 if (a < 30000) refundNative = 1000;
                                 else if (a < 50000) refundNative = 2000;
@@ -816,18 +873,33 @@
                                 else if (a < 1000000) refundNative = 64000;
                                 else refundNative = Math.floor(a * 0.065 / 1000) * 1000; 
                             }
+                            
+                            // V78: Both refund methods get the same native amount from the tier table
+                            const taxRate = (settings.country === 'KR' ? rKrw : rJpy);
+                            postRefundTwd = Math.round(refundNative * taxRate);
+                            immRefundTwd = Math.round(refundNative * taxRate); // Use same logic to avoid confusion
+
                         } else { 
-                            if (targetAmount >= 5500) { refundNative = targetAmount - (targetAmount/1.1); if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); }
+                            if (targetAmount >= 5500) { 
+                                const r = targetAmount - (targetAmount/1.1); 
+                                refundNative = r;
+                                if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); 
+                                immRefundTwd = Math.round(refundNative * rJpy); 
+                            }
+                            postRefundTwd = immRefundTwd;
                         }
                     }
-                    refundTwd = Math.round(refundNative * (settings.country === 'KR' ? rKrw : rJpy));
                 } else {
                     if (settings.country === 'KR') {
                         const rebateUsd = num * (settings.dutyFreeRebate/100);
                         const rebateCny = rebateUsd * effectiveRates.usdToCny;
-                        refundTwd = Math.round(rebateCny * effectiveRates.cny); 
+                        postRefundTwd = Math.round(rebateCny * effectiveRates.cny); 
+                        immRefundTwd = postRefundTwd; // Duty Free defaults
                     }
                 }
+
+                const refundTwd = settings.refundMethod === 'immediate' ? immRefundTwd : postRefundTwd;
+
                 let effectiveFee = settings.fee;
                 let spreadCost = 0;
                 let isWaived = false;
@@ -839,7 +911,8 @@
                 const rewardAmount = Math.round(twdBase * (settings.reward/100));
                 const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
                 const totalSaved = Math.round(twdBase - finalCost);
-                return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost: Math.round(spreadCost), targetAmount };
+                
+                return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost: Math.round(spreadCost), targetAmount, postRefundTwd, immRefundTwd }; 
             }, [inputVal, inputType, settings, effectiveRates]);
 
             const advice = useMemo(() => {
@@ -891,7 +964,6 @@
 
             const renderGeneralHeader = () => {
                 const base = customRates.krw ? parseFloat(customRates.krw) : effectiveRates.krw;
-                // V72: Use fallback for display to prevent 'Infinity' or 'NaN' when base is 0 or invalid
                 const displayVal = isInverseRate 
                     ? (base > 0 ? (1/base).toFixed(2) : '') 
                     : (base > 0 ? base.toFixed(4) : '');
