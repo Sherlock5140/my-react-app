@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V79</title>
-    <meta name="theme-color" content="#5F9EA0">
+    <title>購黑皮 V87</title>
+    <meta name="theme-color" content="#4A7A7D">
     
+    <!-- iOS PWA 專用設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="購黑皮">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176395.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2662/2662503.png">
     
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY3OSIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzVGOUVBMCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zMTc2LzMxNzYzOTUucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+    <!-- Web Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6LO86buR55quIFY4NyIsInNob3J0X25hbWUiOiLos7zpu5HnmqYiLCJzdGFydF91cmwiOiIuIiwic2NvcGUiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y0RjZGOCIsInRoZW1lX2NvbG9yIjoiIzRBN0E3RCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNjYyLzI2NjI1MDMucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
 
+    <!-- 核心依賴 -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -20,13 +23,11 @@
 
     <style>
         :root {
-            --app-bg: #F4F6F8;
-            --tiffany-base: #5F9EA0;
-            --tiffany-dark: #4A8587;
-            --rose-base: #D8A1A8;
-            --rose-dark: #A6808C;
-            --morandi-blue: #6C7A89;
-            --text-primary: #2D3748;
+            --app-bg: #F0F2F5;
+            --header-bg: #4A7A7D; /* 更深沉穩重的藍綠色 */
+            --card-bg: #FFFFFF;
+            --text-primary: #1A202C;
+            --text-secondary: #718096;
         }
 
         html { height: -webkit-fill-available; }
@@ -44,20 +45,7 @@
         
         #root { height: 100%; display: flex; flex-direction: column; }
 
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.92);
-            border-radius: 2rem;
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255,255,255,0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            width: 100%;
-        }
-        
+        /* Reset Input */
         input { 
             background: transparent; 
             border: none; 
@@ -69,6 +57,19 @@
             -webkit-appearance: none;
             border-radius: 0;
         }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        /* V87 UI Components */
+        .app-card {
+            background: var(--card-bg);
+            border-radius: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            width: 100%;
+            transition: transform 0.1s active;
+        }
         
         .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
         .pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
@@ -76,21 +77,34 @@
         .spin-anim { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
-        .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .theme-transition { transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .bg-kr { background: linear-gradient(135deg, var(--tiffany-base) 0%, var(--tiffany-dark) 100%); }
-        .bg-jp { background: linear-gradient(135deg, var(--morandi-blue) 0%, #576473 100%); }
-        .bg-df { background: linear-gradient(135deg, var(--rose-base) 0%, var(--rose-dark) 100%); } 
+        .header-gradient { background: linear-gradient(180deg, var(--header-bg) 0%, #3B6568 100%); }
 
-        .rate-input-container { position: relative; height: 32px; display: flex; align-items: flex-end; justify-content: center; }
-        .rate-input { background: transparent; color: white; font-weight: 800; font-size: 1.2rem; font-family: "SF Mono", monospace; border-bottom: 2px solid rgba(255,255,255,0.3); padding: 0; width: 100%; text-align: center; transition: all 0.2s; text-shadow: 0 2px 4px rgba(0,0,0,0.1); line-height: 1.2; height: 28px; }
+        /* iOS Rate Input Optimization */
+        .rate-input { 
+            background: transparent; 
+            color: white; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            font-family: "SF Mono", monospace; 
+            border-bottom: 1px solid rgba(255,255,255,0.2); 
+            padding: 0; 
+            width: 100%; 
+            text-align: center; 
+            line-height: 32px; 
+            height: 32px; 
+            transition: border-color 0.2s;
+        }
         .rate-input:focus { border-bottom: 2px solid white; }
-        .rate-input::placeholder { color: rgba(255,255,255,0.4); }
+        .rate-input::placeholder { color: rgba(255,255,255,0.3); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .mask-linear { -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%); mask-image: linear-gradient(to right, black 88%, transparent 100%); }
+        
+        /* Screenshot Mode adjustments */
+        .screenshot-mode header { padding-top: 40px; }
+        .screenshot-mode main { padding-bottom: 40px; }
     </style>
 </head>
 <body>
@@ -99,9 +113,9 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        const STORAGE_KEY = 'shopping_app_v79_settings'; 
-        const RATE_STORAGE_KEY = 'shopping_app_v79_rates';
-        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v79_custom_rates'; 
+        const STORAGE_KEY = 'shopping_app_v87_settings'; 
+        const RATE_STORAGE_KEY = 'shopping_app_v87_rates';
+        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates'; 
         const RATE_CACHE_TTL = 3600 * 1000; 
         const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; 
 
@@ -118,6 +132,22 @@
             ],
             activePresetId: 1
         };
+
+        // Install Prompt Component
+        const InstallPrompt = ({ onClose }) => (
+            <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none pb-safe px-4">
+                <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/50 w-full max-w-sm pointer-events-auto mb-4 animate-fade-in">
+                    <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-bold text-slate-800">加入主畫面以獲得最佳體驗</h3>
+                        <button onClick={onClose} className="p-1 text-slate-400"><Icon name="x" size={16}/></button>
+                    </div>
+                    <p className="text-sm text-slate-600 mb-3">點擊瀏覽器下方的 <span className="inline-block px-1"><Icon name="share" size={14}/></span> 分享按鈕，然後選擇「加入主畫面」。</p>
+                    <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-slate-800 w-full animate-[shrink_5s_linear_forwards] origin-left"></div>
+                    </div>
+                </div>
+            </div>
+        );
 
         const Icon = memo(({ name, size=20, className }) => {
             const icons = {
@@ -150,7 +180,9 @@
             const [buffer, setBuffer] = useState(val);
 
             useEffect(() => {
-                if (!isEditing) setBuffer(val);
+                if (!isEditing) {
+                     setBuffer(val); 
+                }
             }, [val, isEditing]);
 
             const handleChange = (e) => {
@@ -159,14 +191,38 @@
 
             const handleBlur = () => {
                 setIsEditing(false);
-                if (buffer === '' || buffer === 0) { onChange(''); } else { onChange(buffer); }
+                if (buffer === '' || parseFloat(buffer) === 0) { 
+                    onChange(''); 
+                } else { 
+                    onChange(buffer); 
+                }
             };
 
             const handleFocus = (e) => {
                 setIsEditing(true);
-                setBuffer(val);
-                e.target.select();
+                // Format value on focus to avoid long decimals
+                const cleanVal = (!val || isNaN(val)) ? '' : parseFloat(val).toFixed(6).replace(/\.?0+$/, '');
+                setBuffer(cleanVal); 
+                // Use simple timeout to ensure selection happens after buffer update renders
+                setTimeout(() => e.target.select(), 0);
             };
+            
+            let displayValue;
+            if (isEditing) {
+                displayValue = buffer;
+            } else {
+                if (val && !isNaN(parseFloat(val)) && isFinite(val)) {
+                    const strVal = val.toString();
+                    // Ensure even display value isn't crazy long if passed directly
+                    if (strVal.includes('.') && strVal.split('.')[1].length > 6) {
+                        displayValue = parseFloat(val).toFixed(5);
+                    } else {
+                        displayValue = val;
+                    }
+                } else {
+                    displayValue = val === 0 ? 0 : '';
+                }
+            }
 
             return (
                 <div className="flex flex-col items-center justify-center w-full">
@@ -174,7 +230,7 @@
                     <div className="rate-input-container w-full">
                         <input 
                             type="number" inputMode="decimal" 
-                            value={isEditing ? buffer : val} 
+                            value={displayValue} 
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             onChange={handleChange}
@@ -272,11 +328,12 @@
             const baseLabel = '付款金額'; 
             const displayRefund = settings.refundMethod === 'immediate' ? immRefundTwd : postRefundTwd;
             
+            const safeTwdBase = isNaN(twdBase) ? 0 : twdBase;
+            const refundPct = safeTwdBase > 0 ? ((displayRefund / safeTwdBase) * 100).toFixed(1) : '0.0';
             const refundLabel = settings.mode === 'dutyfree' 
                 ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
-                : `退稅 (${settings.refundMethod==='immediate'?'現場折抵':'事後退稅'})`;
-            
-            const safeTwdBase = isNaN(twdBase) ? 0 : twdBase;
+                : `退稅 (${refundPct}% | ${settings.refundMethod==='immediate'?'現場折抵':'事後退稅(機場/市區)'})`;
+
             const safeFinalCost = isNaN(finalCost) ? 0 : finalCost;
             
             let errorTag = null;
@@ -337,7 +394,7 @@
             };
 
             return (
-                <div className="glass-card p-6 mb-6 animate-fade-in shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden">
+                <div className="app-card p-6 mt-3 mb-4 animate-fade-in relative overflow-hidden bg-white">
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                          <div className="flex items-center gap-2">
                              <div className="p-1.5 rounded-lg bg-slate-100 text-slate-400"><Icon name="receipt" size={14}/></div>
@@ -377,7 +434,7 @@
                             <div className="flex items-center gap-2"><span className="font-medium">- {settings.rewardType==='points'?'LINE POINTS':'現金回饋'} ({settings.reward}%)</span><span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold">不含手續費</span></div>
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
-                        {refundTwd > 0 && (
+                        {displayRefund > 0 && (
                             <div className="flex flex-col text-[#4F46E5] bg-[#EEF2FF] px-3 py-2.5 rounded-xl border border-[#E0E7FF]">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs font-bold">- {refundLabel}</span>
@@ -413,6 +470,8 @@
                 if (!inputVal || isNaN(parseFloat(inputVal))) return '';
                 if (inputType === field) return inputVal; 
                 const num = parseFloat(inputVal);
+                // Stress test protection for large inputs
+                if (num > 1000000000) return '...';
                 const rKrw = rates.krw;
                 const rJpy = rates.jpy;
                 const rUsd = rates.usd;
@@ -428,10 +487,10 @@
             };
 
             return (
-                <div className="space-y-3 animate-fade-in">
+                <div className="block space-y-3 pb-1">
                     {settings.country === 'KR' && (
-                        <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='usd'?'border-blue-300':''}`}>
-                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm bg-sky-50 text-sky-700">🇺🇸</div>
+                        <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-slate-200 ${inputType==='usd'?'border-slate-300':''}`}>
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-slate-50 border border-slate-100 flex-shrink-0">🇺🇸</div>
                             <div className="flex-1 relative">
                                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">USD</label>
                                 <div className="flex items-center">
@@ -442,8 +501,8 @@
                             </div>
                         </div>
                     )}
-                    <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='target'?'border-blue-300':''}`}>
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${settings.country==='KR'?'bg-teal-50 text-teal-700':'bg-indigo-50 text-indigo-700'}`}>{settings.country==='KR'?'🇰🇷':'🇯🇵'}</div>
+                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-slate-200 ${inputType==='target'?'border-slate-300':''}`}>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-slate-50 border border-slate-100 flex-shrink-0`}>{settings.country==='KR'?'🇰🇷':'🇯🇵'}</div>
                         <div className="flex-1 relative">
                             <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">{settings.country==='KR'?'KRW (TAX INC)':'JPY (TAX INC)'}</label>
                             <div className="flex items-center">
@@ -453,8 +512,8 @@
                             </div>
                         </div>
                     </div>
-                    <div className={`glass-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-blue-100 ${inputType==='twd'?'border-blue-300':''}`}>
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm bg-orange-50 text-orange-700">🇹🇼</div>
+                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-slate-200 ${inputType==='twd'?'border-slate-300':''}`}>
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-slate-50 border border-slate-100 flex-shrink-0">🇹🇼</div>
                         <div className="flex-1 relative">
                             <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block pl-1">TWD</label>
                             <div className="flex items-center">
@@ -464,75 +523,65 @@
                             </div>
                         </div>
                     </div>
-                    <div className={`p-4 rounded-[2rem] space-y-3 shadow-lg border border-white/20 backdrop-blur-md transition-colors duration-500 ${settings.country==='KR'?'bg-teal-50/80 border-teal-100':'bg-indigo-50/80 border-indigo-100'}`}>
+                    
+                    <div className="app-card p-4 flex flex-col gap-3 bg-white">
                         <div className="flex justify-between items-center">
-                            <span className={`text-xs font-bold flex items-center gap-2 ${settings.country==='KR'?'text-teal-800':'text-indigo-800'}`}><Icon name="receipt" size={16}/> {settings.country==='KR'?'退稅設定':'免稅設定'}</span>
-                            <div className="flex bg-white/90 backdrop-blur-md rounded-xl p-1 shadow-sm border border-white/60">
+                            <span className="text-sm font-bold flex items-center gap-2 text-slate-700"><Icon name="receipt" size={18}/> {settings.country==='KR'?'退稅設定':'免稅設定'}</span>
+                            <div className="flex bg-slate-100 rounded-lg p-1">
                                 {['auto','manual','off'].map(m => (
-                                    <button key={m} onClick={()=>updateSetting('taxMode',m)} className={`px-3 py-1 text-[10px] font-bold rounded-lg transition-all duration-300 ${settings.taxMode===m ? (settings.country==='KR'?'bg-teal-600 text-white shadow-md':'bg-indigo-600 text-white shadow-md') : 'text-slate-400 hover:text-slate-600'}`}>{m==='auto'?'自動':m==='manual'?'手動':'關閉'}</button>
+                                    <button key={m} onClick={()=>updateSetting('taxMode',m)} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all duration-300 ${settings.taxMode===m ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{m==='auto'?'自動':m==='manual'?'手動':'關閉'}</button>
                                 ))}
                             </div>
                         </div>
                         {settings.taxMode !== 'off' && (
                             <div className="flex flex-col gap-3"> 
-                                <div className="flex bg-white/90 backdrop-blur-md p-1 rounded-xl border border-white/60 shadow-sm">
-                                    <button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 p-2 rounded-lg transition-all duration-300 flex flex-col items-center justify-center border-2 ${settings.refundMethod==='airport' ? 'bg-teal-50/80 border-teal-200 shadow-sm' : 'border-transparent opacity-60 hover:opacity-80'}`}>
-                                        <span className={`text-[11px] font-black tracking-wider ${settings.refundMethod==='airport'?'text-teal-700':'text-slate-500'}`}>事後退稅</span>
-                                        {calcResult.postRefundTwd !== calcResult.immRefundTwd && (
-                                            <span className="text-[9px] font-mono font-bold text-slate-400 mt-0.5">
-                                            {calcResult.postRefundTwd > 0 ? `≈ NT$${calcResult.postRefundTwd}` : '無退稅'}
-                                            </span>
-                                        )}
+                                <div className="flex gap-2">
+                                    <button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 py-3 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center ${settings.refundMethod==='airport' ? 'border-[#4A7A7D] bg-emerald-50/30 text-[#2C5F62]' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
+                                        <span className="text-xs font-bold tracking-wide">事後退稅</span>
                                     </button>
-                                    <div className="w-px h-8 bg-slate-200 mx-1"></div>
-                                    <button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 p-2 rounded-lg transition-all duration-300 flex flex-col items-center justify-center border-2 ${settings.refundMethod==='immediate' ? 'bg-emerald-50/80 border-emerald-200 shadow-sm' : 'border-transparent opacity-60 hover:opacity-80'}`}>
-                                        <span className={`text-[11px] font-black tracking-wider ${settings.refundMethod==='immediate'?'text-emerald-700':'text-slate-500'}`}>現場折抵</span>
-                                        {calcResult.postRefundTwd !== calcResult.immRefundTwd && (
-                                            <span className="text-[9px] font-mono font-bold text-slate-400 mt-0.5">
-                                                {calcResult.immRefundTwd > 0 ? `≈ NT$${calcResult.immRefundTwd}` : '無退稅'}
-                                            </span>
-                                        )}
+                                    <button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 py-3 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center ${settings.refundMethod==='immediate' ? 'border-[#4A7A7D] bg-emerald-50/30 text-[#2C5F62]' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}>
+                                        <span className="text-xs font-bold tracking-wide">現場折抵</span>
                                     </button>
                                 </div>
                                 
                                 {(() => {
-                                    // V79: Logic for Unified & Simplified Arbitrage Message
                                     if (calcResult.postRefundTwd > 0 && settings.country === 'KR') {
                                          const rewardRate = settings.reward / 100;
                                          const feeRate = settings.fee / 100; 
-                                         // Net Gain calculation
                                          const netGain = Math.round(calcResult.postRefundTwd * (rewardRate - (settings.isBankAccount?0:feeRate)));
                                          
                                          if (netGain > 0) {
-                                             return (
-                                                <div className="text-[10px] p-2.5 rounded-xl flex items-center gap-2 border bg-teal-50/80 border-teal-100 text-teal-700 shadow-sm animate-fade-in">
-                                                    <div className="p-1 rounded-full bg-teal-200 text-white"><Icon name="diamond" size={12}/></div>
-                                                    <span className="font-bold">刷卡回饋套利：選【事後退稅】可多賺約 NT${netGain}</span>
-                                                </div>
-                                             );
-                                         } else {
                                               return (
-                                                <div className="text-[10px] p-2.5 rounded-xl flex items-center gap-2 border bg-emerald-50/80 border-emerald-100 text-emerald-700 shadow-sm animate-fade-in">
-                                                    <div className="p-1 rounded-full bg-emerald-200 text-white"><Icon name="lightning" size={12}/></div>
-                                                    <span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span>
-                                                </div>
-                                             );
+                                                  <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-emerald-100 bg-emerald-50/50 text-emerald-800">
+                                                      <div className="p-1.5 rounded-full bg-emerald-200 text-emerald-800"><Icon name="diamond" size={14}/></div>
+                                                      <div className="flex flex-col">
+                                                          <span className="font-bold">刷卡回饋套利</span>
+                                                          <span className="opacity-80">選【事後退稅】可多賺約 NT${netGain}</span>
+                                                      </div>
+                                                  </div>
+                                               );
+                                         } else {
+                                               return (
+                                                  <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-slate-100 bg-slate-50 text-slate-600">
+                                                      <div className="p-1.5 rounded-full bg-slate-200 text-slate-600"><Icon name="thumbsUp" size={14}/></div>
+                                                      <span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span>
+                                                  </div>
+                                               );
                                          }
                                     }
                                     return null;
                                 })()}
                             </div>
                         )}
-                        {/* V66: Add explicit low threshold warning */}
                         {calcResult.targetAmount > 0 && calcResult.targetAmount < 15000 && settings.mode === 'general' && settings.country === 'KR' && (
-                            <div className="text-[10px] p-3 rounded-xl flex items-start gap-2 border shadow-sm backdrop-blur-md bg-slate-100/50 border-slate-200/60 text-slate-600">
-                                <div className="p-1 rounded-full bg-slate-200 text-white shadow-sm"><Icon name="alert" size={12} /></div>
-                                <span className="mt-0.5 font-medium leading-relaxed">💡 未達退稅門檻：需滿 15,000 KRW 才能退稅</span>
+                            <div className="text-[10px] p-3 rounded-xl flex items-start gap-2 bg-slate-100 text-slate-500">
+                                <Icon name="alert" size={14} />
+                                <span className="mt-0.5 font-medium">未達退稅門檻 (需滿 15,000 KRW)</span>
                             </div>
                         )}
                         {advice && (
-                            <div className={`text-[10px] p-3 rounded-xl flex items-start gap-2 border shadow-sm backdrop-blur-md ${advice.type==='good' ? 'bg-emerald-100/50 border-emerald-200/60 text-emerald-800' : 'bg-orange-100/50 border-orange-200/60 text-orange-800'}`}>
-                                <div className={`p-1 rounded-full ${advice.type==='good'?'bg-emerald-200':'bg-orange-200'} text-white shadow-sm`}><Icon name={advice.type==='good'?'thumbsUp':'alert'} size={12} /></div>
+                            <div className={`text-[10px] p-3 rounded-xl flex items-start gap-2 ${advice.type==='good' ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-orange-700'}`}>
+                                <Icon name={advice.type==='good'?'thumbsUp':'alert'} size={14} />
                                 <span className="mt-0.5 font-medium leading-relaxed">{advice.msg}</span>
                             </div>
                         )}
@@ -569,8 +618,8 @@
             };
 
             return (
-                <div className="space-y-4 animate-fade-in">
-                    <div className="glass-card p-3 space-y-2">
+                <div className="space-y-4 animate-fade-in pb-2">
+                    <div className="app-card p-3 space-y-2">
                         <div className="flex gap-2">
                             {['lotte','shinsegae','shilla'].map(s => (
                                 <button key={s} onClick={()=>updateSetting('dfStore',s)} className={`flex-1 py-3 text-[10px] font-bold rounded-2xl transition-all duration-300 flex flex-col items-center gap-1 ${settings.dfStore===s?'bg-purple-600 text-white shadow-lg scale-100':'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}>
@@ -579,7 +628,7 @@
                             ))}
                         </div>
                     </div>
-                    <div className="glass-card p-5 relative">
+                    <div className="app-card p-5 relative">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2">吊牌原價 (USD)</label>
                         <div className="flex items-center">
                             <span className="text-2xl font-bold text-slate-300 mr-2">$</span>
@@ -592,7 +641,7 @@
                             <button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-xl bg-purple-50 text-purple-700 text-xs font-bold border border-purple-100 hover:bg-purple-100 active:bg-purple-200 transition-colors whitespace-nowrap shadow-sm active:scale-95">{d}折</button>
                         ))}
                     </div>
-                    <div className="glass-card p-5 relative">
+                    <div className="app-card p-5 relative">
                         <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2 text-purple-600">打折後實付款 (USD)</label>
                         <div className="flex items-center">
                             <span className="text-2xl font-bold text-slate-300 mr-2">$</span>
@@ -605,7 +654,7 @@
                         </div>
                     </div>
                     {settings.country === 'KR' && (
-                        <div className="glass-card p-4 bg-rose-50 border-rose-100/50">
+                        <div className="app-card p-4 bg-rose-50 border-rose-100/50">
                             <div className="flex justify-between items-center mb-3">
                                 <label className="text-xs font-bold text-purple-800 pl-1">返點設定 (Rebate %)</label>
                                 <div className="flex items-center bg-white px-3 py-1.5 rounded-xl border border-purple-200 shadow-sm">
@@ -641,19 +690,6 @@
                 </div>
             );
         });
-
-        const InstallPrompt = ({ onClose }) => (
-            <div className="fixed bottom-6 left-4 right-4 bg-slate-900/95 text-white p-4 rounded-3xl shadow-2xl backdrop-blur-lg animate-fade-in z-50 border border-white/20">
-                <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg">加入主畫面以獲得最佳體驗</h3>
-                    <button onClick={onClose} className="p-1 rounded-full bg-white/20 hover:bg-white/30"><Icon name="x" size={14}/></button>
-                </div>
-                <p className="text-sm text-slate-300 mb-4 leading-relaxed">
-                    點擊下方工具列的 <span className="inline-flex align-middle mx-1 bg-white/20 p-1 rounded"><Icon name="share" size={14}/></span> 分享按鈕，<br/>然後選擇「加入主畫面」。
-                </p>
-                <div className="w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-            </div>
-        );
 
         const App = () => {
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
@@ -758,7 +794,7 @@
             const debouncedSave = useCallback((newSettings) => {
                 if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
                 saveTimeoutRef.current = setTimeout(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings)); }, 800);
-            }, [debouncedSave]);
+            }, []);
 
             const updateSetting = useCallback((key, val) => {
                 setSettings(prev => { const next = { ...prev, [key]: val }; debouncedSave(next); return next; });
@@ -841,7 +877,6 @@
                     if (settings.taxMode === 'auto') {
                         if (settings.country === 'KR') {
                             const a = targetAmount;
-                            // V78: Use same table logic for both Post and Immediate to avoid confusion
                             if (a >= 15000) {
                                 if (a < 30000) refundNative = 1000;
                                 else if (a < 50000) refundNative = 2000;
@@ -873,28 +908,17 @@
                                 else if (a < 1000000) refundNative = 64000;
                                 else refundNative = Math.floor(a * 0.065 / 1000) * 1000; 
                             }
-                            
-                            // V78: Both refund methods get the same native amount from the tier table
-                            const taxRate = (settings.country === 'KR' ? rKrw : rJpy);
-                            postRefundTwd = Math.round(refundNative * taxRate);
-                            immRefundTwd = Math.round(refundNative * taxRate); // Use same logic to avoid confusion
-
                         } else { 
-                            if (targetAmount >= 5500) { 
-                                const r = targetAmount - (targetAmount/1.1); 
-                                refundNative = r;
-                                if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); 
-                                immRefundTwd = Math.round(refundNative * rJpy); 
-                            }
-                            postRefundTwd = immRefundTwd;
+                            if (targetAmount >= 5500) { refundNative = targetAmount - (targetAmount/1.1); if (settings.isJpDeptFee) refundNative -= (targetAmount * 0.0155); }
                         }
                     }
+                    postRefundTwd = Math.round(refundNative * (settings.country === 'KR' ? rKrw : rJpy));
+                    immRefundTwd = postRefundTwd; 
                 } else {
                     if (settings.country === 'KR') {
                         const rebateUsd = num * (settings.dutyFreeRebate/100);
                         const rebateCny = rebateUsd * effectiveRates.usdToCny;
                         postRefundTwd = Math.round(rebateCny * effectiveRates.cny); 
-                        immRefundTwd = postRefundTwd; // Duty Free defaults
                     }
                 }
 
@@ -911,7 +935,6 @@
                 const rewardAmount = Math.round(twdBase * (settings.reward/100));
                 const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
                 const totalSaved = Math.round(twdBase - finalCost);
-                
                 return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost: Math.round(spreadCost), targetAmount, postRefundTwd, immRefundTwd }; 
             }, [inputVal, inputType, settings, effectiveRates]);
 
@@ -927,7 +950,7 @@
                 return { type: 'good', msg: '👍 推薦：選【事後退稅】可獲得最高回饋' };
             }, [settings.refundMethod, settings.country, calcResult.twdBase, calcResult.targetAmount, settings.mode]);
 
-            const getThemeClass = () => { if (settings.mode === 'dutyfree') return 'bg-df'; return settings.country === 'KR' ? 'bg-kr' : 'bg-jp'; };
+            const getThemeClass = () => { if (settings.mode === 'dutyfree') return 'header-gradient'; return 'header-gradient'; };
 
             const handleModeSwitch = (newMode) => {
                 if (newMode === 'dutyfree' && settings.mode === 'general') {
@@ -964,9 +987,9 @@
 
             const renderGeneralHeader = () => {
                 const base = customRates.krw ? parseFloat(customRates.krw) : effectiveRates.krw;
-                const displayVal = isInverseRate 
-                    ? (base > 0 ? (1/base).toFixed(2) : '') 
-                    : (base > 0 ? base.toFixed(4) : '');
+                
+                const displayBase = base; 
+                const displayInverse = base && base > 0 ? (1/base) : 0;
                 
                 return (
                     <div className="flex justify-between items-center mb-1">
@@ -978,7 +1001,7 @@
                                 </button>
                                 <RateInput 
                                     label="" 
-                                    val={customRates.krw ? (isInverseRate ? (1/parseFloat(customRates.krw)).toFixed(2) : customRates.krw) : (isInverseRate ? (1/effectiveRates.krw).toFixed(2) : effectiveRates.krw.toFixed(4))}
+                                    val={isInverseRate ? displayInverse : displayBase}
                                     onChange={v => {
                                         if (v === '' || v === 0) {
                                             handleCustomRate('krw', '');
@@ -997,7 +1020,7 @@
                                 <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-white/70 tracking-widest">USD ➔ TWD</span></div>
                                 <RateInput 
                                     label="" 
-                                    val={customRates.usd || effectiveRates.usd.toFixed(2)}
+                                    val={customRates.usd || effectiveRates.usd} 
                                     onChange={v=>handleCustomRate('usd', v)}
                                     isEditing={editingMap['usd']}
                                     setIsEditing={s=>setEditingMap({...editingMap, usd:s})}
@@ -1011,11 +1034,11 @@
             const renderDutyFreeHeader = () => {
                 return (
                     <div className="flex justify-between items-end gap-2 mb-1">
-                        <RateInput label="USD ➔ CNY" val={customRates.usdToCny || effectiveRates.usdToCny?.toFixed(2)} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
+                        <RateInput label="USD ➔ CNY" val={customRates.usdToCny || effectiveRates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
                         <div className="w-px h-10 bg-white/10 self-center"></div>
-                        <RateInput label="CNY ➔ TWD" val={customRates.cny || effectiveRates.cny?.toFixed(2)} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
+                        <RateInput label="CNY ➔ TWD" val={customRates.cny || effectiveRates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
                         <div className="w-px h-10 bg-white/10 self-center"></div>
-                        <RateInput label="USD ➔ TWD" val={customRates.usd || effectiveRates.usd?.toFixed(2)} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
+                        <RateInput label="USD ➔ TWD" val={customRates.usd || effectiveRates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
                     </div>
                 );
             };
@@ -1056,8 +1079,8 @@
                             </div>
                         </div>
                     </header>
-                    <main className="flex-1 rounded-t-[2.5rem] -mt-6 bg-[#F2F4F6] p-5 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/60 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)]" onClick={()=>screenshotMode && setScreenshotMode(false)}>
-                        <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[#F2F4F6] to-transparent pointer-events-none -mt-2 mb-2"></div>
+                    <main className="flex-1 rounded-t-[2.5rem] -mt-6 bg-[#F0F2F5] p-5 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/60 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)]" onClick={()=>screenshotMode && setScreenshotMode(false)}>
+                        <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[#F0F2F5] to-transparent pointer-events-none -mt-2 mb-2"></div>
                         {settings.mode === 'general' ? (
                             <GeneralMode settings={settings} inputVal={inputVal} setInputVal={setInputVal} inputType={inputType} setInputType={setInputType} calcResult={calcResult} updateSetting={updateSetting} advice={advice} rates={effectiveRates}/>
                         ) : (
