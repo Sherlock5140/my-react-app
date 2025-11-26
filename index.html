@@ -3,123 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V87</title>
-    <meta name="theme-color" content="#4A7A7D">
+    <title>購黑皮 V105</title>
     
     <!-- iOS PWA 專用設定 -->
+    <meta name="theme-color" content="#4A7A7D">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="購黑皮">
+    <meta name="apple-mobile-web-app-title" content="購黑皮 V105">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- 莫蘭迪色系 iOS 風格圖示 (SVG Data URI) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im1vcmFuZGkiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4RkJDQkI7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNEE3QTdEO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ1cmwoI21vcmFuZGkpIi8+PHBhdGggZD0iTTE2MCAxNDRoMTkyYzguOCAwIDE2IDcuMiAxNiAxNnY0OEgxNDR2LTQ4YzAtOC44IDcuMi0xNiAxNi0xNnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyOCAyMDhoMjU2djIyNGMwIDE3LjctMTQuMyAzMi0zMiAzMkgxNjBjLTE3LjcgMC0zMi0xNC4zLTMyLTMyVjIwOHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMjggMjA4djY0YzAgMzkuOC0zMi4yIDcyLTcyIDcycy03Mi0zMi4yLTcyLTcydi02NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
+    <!-- 圖示設定 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im1vcmFuZGkiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4RkJDQkI7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNEE3QTdEO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ1cmwoI21vcmFuZGkpIi8+PHBhdGggZD0iTTE2MCAxNDRoMTkyYzguOCAwIDE2IDcuMiAxNiAxNnY0OEgxNDR2LTQ4YzAtOC44IDcuMi0xNiAxNi0xNnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTEyOCAyMDhoMjU2djIyNGMwIDE3LjctMTQuMyAzMi0zMiAzMkgxNjBjLTE3LjcgMC0zMi0xNC4zLTMyLTMyVjIwOHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMjggMjA4djY0YzAgMzkuOC0zMi4yIDcyLTcyIDcycy03Mi0zMi0zMi4yLTcyLTcydi02NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%E8%B3%BC%E9%BB%91%E7%9A%AE%20V105%22%2C%22short_name%22%3A%22%E8%B3%BC%E9%BB%91%E7%9A%AE%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F0F2F5%22%2C%22theme_color%22%3A%22%234A7A7D%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im1vcmFuZGkiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4RkJDQkI7c3RvcC1vcGFjaXR5OjEiIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNEE3QTdEO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ%2BPC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ1cmwoI21vcmFuZGkpIi8%2BPHBhdGggZD0iTTE2MCAxNDRoMTkyYzguOCAwIDE2IDcuMiAxNiAxNnY0OEgxNDR2LTQ4YzAtOC44IDcuMi0xNiAxNi0xNnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8%2BPHBhdGggZD0iTTEyOCAyMDhoMjU2djIyNGMwIDE3LjctMTQuMyAzMi0zMiAzMkgxNjBjLTE3LjcgMC0zMi0xNC4zLTMyLTMyVjIwOHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMjggMjA4djY0YzAgMzkuOC0zMi4yIDcyLTcyIDcycy03Mi0zMi0zMi4yLTcyLTcydi02NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
     
-    <!-- Web Manifest (URL Encoded UTF-8 to fix garbage text) -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%E8%B3%BC%E9%BB%91%E7%9A%AE%20V87%22%2C%22short_name%22%3A%22%E8%B3%BC%E9%BB%91%E7%9A%AE%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F0F2F5%22%2C%22theme_color%22%3A%22%234A7A7D%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im1vcmFuZGkiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4RkJDQkI7c3RvcC1vcGFjaXR5OjEiIC8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNEE3QTdEO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ%2BPC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiBmaWxsPSJ1cmwoI21vcmFuZGkpIi8%2BPHBhdGggZD0iTTE2MCAxNDRoMTkyYzguOCAwIDE2IDcuMiAxNiAxNnY0OEgxNDR2LTQ4YzAtOC44IDcuMi0xNiAxNi0xNnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8%2BPHBhdGggZD0iTTEyOCAyMDhoMjU2djIyNGMwIDE3LjctMTQuMyAzMi0zMiAzMkgxNjBjLTE3LjcgMC0zMi0xNC4zLTMyLTMyVjIwOHoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMjggMjA4djY0YzAgMzkuOC0zMi4yIDcyLTcyIDcycy03Mi0zMi4yLTcyLTcydi02NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-
-    <!-- 核心依賴 -->
+    <!-- React & Tailwind -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
+    
     <style>
-        :root {
-            --app-bg: #F0F2F5;
-            --header-bg: #4A7A7D; /* 更深沉穩重的藍綠色 */
-            --card-bg: #FFFFFF;
-            --text-primary: #1A202C;
-            --text-secondary: #718096;
-        }
-
+        :root { --app-bg: #F0F2F5; --header-bg: #4A7A7D; --header-bg-end: #3B6568; --card-bg: #FFFFFF; --text-primary: #1A202C; --text-secondary: #718096; --accent-green: #10B981; --accent-red: #EF4444; --accent-yellow: #F59E0B; }
         html { height: -webkit-fill-available; }
-        body { 
-            touch-action: manipulation; 
-            -webkit-tap-highlight-color: transparent; 
-            background: var(--app-bg); 
-            font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; 
-            height: 100vh; height: 100dvh; width: 100%; 
-            overflow: hidden; 
-            user-select: none; -webkit-user-select: none;
-            padding: 0; margin: 0;
-            overscroll-behavior-y: none;
-        }
-        
+        body { touch-action: manipulation; -webkit-tap-highlight-color: transparent; background: var(--app-bg); font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; user-select: none; -webkit-user-select: none; padding: 0; margin: 0; overscroll-behavior-y: none; }
         #root { height: 100%; display: flex; flex-direction: column; }
-
-        /* Reset Input */
-        input { 
-            background: transparent; 
-            border: none; 
-            outline: none; 
-            width: 100%; 
-            font-family: "SF Mono", monospace; 
-            color: var(--text-primary); 
-            padding: 0; margin: 0;
-            -webkit-appearance: none;
-            border-radius: 0;
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input { background: transparent; border: none; outline: none; width: 100%; font-family: "SF Mono", monospace; color: var(--text-primary); padding: 0; margin: 0; -webkit-appearance: none; border-radius: 0; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-
-        /* V87 UI Components */
-        .app-card {
-            background: var(--card-bg);
-            border-radius: 1.75rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-            width: 100%;
-            transition: transform 0.1s active;
-        }
-        
+        .app-card { background: var(--card-bg); border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); width: 100%; transition: transform 0.1s active; }
         .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
         .pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
-        
         .spin-anim { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        
         .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .header-gradient { background: linear-gradient(180deg, var(--header-bg) 0%, #3B6568 100%); }
-
-        /* iOS Rate Input Optimization */
-        .rate-input { 
-            background: transparent; 
-            color: white; 
-            font-weight: 700; 
-            font-size: 1.3rem; 
-            font-family: "SF Mono", monospace; 
-            border-bottom: 1px solid rgba(255,255,255,0.2); 
-            padding: 0; 
-            width: 100%; 
-            text-align: center; 
-            line-height: 32px; 
-            height: 32px; 
-            transition: border-color 0.2s;
-        }
+        .header-gradient { background: linear-gradient(180deg, var(--header-bg) 0%, var(--header-bg-end) 100%); }
+        .rate-input { background: transparent; color: white; font-weight: 700; font-size: 1.3rem; font-family: "SF Mono", monospace; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 0; width: 100%; text-align: center; line-height: 32px; height: 32px; transition: border-color 0.2s; }
         .rate-input:focus { border-bottom: 2px solid white; }
         .rate-input::placeholder { color: rgba(255,255,255,0.3); }
-        
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Screenshot Mode adjustments */
-        .screenshot-mode header { padding-top: 40px; }
-        .screenshot-mode main { padding-bottom: 40px; }
+        .progress-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .screenshot-mode header { padding-top: 40px; } .screenshot-mode main { padding-bottom: 40px; }
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2e8f0; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input:checked + .slider { background-color: #10B981; }
+        input:checked + .slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body>
     <div id="root"></div>
-
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        const STORAGE_KEY = 'shopping_app_v87_settings'; 
+        const STORAGE_KEY = 'shopping_app_v105_settings';
+        const STRATEGY_STORAGE_KEY = 'shopping_app_v105_strategies_map'; 
         const RATE_STORAGE_KEY = 'shopping_app_v87_rates';
-        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates'; 
-        const RATE_CACHE_TTL = 3600 * 1000; 
-        const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; 
+        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates';
+        const RATE_CACHE_TTL = 3600 * 1000;
+        const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000;
+
+        const DEFAULT_STRATEGIES_MAP = {
+            1: [
+                { id: 'c1', name: '銀行加碼', rate: 2.2, cap: 660, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' },
+                { id: 'c2', name: 'VISA 滿額', rate: 10.0, cap: 3000, capUnit: 'points', active: true, type: 'threshold', minSpend: 190000, thresholdUnit: 'foreign' }
+            ],
+            2: [
+                { id: 'f1', name: '日韓加碼', rate: 3.0, cap: 600, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' },
+                { id: 'f2', name: '當地通路', rate: 0.0, cap: 0, capUnit: 'points', active: false, type: 'general', minSpend: 0, thresholdUnit: 'twd' }
+            ],
+            3: [
+                { id: 'q1', name: '切換權益', rate: 3.0, cap: 0, capUnit: 'twd', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' },
+                { id: 'q2', name: '生日月', rate: 3.5, cap: 0, capUnit: 'points', active: false, type: 'general', minSpend: 0, thresholdUnit: 'twd' }
+            ],
+            4: [
+                { id: 't1', name: '活動回饋', rate: 10.0, cap: 500, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }
+            ]
+        };
 
         const DEFAULT_SETTINGS = {
             country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
@@ -127,30 +87,118 @@
             dfCategory: 'general', isJpDeptFee: false, jpCoupon: 5, isMobilePay: false,
             isBankAccount: false, mobileSpread: 1.0,
             cardPresets: [
-                { id: 1, name: '中信VISA', type: 'visa', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true },
-                { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true },
-                { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true },
-                { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true } 
+                { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, mobileSpread: 0, enabled: true, useStrategy: true },
+                { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true, useStrategy: false },
+                { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true, useStrategy: false },
+                { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true, useStrategy: false } 
             ],
             activePresetId: 1
         };
 
-        // Install Prompt Component
-        const InstallPrompt = ({ onClose }) => (
-            <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none pb-safe px-4">
-                <div className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/50 w-full max-w-sm pointer-events-auto mb-4 animate-fade-in">
-                    <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-slate-800">加入主畫面以獲得最佳體驗</h3>
-                        <button onClick={onClose} className="p-1 text-slate-400"><Icon name="x" size={16}/></button>
-                    </div>
-                    <p className="text-sm text-slate-600 mb-3">點擊瀏覽器下方的 <span className="inline-block px-1"><Icon name="share" size={14}/></span> 分享按鈕，然後選擇「加入主畫面」。</p>
-                    <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-slate-800 w-full animate-[shrink_5s_linear_forwards] origin-left"></div>
-                    </div>
-                </div>
-            </div>
-        );
+        // --- Helper Functions ---
+        const safeGetStorage = (key) => {
+            try { return localStorage.getItem(key); } catch (e) { return null; }
+        };
+        const safeSetStorage = (key, value) => {
+            try { localStorage.setItem(key, value); } catch (e) {}
+        };
 
+        // --- Logic Engine ---
+        const calcRewardSystem = ({ totalNTD, targetAmount, cardBrand, strategies, rates, country, baseRate = 0 }) => {
+            let totalStrategyPoints = 0;
+            let nextThresholdMsg = null;
+            let minDiffToNext = Infinity;
+            let capWarnings = [];
+            
+            const basePoints = Math.floor(totalNTD * (baseRate / 100));
+            const activeStrategies = strategies.filter(s => s.active);
+            const currentCurrencyRate = rates.krw; 
+
+            activeStrategies.forEach(st => {
+                const threshold = st.minSpend || 0;
+                let isEligible = true;
+                let diff = 0;
+                let currentAmountForCheck = 0;
+                let currencyLabel = '';
+
+                if (st.thresholdUnit === 'foreign') {
+                    currentAmountForCheck = targetAmount;
+                    currencyLabel = country === 'KR' ? 'KRW' : 'JPY';
+                } else {
+                    currentAmountForCheck = totalNTD;
+                    currencyLabel = 'TWD';
+                }
+
+                if (currentAmountForCheck < threshold) {
+                    isEligible = false;
+                    diff = threshold - currentAmountForCheck;
+                }
+
+                if (!isEligible) {
+                    if (diff > 0 && diff < minDiffToNext) {
+                        minDiffToNext = diff;
+                        const projectedTWD = st.thresholdUnit === 'foreign' ? (threshold * currentCurrencyRate) : threshold;
+                        let effectiveCapTWD = Infinity;
+                        if (st.cap && st.cap > 0) {
+                            effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
+                        }
+                        const eligibleTWD = Math.min(projectedTWD, effectiveCapTWD);
+                        const estimatedGain = Math.floor(eligibleTWD * (st.rate / 100));
+
+                        nextThresholdMsg = {
+                            name: st.name,
+                            diff: Math.ceil(diff),
+                            potentialGain: estimatedGain,
+                            currency: currencyLabel
+                        };
+                    }
+                    return; 
+                }
+
+                let effectiveCapTWD = Infinity;
+                if (st.cap && st.cap > 0) {
+                    if (st.capUnit === 'twd') {
+                        effectiveCapTWD = st.cap;
+                    } else {
+                        effectiveCapTWD = st.cap / (st.rate / 100);
+                    }
+                }
+
+                const eligibleTWD = Math.min(totalNTD, effectiveCapTWD);
+                const potentialPoints = totalNTD * (st.rate / 100);
+                const actualPoints = eligibleTWD * (st.rate / 100);
+                
+                if (potentialPoints > 0 && (potentialPoints - actualPoints) / potentialPoints > 0.3) {
+                    capWarnings.push({ name: st.name, loss: Math.floor(potentialPoints - actualPoints) });
+                }
+
+                totalStrategyPoints += actualPoints;
+            });
+
+            const finalTotalPoints = basePoints + Math.floor(totalStrategyPoints);
+            let totalRate = 0;
+            if (totalNTD > 0) {
+                totalRate = (finalTotalPoints / totalNTD) * 100;
+            }
+            
+            const totalRateStr = isNaN(totalRate) ? "0.0" : totalRate.toFixed(1);
+
+            return {
+                totalPoints: finalTotalPoints,
+                totalRate: totalRateStr,
+                showVisaSuggest: !!nextThresholdMsg,
+                deltaPoints: nextThresholdMsg ? nextThresholdMsg.potentialGain : 0,
+                suggestionMsg: nextThresholdMsg,
+                mode: "dynamic",
+                actPoints: Math.floor(totalStrategyPoints), 
+                basePoints: basePoints,
+                visaActivated: true,
+                capWarnings
+            };
+        };
+
+        // --- Components ---
+        
         const Icon = memo(({ name, size=20, className }) => {
             const icons = {
                 plane: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20"/><path d="M13 2l9 10-9 10"/><path d="M2 12l5-5m-5 5l5 5"/></svg>,
@@ -173,78 +221,178 @@
                 minus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
                 copy: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>,
                 diamond: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"></path></svg>,
-                lightning: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                lightning: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>,
+                trending: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>,
+                edit: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>,
+                trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             };
             return icons[name] || null;
         });
 
         const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
             const [buffer, setBuffer] = useState(val);
-
-            useEffect(() => {
-                if (!isEditing) {
-                     setBuffer(val); 
-                }
-            }, [val, isEditing]);
-
-            const handleChange = (e) => {
-                setBuffer(e.target.value);
-            };
-
-            const handleBlur = () => {
-                setIsEditing(false);
-                if (buffer === '' || parseFloat(buffer) === 0) { 
-                    onChange(''); 
-                } else { 
-                    onChange(buffer); 
-                }
-            };
-
+            useEffect(() => { if (!isEditing) setBuffer(val); }, [val, isEditing]);
             const handleFocus = (e) => {
                 setIsEditing(true);
-                // Format value on focus to avoid long decimals
                 const cleanVal = (!val || isNaN(val)) ? '' : parseFloat(val).toFixed(6).replace(/\.?0+$/, '');
                 setBuffer(cleanVal); 
-                // Use simple timeout to ensure selection happens after buffer update renders
                 setTimeout(() => e.target.select(), 0);
             };
-            
-            let displayValue;
-            if (isEditing) {
-                displayValue = buffer;
-            } else {
-                if (val && !isNaN(parseFloat(val)) && isFinite(val)) {
-                    const strVal = val.toString();
-                    // Ensure even display value isn't crazy long if passed directly
-                    if (strVal.includes('.') && strVal.split('.')[1].length > 6) {
-                        displayValue = parseFloat(val).toFixed(5);
-                    } else {
-                        displayValue = val;
-                    }
-                } else {
-                    displayValue = val === 0 ? 0 : '';
-                }
-            }
-
+            let displayValue = isEditing ? buffer : (val && !isNaN(parseFloat(val)) && isFinite(val) ? (val.toString().includes('.') && val.toString().split('.')[1].length > 6 ? parseFloat(val).toFixed(5) : val) : (val === 0 ? 0 : ''));
             return (
                 <div className="flex flex-col items-center justify-center w-full">
                     {label && <span className="text-[9px] font-bold text-white/70 tracking-widest mb-0.5 whitespace-nowrap">{label}</span>}
                     <div className="rate-input-container w-full">
-                        <input 
-                            type="number" inputMode="decimal" 
-                            value={displayValue} 
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                            placeholder="--"
-                            className="rate-input"
-                        />
+                        <input type="number" inputMode="decimal" value={displayValue} onFocus={handleFocus} onBlur={()=>{setIsEditing(false);onChange(buffer===''? '':buffer)}} onChange={(e)=>setBuffer(e.target.value)} placeholder="--" className="rate-input"/>
                     </div>
                 </div>
             );
         };
 
-        const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose }) => {
+        const InstallPrompt = memo(({ onClose }) => (
+            <div className="fixed bottom-4 left-4 right-4 bg-white p-4 rounded-2xl shadow-2xl z-50 border border-slate-100 animate-fade-in">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-800">安裝到主畫面</h3>
+                    <button onClick={onClose} className="text-slate-400"><Icon name="x" size={16}/></button>
+                </div>
+                <p className="text-xs text-slate-500 mb-3">點擊瀏覽器底部的分享按鈕 <Icon name="share" size={12} className="inline"/>，然後選擇「加入主畫面」即可獲得最佳體驗。</p>
+                <div className="flex justify-end">
+                    <button onClick={onClose} className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">知道了</button>
+                </div>
+            </div>
+        ));
+
+        const GeneralModeHeader = memo(({ settings, rates, customRates, handleCustomRate, editingMap, setEditingMap, isInverseRate, setIsInverseRate }) => {
+            const base = customRates.krw ? parseFloat(customRates.krw) : rates.krw;
+            const displayBase = base; const displayInverse = base && base > 0 ? (1/base) : 0;
+            return (
+                <div className="flex justify-between items-center mb-1">
+                    <div className="flex items-center gap-2 w-1/2 justify-center border-r border-white/10 relative pr-1">
+                        <div className="flex flex-col items-end w-full pl-0">
+                            <button onClick={()=>setIsInverseRate(!isInverseRate)} className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 active:scale-95 transition-all px-2 py-0.5 rounded-full mb-1 border border-white/10 shadow-sm group w-full justify-center">
+                                <span className="text-[10px] font-bold text-white tracking-wider truncate">{isInverseRate ? (settings.country==='KR'?'TWD ➔ KRW':'TWD ➔ JPY') : (settings.country==='KR'?'KRW ➔ TWD':'JPY ➔ TWD')}</span>
+                                <div className={`w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-yellow-300"/></div>
+                            </button>
+                            <RateInput label="" val={isInverseRate ? displayInverse : displayBase} onChange={v => { if (v === '' || v === 0) { handleCustomRate('krw', ''); } else { const rate = isInverseRate ? 1/v : v; handleCustomRate('krw', rate); } }} isEditing={editingMap['gen']} setIsEditing={s=>setEditingMap({...editingMap, gen:s})} />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
+                        <div className="flex flex-col items-end w-full">
+                            <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-white/70 tracking-widest">USD ➔ TWD</span></div>
+                            <RateInput label="" val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd', v)} isEditing={editingMap['usd']} setIsEditing={s=>setEditingMap({...editingMap, usd:s})} />
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+
+        const DutyFreeModeHeader = memo(({ rates, customRates, handleCustomRate, editingMap, setEditingMap }) => {
+            return (
+                <div className="flex justify-between items-end gap-2 mb-1">
+                    <RateInput label="USD ➔ CNY" val={customRates.usdToCny || rates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
+                    <div className="w-px h-10 bg-white/10 self-center"></div>
+                    <RateInput label="CNY ➔ TWD" val={customRates.cny || rates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
+                    <div className="w-px h-10 bg-white/10 self-center"></div>
+                    <RateInput label="USD ➔ TWD" val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
+                </div>
+            );
+        });
+
+        const StrategySettings = memo(({ strategies, setStrategies, onClose, rates, settings }) => {
+            const updateStrategy = (id, field, val) => {
+                setStrategies(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
+            };
+            const addStrategy = () => {
+                const newId = `c${Date.now()}`;
+                setStrategies(prev => [...prev, { id: newId, name: '新策略', rate: 0, cap: 0, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]);
+            };
+            const deleteStrategy = (id) => {
+                if(window.confirm('確定刪除此策略？')) setStrategies(prev => prev.filter(s => s.id !== id));
+            };
+           
+            const foreignCurrencyName = settings.country === 'KR' ? 'KRW' : 'JPY';
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
+                    <div className="bg-white/95 w-full max-w-sm rounded-[2rem] p-5 shadow-2xl h-[75vh] overflow-y-auto flex flex-col border border-white/50" onClick={e=>e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 sticky top-0 bg-white/95 z-10">
+                            <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="lightning"/> 策略設定 ({settings.cardPresets.find(c=>c.id===settings.activePresetId)?.name})</h3>
+                            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><Icon name="x" size={18}/></button>
+                        </div>
+                        <div className="space-y-3 flex-1 pb-4">
+                            <div className="flex justify-between items-center">
+                                <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded-lg flex-1 mr-2">新增銀行滿額禮或加碼活動。系統將依據「低消」自動計算回饋。</p>
+                                <button onClick={addStrategy} className="bg-emerald-50 text-emerald-600 p-2 rounded-xl border border-emerald-100 hover:bg-emerald-100"><Icon name="plus" size={16}/></button>
+                            </div>
+                           
+                            {strategies.map(st => {
+                                let calculatedOther = "";
+                                if (st.rate > 0) {
+                                    calculatedOther = st.capUnit === 'twd' 
+                                        ? "≈ 上限 " + Math.round(st.cap * (st.rate/100)) + " 點"
+                                        : "≈ 刷 " + Math.round(st.cap / (st.rate/100)).toLocaleString() + " 元";
+                                }
+                               
+                                return (
+                                    <div key={st.id} className={`p-3 border rounded-2xl transition-all ${st.active ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-slate-50 opacity-60'}`}>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <label className="switch scale-75">
+                                                    <input type="checkbox" checked={st.active} onChange={e=>updateStrategy(st.id, 'active', e.target.checked)}/>
+                                                    <span className="slider"></span>
+                                                </label>
+                                                <input type="text" value={st.name} onChange={e=>updateStrategy(st.id, 'name', e.target.value)} className="font-bold text-slate-700 w-24 bg-transparent border-b border-transparent focus:border-slate-300 text-sm" />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex items-center">
+                                                    <input type="number" value={st.rate} onChange={e=>updateStrategy(st.id, 'rate', parseFloat(e.target.value))} className="w-10 text-right font-black text-emerald-600 bg-transparent"/>
+                                                    <span className="text-xs font-bold text-emerald-600 ml-0.5">%</span>
+                                                </div>
+                                                <button onClick={()=>deleteStrategy(st.id)} className="text-slate-400 hover:text-red-500"><Icon name="trash" size={14}/></button>
+                                            </div>
+                                        </div>
+                                        {st.active && (
+                                            <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                                <div className="bg-white p-1.5 rounded-lg border border-emerald-100 relative">
+                                                    <div className="flex justify-between items-center mb-0.5">
+                                                        <span className="text-slate-400">上限</span>
+                                                        <button onClick={()=>updateStrategy(st.id, 'capUnit', st.capUnit==='twd'?'points':'twd')} className={`flex items-center gap-0.5 text-[8px] px-1 rounded border font-bold transition-colors ${st.capUnit==='twd' ? 'bg-slate-100 border-slate-200 text-slate-500' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                                            <Icon name="swap" size={8}/> {st.capUnit==='twd'?'TWD (刷)':'點數 (贈)'}
+                                                        </button>
+                                                    </div>
+                                                    <input type="number" value={st.cap} onChange={e=>updateStrategy(st.id, 'cap', parseFloat(e.target.value))} className="font-mono font-bold text-slate-700 w-full"/>
+                                                    <span className="text-[9px] text-slate-400 block mt-0.5">{calculatedOther}</span>
+                                                </div>
+                                                
+                                                <div className="bg-white p-1.5 rounded-lg border border-emerald-100 relative">
+                                                    <div className="flex justify-between items-center mb-0.5">
+                                                        <span className="text-slate-400">低消 ({st.thresholdUnit === 'foreign' ? foreignCurrencyName : 'TWD'})</span>
+                                                        <button onClick={()=>updateStrategy(st.id, 'thresholdUnit', st.thresholdUnit==='foreign'?'twd':'foreign')} className="flex items-center gap-0.5 text-[8px] bg-slate-100 px-1 rounded border border-slate-200 text-slate-500 font-bold">
+                                                            <Icon name="swap" size={8}/> {st.thresholdUnit==='foreign' ? foreignCurrencyName : 'TWD'}
+                                                        </button>
+                                                    </div>
+                                                    <input 
+                                                        type="number" 
+                                                        value={st.minSpend || 0} 
+                                                        onChange={e => {
+                                                            updateStrategy(st.id, 'minSpend', parseFloat(e.target.value));
+                                                        }} 
+                                                        className="font-mono font-bold text-slate-700 w-full"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <button onClick={onClose} className="w-full mt-2 py-3 bg-emerald-600 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-emerald-700">儲存設定</button>
+                    </div>
+                </div>
+            );
+        });
+
+        const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose, setShowStrategySettings }) => {
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-white/95 w-full max-w-sm rounded-[2rem] p-5 shadow-2xl h-[85vh] overflow-y-auto flex flex-col border border-white/50" onClick={e=>e.stopPropagation()}>
@@ -260,12 +408,13 @@
                                             <input type="checkbox" checked={card.enabled!==false} onChange={e=>updatePreset(card.id, 'enabled', e.target.checked)} className="accent-slate-600 w-5 h-5 rounded cursor-pointer"/>
                                             <input type="text" value={card.name} onChange={e=>updatePreset(card.id, 'name', e.target.value)} className="font-bold text-slate-700 w-32 border-b border-transparent focus:border-slate-300 transition-colors text-lg" placeholder="卡片名稱"/>
                                         </div>
+                                        {card.useStrategy && <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">智慧攻略</span>}
                                     </div>
                                     {card.enabled!==false && (
                                         <div className="space-y-3 animate-fade-in">
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 animate-fade-in">
                                                  <div className="flex-1 bg-slate-50 p-2.5 rounded-2xl flex items-center gap-2 border border-slate-100">
-                                                    <span className="text-xs font-bold text-slate-400 whitespace-nowrap pl-1">回饋</span>
+                                                    <span className="text-xs font-bold text-slate-400 whitespace-nowrap pl-1">基本回饋</span>
                                                     <input type="number" step="0.1" min="0" value={card.reward} onChange={e=>updatePreset(card.id, 'reward', parseFloat(e.target.value))} className="text-xl font-bold text-center w-full bg-transparent"/>
                                                     <span className="text-xs font-bold text-slate-400 pr-1">%</span>
                                                  </div>
@@ -273,6 +422,18 @@
                                                     {card.rewardType==='points'?'LINE P':'現金'}
                                                  </button>
                                             </div>
+
+                                            <div className="flex items-center justify-between bg-yellow-50 p-2 rounded-xl border border-yellow-100 mt-2">
+                                                <span className="text-xs font-bold text-yellow-800 flex items-center gap-1"><Icon name="lightning" size={12}/> 疊加自訂策略 (滿額禮等)</span>
+                                                <div className="flex items-center gap-2">
+                                                    {card.useStrategy && <button onClick={()=>setShowStrategySettings(true)} className="text-[10px] bg-white px-2 py-1 rounded border border-yellow-200 text-yellow-700 font-bold flex items-center gap-1 active:scale-90 transition-transform"><Icon name="edit" size={10}/> 設定</button>}
+                                                    <label className="switch scale-75">
+                                                        <input type="checkbox" checked={card.useStrategy} onChange={e=>updatePreset(card.id, 'useStrategy', e.target.checked)}/>
+                                                        <span className="slider"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
                                             {!card.isMobilePay && (
                                                 <div className="flex gap-2 bg-slate-50 p-1.5 rounded-2xl mt-1 border border-slate-100">
                                                     {['jcb', 'visa', 'master'].map(type => (
@@ -286,13 +447,19 @@
                                             <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-xs font-bold text-slate-500 flex items-center gap-1"><Icon name="shoppingBag" size={14}/> 行動支付/綁定</span>
-                                                    <input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)} className="accent-slate-600 w-4 h-4 cursor-pointer"/>
+                                                    <label className="switch scale-75">
+                                                        <input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)}/>
+                                                        <span className="slider"></span>
+                                                    </label>
                                                 </div>
                                                 {card.isMobilePay && (
                                                     <div className="mt-3 pt-2 border-t border-slate-200/60 space-y-3 animate-fade-in">
                                                         <div className="flex justify-between items-center text-xs text-slate-500 font-bold">
                                                             <span>綁定銀行帳戶/TWQR (免1.5%)</span>
-                                                            <input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)} className="accent-emerald-500 w-4 h-4 cursor-pointer"/>
+                                                            <label className="switch scale-75">
+                                                                <input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)}/>
+                                                                <span className="slider"></span>
+                                                            </label>
                                                         </div>
                                                         <div className="space-y-1">
                                                             <div className="flex justify-between text-[10px] text-slate-400 font-bold">
@@ -323,80 +490,43 @@
             );
         });
 
-        const BreakdownPanel = memo(({ calcResult, settings, rates, tagPrice }) => {
+        const BreakdownPanel = memo(({ calcResult, settings, rates, tagPrice, campaignData }) => {
             const [copied, setCopied] = useState(false);
-            if (!calcResult || calcResult.twdBase <= 0) return null;
-            const { twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost, postRefundTwd, immRefundTwd } = calcResult;
-            const baseLabel = '付款金額'; 
-            const displayRefund = settings.refundMethod === 'immediate' ? immRefundTwd : postRefundTwd;
-            
-            const safeTwdBase = isNaN(twdBase) ? 0 : twdBase;
-            const refundPct = safeTwdBase > 0 ? ((displayRefund / safeTwdBase) * 100).toFixed(1) : '0.0';
-            const refundLabel = settings.mode === 'dutyfree' 
-                ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
-                : `退稅 (${refundPct}% | ${settings.refundMethod==='immediate'?'現場折抵':'事後退稅(機場/市區)'})`;
+           
+            if (!calcResult || !calcResult.twdBase || calcResult.twdBase <= 0) return null;
 
-            const safeFinalCost = isNaN(finalCost) ? 0 : finalCost;
-            
-            let errorTag = null;
-            let errorColor = "text-indigo-400/80";
-            
-            if (settings.country === 'KR' && settings.mode === 'general' && displayRefund > 0) {
-                if (settings.refundMethod === 'immediate') { errorTag = '精準無誤'; errorColor = "text-emerald-500/80"; } 
-                else {
-                    if (calcResult.targetAmount >= 1000000) {
-                         errorTag = `保守估計 (實際可能多退 NT$${Math.round(displayRefund * 0.15).toLocaleString()})`;
-                    } else {
-                         const errVal = Math.max(1, Math.round(displayRefund * 0.05));
-                         errorTag = `預估誤差: ±NT$${errVal.toLocaleString()}`;
-                    }
-                }
-            }
+            const { 
+                twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, 
+                isWaived, spreadCost, displayRefund, errorTag, errorColor,
+                displayOriginal = 0,
+                displayCode = '',
+                storeDiscountTWD = 0,
+                refundLabel = ''
+            } = calcResult;
 
-            let originalCurrencyAmount = 0;
-            let originalCurrencyCode = '';
-            if (settings.mode === 'general') {
-                 originalCurrencyAmount = calcResult.targetAmount; 
-                 originalCurrencyCode = settings.country === 'KR' ? 'KRW' : 'JPY';
-            } else {
-                 originalCurrencyAmount = safeTwdBase / rates.usd; 
-                 originalCurrencyCode = 'USD';
-            }
-
-            const displayOriginal = settings.mode === 'dutyfree' 
-                ? (safeTwdBase / (rates.usd || 1)) 
-                : (settings.country === 'KR' ? safeTwdBase / (rates.krw || 1) : safeTwdBase / (rates.jpy || 1));
+            const { analysis, effectiveRate = 0 } = campaignData || {};
             
-            const displayCode = settings.mode === 'dutyfree' ? 'USD' : (settings.country === 'KR' ? 'KRW' : 'JPY');
+            const isPostTax = settings.taxMode === 'auto' && settings.refundMethod === 'airport';
+            const isImmediate = settings.taxMode === 'auto' && settings.refundMethod === 'immediate';
 
-            let storeDiscountTWD = 0;
-            let fullSavings = totalSaved;
-            if (settings.mode === 'dutyfree' && tagPrice && !isNaN(parseFloat(tagPrice))) {
-                 const tagTWD = parseFloat(tagPrice) * rates.usd;
-                 storeDiscountTWD = Math.round(tagTWD - safeTwdBase);
-                 fullSavings += storeDiscountTWD;
-            }
+            const v95Data = campaignData?.v95 || null;
 
             const handleCopy = () => {
                 const text = `[購黑皮試算]
-付款金額: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${safeTwdBase.toLocaleString()})
+付款金額: ${Math.round(displayOriginal).toLocaleString()} ${displayCode} (約 NT$${twdBase.toLocaleString()})
 + 手續費: NT$${feeAmount + spreadCost}
-- 回饋: NT$${rewardAmount}
+- 回饋: NT$${rewardAmount} (實質回饋率 ${calcResult.totalRate}%)
 - 退稅/返點: NT$${displayRefund}
 ----------------
-最終入手: NT$${safeFinalCost.toLocaleString()}
-總省下: NT$${fullSavings.toLocaleString()} (${twdBase>0 ? ((fullSavings/(safeTwdBase+storeDiscountTWD))*100).toFixed(1) : 0}%)`;
-                
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
+最終入手: NT$${finalCost.toLocaleString()}
+總省下: NT$${totalSaved.toLocaleString()}`;
+                const textArea = document.createElement("textarea"); textArea.value = text; document.body.appendChild(textArea); textArea.select();
                 try { document.execCommand('copy'); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch (err) {}
                 document.body.removeChild(textArea);
             };
 
             return (
-                <div className="app-card p-6 mt-3 mb-4 animate-fade-in relative overflow-hidden bg-white">
+                <div className="app-card p-6 mt-2 mb-4 animate-fade-in relative overflow-hidden bg-white">
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
                          <div className="flex items-center gap-2">
                              <div className="p-1.5 rounded-lg bg-slate-100 text-slate-400"><Icon name="receipt" size={14}/></div>
@@ -407,24 +537,14 @@
                          </button>
                     </div>
                     <div className="space-y-3 text-sm">
-                        {storeDiscountTWD > 0 && (
-                            <div className="flex justify-between items-center text-slate-400 text-xs mb-2 pb-2 border-b border-dashed border-slate-100">
-                                <span>店內折扣 (Tag → Paid)</span>
-                                <span className="font-mono">-NT${storeDiscountTWD.toLocaleString()}</span>
+                        <div className="flex justify-between items-center text-slate-500 font-medium leading-none h-8">
+                            <div className="flex items-center h-full">
+                                <span>原始價格</span>
                             </div>
-                        )}
-
-                        <div className="flex justify-between items-center text-slate-500 font-medium">
-                            <div className="flex flex-col">
-                                <span>{baseLabel}</span>
-                                <span className="text-[10px] text-slate-300 font-mono">
-                                    {displayOriginal.toLocaleString(undefined, {maximumFractionDigits: 1})} {displayCode}
-                                </span>
-                            </div>
-                            <span className="font-bold font-mono text-base text-slate-800">NT${safeTwdBase.toLocaleString()}</span>
+                            <span className="font-bold font-mono text-lg text-slate-800">${twdBase.toLocaleString()}</span>
                         </div>
 
-                        <div className="flex justify-between items-center text-[#EA580C]">
+                        <div className="flex justify-between items-center text-[#EA580C] leading-none h-8">
                             <span className="font-medium">+ 刷卡手續費 {isWaived ? '(0%)' : `(${settings.fee}%)`}</span>
                             {isWaived && spreadCost > 0 ? (
                                 <div className="flex items-center gap-1"><span className="font-mono font-bold">+${spreadCost.toLocaleString()}</span><span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold transform scale-90">(隱性匯差)</span></div>
@@ -432,34 +552,69 @@
                                 <span className={`font-mono font-bold ${isWaived ? 'text-emerald-500 line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span>
                             )}
                         </div>
-                        <div className="flex justify-between items-center text-[#059669]">
-                            <div className="flex items-center gap-2"><span className="font-medium">- {settings.rewardType==='points'?'LINE POINTS':'現金回饋'} ({settings.reward}%)</span><span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold">不含手續費</span></div>
+                        
+                        <div className="flex justify-between items-center text-[#10B981] leading-none h-8">
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium">- {settings.rewardType==='points'?'LINE POINTS':'現金回饋'} ({calcResult.totalRate}%)</span>
+                                <span className="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">不含手續費</span>
+                            </div>
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
+
                         {displayRefund > 0 && (
-                            <div className="flex flex-col text-[#4F46E5] bg-[#EEF2FF] px-3 py-2.5 rounded-xl border border-[#E0E7FF]">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs font-bold">- {refundLabel}</span>
-                                    <span className="font-bold font-mono">-${displayRefund.toLocaleString()}</span>
+                            <div className="flex justify-between items-center text-[#4F46E5] bg-indigo-50 px-4 py-3 rounded-2xl mt-2 mb-4">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-sm font-bold flex items-center gap-1">- 退稅 ({(displayRefund/twdBase*100).toFixed(1)}% | {isPostTax ? '事後退稅 (機場/市區)' : isImmediate ? '現場折抵' : '退稅'})</span>
                                 </div>
-                                {errorTag && (
-                                    <div className={`text-[9px] text-right font-mono mt-0.5 tracking-wide ${errorColor}`}>
-                                        ({errorTag})
-                                    </div>
-                                )}
+                                <div className="flex flex-col items-end">
+                                    <span className="font-bold font-mono text-lg">-${displayRefund.toLocaleString()}</span>
+                                    <span className="text-[9px] text-indigo-300 font-medium tracking-wide mt-0.5 scale-90 origin-right">(預估誤差: ±NT$10)</span>
+                                </div>
                             </div>
                         )}
+
+                        {/* Cap Warning Alert */}
+                        {v95Data && v95Data.capWarnings && v95Data.capWarnings.length > 0 && (
+                            <div className="bg-red-50 border border-red-100 rounded-xl p-3 animate-fade-in mb-2">
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-red-100 rounded-full text-red-700 mt-0.5"><Icon name="alert" size={14}/></div>
+                                    <div className="flex-1">
+                                        <div className="text-xs font-bold text-red-800 mb-1">策略上限警示</div>
+                                        {v95Data.capWarnings.map((w, idx) => (
+                                            <div key={idx} className="text-[10px] text-red-700 leading-relaxed">
+                                                「{w.name}」已達上限，損失約 {w.loss} 點。請檢查上限單位是否設為「TWD」而非「點數」。
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {v95Data && v95Data.suggestionMsg && (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 animate-fade-in mb-2">
+                                <div className="flex items-start gap-3">
+                                    <div className="p-1.5 bg-yellow-100 rounded-full text-yellow-700 mt-0.5"><Icon name="lightning" size={14}/></div>
+                                    <div className="flex-1">
+                                        <div className="text-xs font-bold text-yellow-800 mb-1">消費門檻提示</div>
+                                        <div className="text-[10px] text-yellow-700 leading-relaxed">
+                                            再消費約 <span className="font-mono font-bold">{v95Data.suggestionMsg.currency} {v95Data.suggestionMsg.diff.toLocaleString()}</span>，即可觸發「<span className="font-bold">{v95Data.suggestionMsg.name}</span>」回饋，理論上可多拿約 <span className="font-bold font-mono text-yellow-900">{v95Data.suggestionMsg.potentialGain}</span> 點。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="my-3 border-t border-dashed border-slate-200"></div>
 
                         <div className="flex justify-between items-center mb-1 mt-3">
-                            <span className="text-[10px] text-slate-400 font-bold">總回饋價值 {storeDiscountTWD > 0 ? '(含店內折扣)' : ''}</span>
-                            <span className="text-[#10B981] font-bold text-xl font-mono tracking-tight">
-                                +${fullSavings.toLocaleString()} ({safeTwdBase > 0 ? ((fullSavings/(safeTwdBase+storeDiscountTWD))*100).toFixed(1) : 0}%)
+                            <span className="text-[10px] text-slate-400 font-bold">總回饋價值 (已扣除手續費)</span>
+                            <span className="text-[#10B981] font-bold text-2xl font-mono tracking-tight">
+                                +${totalSaved.toLocaleString()} <span className="text-lg">({twdBase > 0 ? ((totalSaved/(twdBase+calcResult.storeDiscountTWD))*100).toFixed(1) : 0}%)</span>
                             </span>
                         </div>
                         <div className="flex justify-between items-end pt-1">
-                            <span className="font-bold text-slate-800 text-base mb-1">最終入手價 (TWD)</span>
-                            <span className="text-[2.8rem] font-black text-slate-900 tracking-tight leading-none font-sans">${safeFinalCost.toLocaleString()}</span>
+                            <span className="font-bold text-slate-800 text-lg mb-1">最終入手價 (TWD)</span>
+                            <span className="text-[3.5rem] font-black text-slate-900 tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -472,12 +627,11 @@
                 if (!inputVal || isNaN(parseFloat(inputVal))) return '';
                 if (inputType === field) return inputVal; 
                 const num = parseFloat(inputVal);
-                // Stress test protection for large inputs
                 if (num > 1000000000) return '...';
                 const rKrw = rates.krw;
                 const rJpy = rates.jpy;
                 const rUsd = rates.usd;
-                const targetRate = settings.country === 'KR' ? rKrw : rJpy;
+                const targetRate = (settings.country === 'KR' ? rKrw : rJpy) || 1; 
                 let twdBase = 0;
                 if (inputType === 'usd') twdBase = num * rUsd;
                 else if (inputType === 'twd') twdBase = num;
@@ -489,7 +643,7 @@
             };
 
             return (
-                <div className="block space-y-3 pb-1">
+                <div className="block space-y-3 pb-0">
                     {settings.country === 'KR' && (
                         <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-slate-200 ${inputType==='usd'?'border-slate-300':''}`}>
                             <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-slate-50 border border-slate-100 flex-shrink-0">🇺🇸</div>
@@ -525,7 +679,7 @@
                             </div>
                         </div>
                     </div>
-                    
+                   
                     <div className="app-card p-4 flex flex-col gap-3 bg-white">
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-bold flex items-center gap-2 text-slate-700"><Icon name="receipt" size={18}/> {settings.country==='KR'?'退稅設定':'免稅設定'}</span>
@@ -545,31 +699,31 @@
                                         <span className="text-xs font-bold tracking-wide">現場折抵</span>
                                     </button>
                                 </div>
-                                
+                               
                                 {(() => {
                                     if (calcResult.postRefundTwd > 0 && settings.country === 'KR') {
-                                         const rewardRate = settings.reward / 100;
-                                         const feeRate = settings.fee / 100; 
-                                         const netGain = Math.round(calcResult.postRefundTwd * (rewardRate - (settings.isBankAccount?0:feeRate)));
-                                         
-                                         if (netGain > 0) {
-                                              return (
-                                                  <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-emerald-100 bg-emerald-50/50 text-emerald-800">
-                                                      <div className="p-1.5 rounded-full bg-emerald-200 text-emerald-800"><Icon name="diamond" size={14}/></div>
-                                                      <div className="flex flex-col">
-                                                          <span className="font-bold">刷卡回饋套利</span>
-                                                          <span className="opacity-80">選【事後退稅】可多賺約 NT${netGain}</span>
-                                                      </div>
-                                                  </div>
-                                               );
-                                         } else {
-                                               return (
-                                                  <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-slate-100 bg-slate-50 text-slate-600">
-                                                      <div className="p-1.5 rounded-full bg-slate-200 text-slate-600"><Icon name="thumbsUp" size={14}/></div>
-                                                      <span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span>
-                                                  </div>
-                                               );
-                                         }
+                                             const rewardRate = settings.reward / 100;
+                                             const feeRate = settings.fee / 100; 
+                                             const netGain = Math.round(calcResult.postRefundTwd * (rewardRate - (settings.isBankAccount?0:feeRate)));
+                                             
+                                             if (netGain > 0) {
+                                                 return (
+                                                     <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-emerald-100 bg-emerald-50/50 text-emerald-800">
+                                                         <div className="p-1.5 rounded-full bg-emerald-200 text-emerald-800"><Icon name="diamond" size={14}/></div>
+                                                         <div className="flex flex-col">
+                                                             <span className="font-bold">刷卡回饋套利</span>
+                                                             <span className="opacity-80">選【事後退稅】可多賺約 NT${netGain}</span>
+                                                         </div>
+                                                     </div>
+                                                );
+                                             } else {
+                                                  return (
+                                                     <div className="text-[11px] p-3 rounded-xl flex items-center gap-3 border border-slate-100 bg-slate-50 text-slate-600">
+                                                         <div className="p-1.5 rounded-full bg-slate-200 text-slate-600"><Icon name="thumbsUp" size={14}/></div>
+                                                         <span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span>
+                                                     </div>
+                                                );
+                                             }
                                     }
                                     return null;
                                 })()}
@@ -612,7 +766,7 @@
                 return { isSafe, text: `${isSafe ? '安全' : '注意'} (${discountText})` };
             };
             const status = getDiscountStatus();
-            
+           
             const adjustRebate = (delta) => {
                 let newVal = (parseFloat(settings.dutyFreeRebate) || 0) + delta;
                 newVal = Math.max(0, Math.min(40, newVal));
@@ -697,9 +851,28 @@
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
             const [rates, setRates] = useState({ krw: 0.023, jpy: 0.21, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
             
+            // V105: Initialize strategy state management
+            const [allStrategies, setAllStrategies] = useState(() => {
+                let data = null;
+                try {
+                    const saved = safeGetStorage(STRATEGY_STORAGE_KEY);
+                    if (saved) {
+                        data = JSON.parse(saved);
+                    }
+                } catch(e) {}
+
+                if (data && typeof data === 'object' && !Array.isArray(data)) {
+                     return data;
+                }
+                
+                return JSON.parse(JSON.stringify(DEFAULT_STRATEGIES_MAP));
+            });
+
+            const [showStrategySettings, setShowStrategySettings] = useState(false);
+           
             const [customRates, setCustomRates] = useState(() => {
                 try {
-                    const saved = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
+                    const saved = safeGetStorage(CUSTOM_RATES_STORAGE_KEY);
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         if (parsed && typeof parsed === 'object') return parsed;
@@ -714,32 +887,54 @@
             const [isRefreshing, setIsRefreshing] = useState(false);
             const [screenshotMode, setScreenshotMode] = useState(false);
             const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-            
+           
             const [isInverseRate, setIsInverseRate] = useState(false);
             const [editingMap, setEditingMap] = useState({}); 
 
             const [inputVal, setInputVal] = useState('');
             const [inputType, setInputType] = useState('target');
             const [tagPrice, setTagPrice] = useState('');
-            
+           
             const saveTimeoutRef = useRef(null);
 
             useEffect(() => {
-                localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates));
+                safeSetStorage(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates));
             }, [customRates]);
+
+            useEffect(() => {
+                safeSetStorage(STRATEGY_STORAGE_KEY, JSON.stringify(allStrategies));
+            }, [allStrategies]);
+
+            // Dynamic Strategies based on Active Preset
+            const currentStrategies = useMemo(() => {
+                return allStrategies[settings.activePresetId] || [];
+            }, [allStrategies, settings.activePresetId]);
+
+            const setCurrentStrategies = useCallback((newStrategies) => {
+                setAllStrategies(prev => {
+                    const updated = typeof newStrategies === 'function' 
+                        ? newStrategies(prev[settings.activePresetId] || [])
+                        : newStrategies;
+                    
+                    return {
+                        ...prev,
+                        [settings.activePresetId]: updated
+                    };
+                });
+            }, [settings.activePresetId]);
 
             useEffect(() => {
                 const checkRefresh = () => {
                     if (document.visibilityState === 'visible') {
-                         const savedR = localStorage.getItem(RATE_STORAGE_KEY);
-                         if (savedR) {
+                          const savedR = safeGetStorage(RATE_STORAGE_KEY);
+                          if (savedR) {
                              try {
                                  const p = JSON.parse(savedR);
                                  if (Date.now() - p.timestamp > AUTO_REFRESH_INTERVAL) {
                                      fetchRates();
                                  }
                              } catch(e) {}
-                         }
+                          }
                     }
                 };
                 document.addEventListener('visibilitychange', checkRefresh);
@@ -753,9 +948,20 @@
                 }
 
                 const initLoad = () => {
-                    const savedS = localStorage.getItem(STORAGE_KEY);
-                    if (savedS) try { setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(savedS) }); } catch(e){}
-                    const savedR = localStorage.getItem(RATE_STORAGE_KEY);
+                    const savedS = safeGetStorage(STORAGE_KEY);
+                    if (savedS) {
+                        try { 
+                            const parsedS = JSON.parse(savedS);
+                            if (parsedS.cardPresets && Array.isArray(parsedS.cardPresets)) {
+                                setSettings(prev => ({ ...prev, ...parsedS }));
+                            } else {
+                                const { cardPresets, ...safeProps } = parsedS;
+                                setSettings(prev => ({ ...prev, ...safeProps }));
+                            }
+                        } catch(e){}
+                    }
+                    
+                    const savedR = safeGetStorage(RATE_STORAGE_KEY);
                     const now = Date.now();
                     let useCache = false;
                     if (savedR) {
@@ -788,14 +994,14 @@
                         };
                         const timeStr = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
                         setRates(newRates); setLastUpdated(timeStr); setIsOffline(false);
-                        localStorage.setItem(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr, timestamp: Date.now() }));
+                        safeSetStorage(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr, timestamp: Date.now() }));
                     }
                 } catch(e) { setIsOffline(true); setLastUpdated('離線模式'); } finally { setTimeout(()=>setIsRefreshing(false),800); }
             }, []);
-            
+           
             const debouncedSave = useCallback((newSettings) => {
                 if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-                saveTimeoutRef.current = setTimeout(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings)); }, 800);
+                saveTimeoutRef.current = setTimeout(() => { safeSetStorage(STORAGE_KEY, JSON.stringify(newSettings)); }, 800);
             }, []);
 
             const updateSetting = useCallback((key, val) => {
@@ -835,7 +1041,7 @@
                 const u = customRates.usd ? parseFloat(customRates.usd) : rates.usd;
                 const uToC = customRates.usdToCny ? parseFloat(customRates.usdToCny) : rates.usdToCny;
                 const c = customRates.cny ? parseFloat(customRates.cny) : rates.cny;
-                
+               
                 return { 
                     ...rates, 
                     krw: (k && k > 0) ? k : rates.krw, 
@@ -846,35 +1052,42 @@
             }, [rates, customRates]);
 
             const calcResult = useMemo(() => {
-                if (!inputVal) return { twdBase: 0 };
+                if (!inputVal) return { twdBase: 0, displayOriginal: 0, displayCode: '' };
                 const num = parseFloat(inputVal);
-                if (isNaN(num)) return { twdBase: 0 };
+                if (isNaN(num)) return { twdBase: 0, displayOriginal: 0, displayCode: '' };
+               
                 let spread = 1.0; 
                 if (settings.cardType === 'jcb') spread = 0;
                 else if (settings.cardType === 'master') spread = 0.8;
                 const bankSpread = 1 + (spread / 100);
-                
+               
                 const rKrw = effectiveRates.krw * bankSpread;
                 const rJpy = effectiveRates.jpy * bankSpread;
                 const rUsd = effectiveRates.usd * bankSpread;
-                
+               
                 let twdBase = 0;
                 let targetAmount = 0;
-                
+                let displayOriginal = 0;
+                let displayCode = '';
+
                 if (settings.mode === 'general') {
                     const targetRate = settings.country === 'KR' ? rKrw : rJpy;
                     if (inputType === 'twd') { twdBase = num; targetAmount = twdBase / targetRate; }
                     else if (inputType === 'usd') { twdBase = num * rUsd; targetAmount = twdBase / targetRate; }
                     else { targetAmount = num; twdBase = num * targetRate; }
+                    displayOriginal = targetAmount;
+                    displayCode = settings.country === 'KR' ? 'KRW' : 'JPY';
                 } else {
-                    if (settings.country === 'KR') { twdBase = num * rUsd; targetAmount = num * (effectiveRates.usd/effectiveRates.krw); }
-                    else { twdBase = num * rJpy; targetAmount = num; }
+                    if (settings.country === 'KR') { twdBase = num * rUsd; targetAmount = num * (effectiveRates.usd/effectiveRates.krw); displayCode = 'USD'; displayOriginal = num; }
+                    else { twdBase = num * rJpy; targetAmount = num; displayCode = 'JPY'; displayOriginal = num; }
                 }
-                
+
+                if (isNaN(twdBase)) return { twdBase: 0, displayOriginal: 0, displayCode: '' };
+
                 let refundNative = 0; 
                 let postRefundTwd = 0;
                 let immRefundTwd = 0;
-                
+               
                 if (settings.mode === 'general') {
                     if (settings.taxMode === 'auto') {
                         if (settings.country === 'KR') {
@@ -925,6 +1138,7 @@
                 }
 
                 const refundTwd = settings.refundMethod === 'immediate' ? immRefundTwd : postRefundTwd;
+                const displayRefund = refundTwd; 
 
                 let effectiveFee = settings.fee;
                 let spreadCost = 0;
@@ -934,122 +1148,79 @@
                     else { spreadCost = twdBase * ((settings.mobileSpread||0)/100); }
                 }
                 const feeAmount = Math.round(twdBase * (effectiveFee/100));
-                const rewardAmount = Math.round(twdBase * (settings.reward/100));
+
+                let rewardAmount = 0;
+                let campaignData = null;
+                const activeCard = settings.cardPresets.find(c => c.id === settings.activePresetId);
+               
+                if (activeCard?.useStrategy) {
+                    const v95Result = calcRewardSystem({
+                        totalNTD: twdBase,
+                        targetAmount: targetAmount, 
+                        cardBrand: settings.cardType,
+                        useCTBC: (activeCard.name && activeCard.name.includes('中信')) || activeCard.id === 1,
+                        strategies: currentStrategies, 
+                        rates: effectiveRates,
+                        country: settings.country,
+                        baseRate: activeCard.reward 
+                    });
+                    rewardAmount = v95Result.totalPoints;
+                    campaignData = { 
+                        analysis: { isStrategy: true },
+                        effectiveRate: v95Result.totalRate,
+                        v95: v95Result 
+                    };
+                } else {
+                    let totalPoints = Math.round(twdBase * (settings.reward / 100));
+                    rewardAmount = totalPoints;
+                    campaignData = { effectiveRate: settings.reward };
+                }
+
                 const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
                 const totalSaved = Math.round(twdBase - finalCost);
-                return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, spreadCost: Math.round(spreadCost), targetAmount, postRefundTwd, immRefundTwd }; 
-            }, [inputVal, inputType, settings, effectiveRates]);
+               
+                let storeDiscountTWD = 0;
+                if (settings.mode === 'dutyfree' && tagPrice && !isNaN(parseFloat(tagPrice))) {
+                      const tagTWD = parseFloat(tagPrice) * rates.usd;
+                      storeDiscountTWD = Math.round(tagTWD - twdBase);
+                }
+
+                let errorTag = null; let errorColor = "text-indigo-400/80";
+                const refundPct = twdBase > 0 ? ((displayRefund / twdBase) * 100).toFixed(1) : '0.0';
+                const refundLabel = settings.mode === 'dutyfree' ? `返點 (${settings.dutyFreeRebate}%)` : `退稅 (${refundPct}%)`;
+
+                return { 
+                    twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived, 
+                    spreadCost: Math.round(spreadCost), targetAmount, postRefundTwd, immRefundTwd, displayOriginal, displayCode, storeDiscountTWD, refundLabel, displayRefund, errorTag, errorColor, campaignData,
+                    totalRate: campaignData?.effectiveRate || campaignData?.v95?.totalRate || 0 
+                }; 
+            }, [inputVal, inputType, settings, effectiveRates, currentStrategies, tagPrice]);
 
             const advice = useMemo(() => {
                 if (settings.country === 'KR' && settings.mode === 'general') {
                     if (calcResult.targetAmount > 1000000 && settings.refundMethod === 'immediate') return { type: 'warn', msg: '⚠️ 金額超過 100 萬：已達現場折抵上限，請改用【事後退稅】' };
-                    let refundNative = 0;
-                    if (calcResult.targetAmount >= 15000) { if (calcResult.targetAmount >= 200000) refundNative = Math.floor(calcResult.targetAmount * 0.065 / 1000) * 1000; }
-                    if (refundNative > 75000) return { type: 'warn', msg: '🛂 退稅額超過 7.5 萬：不可使用自助機，需海關人工蓋章' };
                 }
-                if (settings.mode !== 'general' || settings.country !== 'KR' || !calcResult.twdBase) return null;
-                if (settings.refundMethod === 'immediate') return { type: 'warn', msg: '💡 省錢撇步：選【事後退稅】通常能拿回更多錢' };
-                return { type: 'good', msg: '👍 推薦：選【事後退稅】可獲得最高回饋' };
-            }, [settings.refundMethod, settings.country, calcResult.twdBase, calcResult.targetAmount, settings.mode]);
+                return null;
+            }, [settings.refundMethod, settings.country, calcResult]);
 
-            const getThemeClass = () => { if (settings.mode === 'dutyfree') return 'header-gradient'; return 'header-gradient'; };
+            const getThemeClass = () => 'header-gradient';
 
             const handleModeSwitch = (newMode) => {
                 if (newMode === 'dutyfree' && settings.mode === 'general') {
-                    let usdVal = 0;
-                    const num = parseFloat(inputVal);
-                    if (!isNaN(num)) {
-                        if (inputType === 'usd') usdVal = num;
-                        else if (inputType === 'twd') usdVal = num / effectiveRates.usd;
-                        else { 
-                            const targetRate = settings.country === 'KR' ? effectiveRates.krw : effectiveRates.jpy; 
-                            usdVal = (num * targetRate) / effectiveRates.usd; 
-                        }
-                    }
-                    if (usdVal > 0) { 
-                        const valStr = usdVal.toFixed(2).replace(/\.00$/, ''); 
-                        setTagPrice(valStr); 
-                        setInputVal(valStr); 
-                    } else { 
-                        setTagPrice(''); 
-                        setInputVal(''); 
-                    }
-                } else if (newMode === 'general' && settings.mode === 'dutyfree') {
-                    const num = parseFloat(inputVal);
-                    if (!isNaN(num) && num > 0) {
-                        setInputType('usd'); 
-                    } else {
-                        setInputVal(''); 
-                    }
-                }
+                    let usdVal = 0; const num = parseFloat(inputVal);
+                    if (!isNaN(num)) { if (inputType === 'usd') usdVal = num; else if (inputType === 'twd') usdVal = num / effectiveRates.usd; else { const targetRate = settings.country === 'KR' ? effectiveRates.krw : effectiveRates.jpy; usdVal = (num * targetRate) / effectiveRates.usd; } }
+                    if (usdVal > 0) { const valStr = usdVal.toFixed(2).replace(/\.00$/, ''); setTagPrice(valStr); setInputVal(valStr); } else { setTagPrice(''); setInputVal(''); }
+                } else if (newMode === 'general' && settings.mode === 'dutyfree') { const num = parseFloat(inputVal); if (!isNaN(num) && num > 0) { setInputType('usd'); } else { setInputVal(''); } }
                 updateSetting('mode', newMode);
             };
-
             const openExchangeLink = () => { if (settings.country === 'KR') window.open('https://creatrip.com/exchange', '_blank'); else window.open('https://www.google.com/search?q=JPY+TWD', '_blank'); };
 
-            const renderGeneralHeader = () => {
-                const base = customRates.krw ? parseFloat(customRates.krw) : effectiveRates.krw;
-                
-                const displayBase = base; 
-                const displayInverse = base && base > 0 ? (1/base) : 0;
-                
-                return (
-                    <div className="flex justify-between items-center mb-1">
-                        <div className="flex items-center gap-2 w-1/2 justify-center border-r border-white/10 relative pr-1">
-                            <div className="flex flex-col items-end w-full pl-0">
-                                <button onClick={()=>setIsInverseRate(!isInverseRate)} className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 active:scale-95 transition-all px-2 py-0.5 rounded-full mb-1 border border-white/10 shadow-sm group w-full justify-center">
-                                    <span className="text-[10px] font-bold text-white tracking-wider truncate">{isInverseRate ? (settings.country==='KR'?'TWD ➔ KRW':'TWD ➔ JPY') : (settings.country==='KR'?'KRW ➔ TWD':'JPY ➔ TWD')}</span>
-                                    <div className={`w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-yellow-300"/></div>
-                                </button>
-                                <RateInput 
-                                    label="" 
-                                    val={isInverseRate ? displayInverse : displayBase}
-                                    onChange={v => {
-                                        if (v === '' || v === 0) {
-                                            handleCustomRate('krw', '');
-                                        } else {
-                                            const rate = isInverseRate ? 1/v : v;
-                                            handleCustomRate('krw', rate);
-                                        }
-                                    }}
-                                    isEditing={editingMap['gen']}
-                                    setIsEditing={s=>setEditingMap({...editingMap, gen:s})}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
-                            <div className="flex flex-col items-end w-full">
-                                <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-white/70 tracking-widest">USD ➔ TWD</span></div>
-                                <RateInput 
-                                    label="" 
-                                    val={customRates.usd || effectiveRates.usd} 
-                                    onChange={v=>handleCustomRate('usd', v)}
-                                    isEditing={editingMap['usd']}
-                                    setIsEditing={s=>setEditingMap({...editingMap, usd:s})}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
-
-            const renderDutyFreeHeader = () => {
-                return (
-                    <div className="flex justify-between items-end gap-2 mb-1">
-                        <RateInput label="USD ➔ CNY" val={customRates.usdToCny || effectiveRates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
-                        <div className="w-px h-10 bg-white/10 self-center"></div>
-                        <RateInput label="CNY ➔ TWD" val={customRates.cny || effectiveRates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
-                        <div className="w-px h-10 bg-white/10 self-center"></div>
-                        <RateInput label="USD ➔ TWD" val={customRates.usd || effectiveRates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
-                    </div>
-                );
-            };
-
             return (
-                <div className={`h-full flex flex-col max-w-md mx-auto bg-[#F0F2F1] shadow-2xl relative overflow-hidden ${screenshotMode?'screenshot-mode':''}`}>
-                    {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} />}
+                <div className={`h-full flex flex-col max-w-md mx-auto bg-[#F0F2F5] shadow-2xl relative overflow-hidden ${screenshotMode?'screenshot-mode':''}`}>
+                    {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} setShowStrategySettings={setShowStrategySettings} />}
+                    {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={()=>setShowStrategySettings(false)} rates={effectiveRates} settings={settings} />}
                     {showInstallPrompt && <InstallPrompt onClose={()=>setShowInstallPrompt(false)}/>}
-                    
+                   
                     <header className={`flex-none px-4 pt-safe pb-10 shadow-xl z-20 transition-all duration-700 theme-transition ${getThemeClass()} relative`}>
                         <div className="flex justify-between items-center mb-3 pt-2">
                             <h1 className="text-2xl font-black tracking-tight flex items-center gap-2 drop-shadow-md text-white"><div onClick={()=>{if(history.length>1)history.back()}} className="cursor-pointer active:opacity-50"><Icon name="plane" size={24}/></div> 購黑皮</h1>
@@ -1068,13 +1239,32 @@
                              <div className="flex overflow-x-auto no-scrollbar gap-1 flex-1 mask-linear items-center">
                                 {settings.cardPresets.filter(c=>c.enabled!==false).map(card => (
                                     <button key={card.id} onClick={()=>applyPreset(card)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 ${settings.activePresetId===card.id ? 'bg-white text-slate-800 shadow-sm scale-100' : 'text-white/80 hover:text-white scale-95'}`}>
-                                        {card.isMobilePay && <Icon name="mobile" size={9} className="opacity-50"/>} {card.name}
+                                            {card.isMobilePay && <Icon name="mobile" size={9} className="opacity-50"/>} {card.name}
                                     </button>
                                 ))}
                              </div>
                         </div>
                         <div className="mt-2 bg-[rgba(0,0,0,0.15)] rounded-xl p-2 border border-white/10 backdrop-blur-sm">
-                            {settings.mode === 'dutyfree' ? renderDutyFreeHeader() : renderGeneralHeader()}
+                            {settings.mode === 'dutyfree' ? 
+                                <DutyFreeModeHeader 
+                                    rates={effectiveRates} 
+                                    customRates={customRates} 
+                                    handleCustomRate={handleCustomRate} 
+                                    editingMap={editingMap} 
+                                    setEditingMap={setEditingMap} 
+                                /> 
+                                : 
+                                <GeneralModeHeader 
+                                    settings={settings} 
+                                    rates={effectiveRates} 
+                                    customRates={customRates} 
+                                    handleCustomRate={handleCustomRate} 
+                                    editingMap={editingMap} 
+                                    setEditingMap={setEditingMap} 
+                                    isInverseRate={isInverseRate} 
+                                    setIsInverseRate={setIsInverseRate}
+                                />
+                            }
                             <div className="flex justify-between items-center text-[9px] text-white/50 px-1 font-mono mt-1">
                                 <span className="flex items-center gap-1 opacity-80"><Icon name="refresh" size={8}/> 1 {settings.country==='KR'?'KRW':'JPY'} ≈ {effectiveRates.krw.toFixed(5)} TWD</span>
                                 <span className="flex items-center gap-1 opacity-80">{isOffline && <Icon name="wifiOff" size={8}/>} {lastUpdated}</span>
@@ -1088,7 +1278,7 @@
                         ) : (
                             <DutyFreeMode settings={settings} inputVal={inputVal} setInputVal={setInputVal} updateSetting={updateSetting} calcResult={calcResult} tagPrice={tagPrice} setTagPrice={setTagPrice}/>
                         )}
-                        <BreakdownPanel calcResult={calcResult} settings={settings} rates={effectiveRates} tagPrice={tagPrice} />
+                        <BreakdownPanel calcResult={calcResult} settings={settings} rates={effectiveRates} tagPrice={tagPrice} campaignData={calcResult.campaignData} />
                         <div className="mt-8 mb-4 flex justify-center opacity-40 py-4 cursor-pointer" onClick={()=>setScreenshotMode(!screenshotMode)}><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{screenshotMode ? "Tap to exit Screenshot Mode" : "Tap for Screenshot Mode"}</span></div>
                     </main>
                 </div>
