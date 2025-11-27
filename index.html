@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V120 (Smart Advice)</title>
+    <title>購黑皮 V123 (Final Stable)</title>
     
     <!-- iOS PWA 設定 -->
     <meta name="theme-color" content="#6DA6A6">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="購黑皮 V120">
+    <meta name="apple-mobile-web-app-title" content="購黑皮 V123">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- 圖示 -->
@@ -64,7 +64,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        const STORAGE_KEY = 'shopping_app_v120_settings';
+        const STORAGE_KEY = 'shopping_app_v123_settings';
         const STRATEGY_STORAGE_KEY = 'shopping_app_v102_strategies_map'; 
         const RATE_STORAGE_KEY = 'shopping_app_v87_rates';
         const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates';
@@ -297,6 +297,9 @@
             const rewardLabel = settings.rewardType === 'points' ? 'LINE POINTS' : '現金回饋';
             const activeCardRate = campaignData?.v95?.totalRate || campaignData?.effectiveRate || 0;
 
+            // Dynamic Error Margin (V122)
+            const errorMargin = Math.max(5, Math.round(displayRefund * 0.015)); // 1.5% dynamic variance
+
             return (
                 <div className="app-card p-6 mt-2 mb-4 animate-fade-in relative overflow-hidden bg-white">
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
@@ -321,7 +324,12 @@
                         {(settings.mode === 'dutyfree' || displayRefund > 0) && (
                              <div className="flex justify-between items-center text-[#3B82F6] bg-blue-50 px-4 py-3 rounded-2xl mt-2 mb-4">
                                 <div className="flex flex-col gap-1"><span className="text-sm font-bold flex items-center gap-1">- {refundLabel}</span>{settings.mode === 'general' && (<div className="flex gap-1 mt-1">{isPostTax && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">事後退稅 (機場/市區)</span>}{isImmediate && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">現場折抵</span>}</div>)}</div>
-                                <div className="flex flex-col items-end"><span className="font-bold font-mono text-lg">-${displayRefund.toLocaleString()}</span></div>
+                                <div className="flex flex-col items-end">
+                                    <span className="font-bold font-mono text-lg">-${displayRefund.toLocaleString()}</span>
+                                    {settings.mode === 'general' && (
+                                        <span className="text-[9px] text-slate-400 font-bold mt-0.5 scale-95 origin-right">(預估誤差: ±NT${errorMargin.toLocaleString()})</span>
+                                    )}
+                                </div>
                              </div>
                         )}
                         
