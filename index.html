@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>購黑皮 V123 (Final Stable)</title>
+    <title>購黑皮 V125 (Final Perfect)</title>
     
     <!-- iOS PWA 設定 -->
     <meta name="theme-color" content="#6DA6A6">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="購黑皮 V123">
+    <meta name="apple-mobile-web-app-title" content="購黑皮 V125">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- 圖示 -->
@@ -64,7 +64,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
 
-        const STORAGE_KEY = 'shopping_app_v123_settings';
+        const STORAGE_KEY = 'shopping_app_v125_settings';
         const STRATEGY_STORAGE_KEY = 'shopping_app_v102_strategies_map'; 
         const RATE_STORAGE_KEY = 'shopping_app_v87_rates';
         const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates';
@@ -215,16 +215,22 @@
             </div>
         ));
 
-        const StrategySettings = memo(({ strategies, setStrategies, onClose, rates, settings }) => {
+        const StrategySettings = memo(({ strategies, setStrategies, onClose, rates, settings, cardName }) => {
             const updateStrategy = (id, field, val) => setStrategies(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
             const addStrategy = () => setStrategies(prev => [...prev, { id: `c${Date.now()}`, name: '新策略', rate: 0, cap: 0, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]);
             const deleteStrategy = (id) => { if(window.confirm('確定刪除？')) setStrategies(prev => prev.filter(s => s.id !== id)); };
             return (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-white/95 w-full max-w-sm rounded-[2rem] p-5 shadow-2xl h-[75vh] overflow-y-auto flex flex-col border border-white/50" onClick={e=>e.stopPropagation()}>
-                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 sticky top-0 bg-white/95 z-10"><h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="lightning"/> 策略設定</h3><button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><Icon name="x" size={18}/></button></div>
+                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 sticky top-0 bg-white/95 z-10">
+                            <div className="flex flex-col">
+                                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="lightning"/> 策略設定</h3>
+                                <span className="text-xs text-slate-400 font-bold pl-7">正在設定：{cardName}</span>
+                            </div>
+                            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><Icon name="x" size={18}/></button>
+                        </div>
                         <div className="space-y-3 flex-1 pb-4">
-                            <div className="flex justify-between items-center"><p className="text-xs text-slate-500 bg-slate-50 p-2 rounded-lg flex-1 mr-2">設定滿額禮與加碼。</p><button onClick={addStrategy} className="bg-emerald-50 text-emerald-600 p-2 rounded-xl border border-emerald-100 hover:bg-emerald-100"><Icon name="plus" size={16}/></button></div>
+                            <div className="flex justify-between items-center"><p className="text-xs text-slate-500 bg-slate-50 p-2 rounded-lg flex-1 mr-2">設定滿額禮與加碼 (所有項目皆可自訂)。</p><button onClick={addStrategy} className="bg-emerald-50 text-emerald-600 p-2 rounded-xl border border-emerald-100 hover:bg-emerald-100"><Icon name="plus" size={16}/></button></div>
                             {strategies.map(st => (
                                 <div key={st.id} className={`p-3 border rounded-2xl transition-all ${st.active ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-slate-50 opacity-60'}`}>
                                     <div className="flex justify-between items-center mb-2">
@@ -246,7 +252,7 @@
             );
         });
 
-        const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose, setShowStrategySettings }) => {
+        const CardSettings = memo(({ settings, updatePreset, updateSetting, onClose, openStrategySettings }) => {
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-white/95 w-full max-w-sm rounded-[2rem] p-5 shadow-2xl h-[85vh] overflow-y-auto flex flex-col border border-white/50" onClick={e=>e.stopPropagation()}>
@@ -258,7 +264,7 @@
                                     {card.enabled!==false && (
                                         <div className="space-y-3 animate-fade-in">
                                             <div className="flex gap-2 animate-fade-in"><div className="flex-1 bg-slate-50 p-2.5 rounded-2xl flex items-center gap-2 border border-slate-100"><span className="text-xs font-bold text-slate-400 whitespace-nowrap pl-1">基本回饋</span><input type="number" step="0.1" min="0" value={card.reward} onChange={e=>updatePreset(card.id, 'reward', parseFloat(e.target.value))} className="text-xl font-bold text-center w-full bg-transparent"/><span className="text-xs font-bold text-slate-400 pr-1">%</span></div><button onClick={()=>updatePreset(card.id, 'rewardType', card.rewardType==='cash'?'points':'cash')} className={`px-4 rounded-2xl text-xs font-bold border active:scale-95 transition-transform ${card.rewardType==='points'?'bg-emerald-50 text-emerald-600 border-emerald-100':'bg-sky-50 text-sky-600 border-sky-100'}`}>{card.rewardType==='points'?'LINE P':'現金'}</button></div>
-                                            <div className="flex items-center justify-between bg-yellow-50 p-2 rounded-xl border border-yellow-100 mt-2"><span className="text-xs font-bold text-yellow-800 flex items-center gap-1"><Icon name="lightning" size={12}/> 疊加自訂策略</span><div className="flex items-center gap-2">{card.useStrategy && <button onClick={()=>setShowStrategySettings(true)} className="text-[10px] bg-white px-2 py-1 rounded border border-yellow-200 text-yellow-700 font-bold flex items-center gap-1 active:scale-90 transition-transform"><Icon name="edit" size={10}/> 設定</button>}<label className="switch scale-75"><input type="checkbox" checked={card.useStrategy} onChange={e=>updatePreset(card.id, 'useStrategy', e.target.checked)}/><span className="slider"></span></label></div></div>
+                                            <div className="flex items-center justify-between bg-yellow-50 p-2 rounded-xl border border-yellow-100 mt-2"><span className="text-xs font-bold text-yellow-800 flex items-center gap-1"><Icon name="lightning" size={12}/> 疊加自訂策略</span><div className="flex items-center gap-2">{card.useStrategy && <button onClick={()=>openStrategySettings(card.id)} className="text-[10px] bg-white px-2 py-1 rounded border border-yellow-200 text-yellow-700 font-bold flex items-center gap-1 active:scale-90 transition-transform"><Icon name="edit" size={10}/> 設定</button>}<label className="switch scale-75"><input type="checkbox" checked={card.useStrategy} onChange={e=>updatePreset(card.id, 'useStrategy', e.target.checked)}/><span className="slider"></span></label></div></div>
                                             {!card.isMobilePay && <div className="flex gap-2 bg-slate-50 p-1.5 rounded-2xl mt-1 border border-slate-100">{['jcb', 'visa', 'master'].map(type => (<button key={type} onClick={() => updatePreset(card.id, 'type', type)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold transition-all flex flex-col items-center justify-center ${card.type === type ? 'bg-white text-slate-800 shadow-sm ring-1 ring-black/5' : 'text-slate-400 hover:text-slate-600'}`}><span className="uppercase font-black tracking-wider">{type}</span><span className="text-[9px] opacity-60 scale-90 mt-0.5">{type==='jcb' ? '(原始)' : (type==='visa' ? '(+1.0%)' : '(+0.8%)')}</span></button>))}</div>}
                                             <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100"><div className="flex justify-between items-center"><span className="text-xs font-bold text-slate-500 flex items-center gap-1"><Icon name="shoppingBag" size={14}/> 行動支付/綁定</span><label className="switch scale-75"><input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)}/><span className="slider"></span></label></div>{card.isMobilePay && <div className="mt-3 pt-2 border-t border-slate-200/60 space-y-3 animate-fade-in"><div className="flex justify-between items-center text-xs text-slate-500 font-bold"><span>綁定銀行帳戶/TWQR (免1.5%)</span><label className="switch scale-75"><input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)}/><span className="slider"></span></label></div><div className="space-y-1"><div className="flex justify-between text-[10px] text-slate-400 font-bold"><span>額外平台手續費/匯差</span><span>{card.mobileSpread||1.0}%</span></div><input type="range" min="0" max="2" step="0.1" value={card.mobileSpread !== undefined ? card.mobileSpread : 1.0} onChange={e=>updatePreset(card.id, 'mobileSpread', parseFloat(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-slate-500"/></div></div>}</div>
                                         </div>
@@ -457,11 +463,38 @@
             // Separate State for Memory Function
             const [genInput, setGenInput] = useState({ val: '', type: 'target' });
             const [dfInput, setDfInput] = useState({ payVal: '', tagPrice: '' });
+            // NEW: State to track which card is being edited in Strategy Settings
+            const [editingStrategyCardId, setEditingStrategyCardId] = useState(null);
 
             useEffect(() => { safeSetStorage(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates)); }, [customRates]);
             useEffect(() => { safeSetStorage(STRATEGY_STORAGE_KEY, JSON.stringify(allStrategies)); }, [allStrategies]);
-            const currentStrategies = useMemo(() => allStrategies[settings.activePresetId] || [], [allStrategies, settings.activePresetId]);
-            const setCurrentStrategies = useCallback((newS) => { setAllStrategies(prev => ({ ...prev, [settings.activePresetId]: typeof newS === 'function' ? newS(prev[settings.activePresetId]||[]) : newS })); }, [settings.activePresetId]);
+            
+            // NEW: Get strategies for the card currently being edited, or active if none specified (though modal logic ensures ID is set)
+            const currentStrategies = useMemo(() => {
+                const targetId = editingStrategyCardId || settings.activePresetId;
+                return allStrategies[targetId] || [];
+            }, [allStrategies, editingStrategyCardId, settings.activePresetId]);
+
+            // NEW: Update strategies for the specific card being edited
+            const setCurrentStrategies = useCallback((newS) => { 
+                const targetId = editingStrategyCardId || settings.activePresetId;
+                setAllStrategies(prev => ({ 
+                    ...prev, 
+                    [targetId]: typeof newS === 'function' ? newS(prev[targetId]||[]) : newS 
+                })); 
+            }, [editingStrategyCardId, settings.activePresetId]);
+
+            // NEW: Handler to open settings for a specific card
+            const handleOpenStrategySettings = useCallback((cardId) => {
+                setEditingStrategyCardId(cardId);
+                setShowStrategySettings(true);
+            }, []);
+
+            // NEW: Close handler to reset editing ID
+            const handleCloseStrategySettings = useCallback(() => {
+                setShowStrategySettings(false);
+                setEditingStrategyCardId(null);
+            }, []);
 
             useEffect(() => {
                 const init = () => {
@@ -556,7 +589,10 @@
                         if (a>=15000) { if(a<30000) refundNative=1000; else if(a<50000) refundNative=2000; else if(a<75000) refundNative=3500; else if(a<100000) refundNative=5000; else if(a<125000) refundNative=7500; else if(a<150000) refundNative=9000; else if(a<175000) refundNative=10000; else if(a<200000) refundNative=12000; else if(a<225000) refundNative=13500; else if(a<250000) refundNative=15500; else if(a<275000) refundNative=17000; else if(a<300000) refundNative=19000; else if(a<325000) refundNative=20500; else if(a<350000) refundNative=22000; else if(a<375000) refundNative=24000; else if(a<400000) refundNative=25500; else if(a<450000) refundNative=28000; else if(a<500000) refundNative=32000; else if(a<550000) refundNative=35000; else if(a<600000) refundNative=39000; else if(a<650000) refundNative=42000; else if(a<700000) refundNative=45000; else if(a<750000) refundNative=48000; else if(a<800000) refundNative=52000; else if(a<850000) refundNative=55000; else if(a<900000) refundNative=58000; else if(a<950000) refundNative=61000; else if(a<1000000) refundNative=64000; else refundNative=Math.floor(a*0.065/1000)*1000; }
                     }
                     if (settings.taxMode === 'auto' && settings.country !== 'KR' && targetAmount>=5500) refundNative = targetAmount - (targetAmount/1.1) - (settings.isJpDeptFee?targetAmount*0.0155:0);
-                    refundTwd = Math.round(refundNative * (settings.country==='KR'?effectiveRates.krw:effectiveRates.jpy) * bankSpread);
+                    
+                    // V125 FIX: Removed bankSpread from tax refund calculation
+                    // Tax refund is returned at spot/buy rate, not sell rate + fee
+                    refundTwd = Math.round(refundNative * (settings.country==='KR'?effectiveRates.krw:effectiveRates.jpy));
                 } else {
                     if (settings.country === 'KR') {
                         const rebateUsd = num * (settings.dutyFreeRebate / 100);
@@ -580,10 +616,20 @@
                 }
 
                 if (activeCard?.useStrategy) {
-                    const v95 = calcRewardSystem({ totalNTD: twdBase, targetAmount: strategyTargetAmount, strategies: currentStrategies, rates: effectiveRates, country: settings.country, baseRate: activeCard.reward });
-                    rewardAmount = v95.totalPoints; campaignData = { v95 };
+                    const calculationStrategies = allStrategies[settings.activePresetId] || [];
+                    const v95 = calcRewardSystem({ 
+                        totalNTD: twdBase, 
+                        targetAmount: strategyTargetAmount, 
+                        strategies: calculationStrategies, 
+                        rates: effectiveRates, 
+                        country: settings.country, 
+                        baseRate: activeCard.reward 
+                    });
+                    rewardAmount = v95.totalPoints; 
+                    campaignData = { v95 };
                 } else {
-                    rewardAmount = Math.round(twdBase * (settings.reward/100)); campaignData = { effectiveRate: settings.reward };
+                    rewardAmount = Math.round(twdBase * (settings.reward/100)); 
+                    campaignData = { effectiveRate: settings.reward };
                 }
 
                 const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
@@ -591,15 +637,33 @@
                 const refundLabel = settings.mode === 'dutyfree' ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)` : `退稅 (${twdBase>0?((displayRefund/twdBase)*100).toFixed(1):0}%)`;
 
                 return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived: effectiveFee===0, spreadCost: Math.round(spreadCost), targetAmount, displayOriginal, displayCode, refundLabel, displayRefund, campaignData, totalRate: campaignData?.v95?.totalRate || settings.reward };
-            }, [genInput, dfInput, settings, effectiveRates, currentStrategies]);
+            }, [genInput, dfInput, settings, effectiveRates, allStrategies]);
 
             const advice = useMemo(() => { if (settings.country==='KR' && settings.mode==='general' && calcResult.targetAmount>1000000 && settings.refundMethod==='immediate') return { type: 'warn', msg: '⚠️ 超過 100 萬：已達現場折抵上限，請改用【事後退稅】' }; return null; }, [settings, calcResult]);
-            const handleModeSwitch = (m) => { if(m==='dutyfree'&&settings.mode==='general'&&genInput.val){ const n=parseFloat(genInput.val); if(!isNaN(n)){ let uv=0; if(genInput.type==='usd') uv=n; else if(genInput.type==='twd') uv=n/effectiveRates.usd; else { const tr=settings.country==='KR'?effectiveRates.krw:effectiveRates.jpy; uv=(n*tr)/effectiveRates.usd; } if(uv>0) setDfInput(p=>({...p, tagPrice: uv.toFixed(2)})); } } updateSetting('mode', m); };
+            
+            const handleModeSwitch = (m) => {
+                if (m === 'dutyfree' && settings.mode === 'general' && genInput.val) {
+                    const num = parseFloat(genInput.val);
+                    if (!isNaN(num)) {
+                        let usdVal = 0;
+                        if (genInput.type === 'usd') usdVal = num;
+                        else if (genInput.type === 'twd') usdVal = num / effectiveRates.usd;
+                        else { 
+                            const targetRate = settings.country === 'KR' ? effectiveRates.krw : effectiveRates.jpy;
+                            usdVal = (num * targetRate) / effectiveRates.usd;
+                        }
+                        if (usdVal > 0) {
+                            setDfInput(prev => ({ ...prev, tagPrice: usdVal.toFixed(2) }));
+                        }
+                    }
+                }
+                updateSetting('mode', m); 
+            };
 
             return (
                 <div className={`h-full flex flex-col max-w-md mx-auto bg-[#F0F2F5] shadow-2xl relative overflow-hidden ${screenshotMode?'screenshot-mode':''}`}>
-                    {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} setShowStrategySettings={setShowStrategySettings} />}
-                    {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={()=>setShowStrategySettings(false)} rates={effectiveRates} settings={settings} />}
+                    {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} openStrategySettings={handleOpenStrategySettings} />}
+                    {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={handleCloseStrategySettings} rates={effectiveRates} settings={settings} cardName={settings.cardPresets.find(c => c.id === editingStrategyCardId)?.name || '未知卡片'} />}
                     {showInstallPrompt && <InstallPrompt onClose={()=>setShowInstallPrompt(false)}/>}
                     
                     <header className={`flex-none px-4 pt-safe pb-10 shadow-xl z-20 transition-all duration-700 ${settings.mode==='dutyfree'?'header-dutyfree':'header-general'}`}>
