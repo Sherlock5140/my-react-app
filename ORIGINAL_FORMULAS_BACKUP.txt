@@ -1,0 +1,153 @@
+Source backup commit: 7e3e015f994bdbb6660bb4f327740bd0c8c71a30
+Branch: backup-original-ui
+Purpose: preserve the original calculation formulas verbatim for reference only.
+
+const DEFAULT_STRATEGIES_MAP = {
+    1: [{ id: 'c1', name: '銀行加碼', rate: 2.2, cap: 660, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }, { id: 'c2', name: 'VISA 滿額', rate: 10.0, cap: 3000, capUnit: 'points', active: true, type: 'threshold', minSpend: 190000, thresholdUnit: 'foreign' }],
+    2: [{ id: 'f1', name: '韓國加碼', rate: 3.0, cap: 600, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
+    3: [{ id: 'q1', name: '切換權益', rate: 3.0, cap: 0, capUnit: 'twd', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
+    4: [{ id: 't1', name: '活動回饋', rate: 10.0, cap: 500, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]
+};
+
+const DEFAULT_SETTINGS = {
+    country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
+    taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 36,
+    cardPresets: [
+        { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, mobileSpread: 0, enabled: true, useStrategy: true },
+        { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true, useStrategy: false },
+        { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true, useStrategy: false },
+        { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true, useStrategy: false }
+    ],
+    activePresetId: 1
+};
+
+const calcRewardSystem = ({ totalNTD, targetAmount, strategies, rates, country, baseRate = 0 }) => {
+    let totalStrategyPoints = 0; let nextThresholdMsg = null; let minDiffToNext = Infinity; let capWarnings = [];
+    const basePoints = Math.floor(totalNTD * (baseRate / 100));
+    const activeStrategies = strategies.filter(s => s.active);
+    const currentCurrencyRate = rates.krw;
+
+    activeStrategies.forEach(st => {
+        const threshold = st.minSpend || 0;
+        let isEligible = true; let diff = 0; let currentAmountForCheck = 0; let currencyLabel = '';
+        if (st.thresholdUnit === 'foreign') { currentAmountForCheck = targetAmount; currencyLabel = 'KRW'; } else { currentAmountForCheck = totalNTD; currencyLabel = 'TWD'; }
+        if (currentAmountForCheck < threshold) { isEligible = false; diff = threshold - currentAmountForCheck; }
+
+        if (!isEligible) {
+            if (diff > 0 && diff < minDiffToNext) {
+                minDiffToNext = diff;
+                const projectedTWD = st.thresholdUnit === 'foreign' ? (threshold * currentCurrencyRate) : threshold;
+                let effectiveCapTWD = Infinity;
+                if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
+                const eligibleTWD = Math.min(projectedTWD, effectiveCapTWD);
+                const estimatedGain = Math.floor(eligibleTWD * (st.rate / 100));
+                nextThresholdMsg = { name: st.name, diff: Math.ceil(diff), potentialGain: estimatedGain, currency: currencyLabel };
+            }
+            return;
+        }
+        let effectiveCapTWD = Infinity;
+        if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
+        const eligibleTWD = Math.min(totalNTD, effectiveCapTWD);
+        const potentialPoints = totalNTD * (st.rate / 100);
+        const actualPoints = eligibleTWD * (st.rate / 100);
+        if (potentialPoints > 0 && (potentialPoints - actualPoints) / potentialPoints > 0.3) capWarnings.push({ name: st.name, loss: Math.floor(potentialPoints - actualPoints) });
+        totalStrategyPoints += actualPoints;
+    });
+    const finalTotalPoints = basePoints + Math.floor(totalStrategyPoints);
+    const totalRate = totalNTD > 0 ? (finalTotalPoints / totalNTD) * 100 : 0;
+    return { totalPoints: finalTotalPoints, totalRate: isNaN(totalRate) ? "0.0" : totalRate.toFixed(1), suggestionMsg: nextThresholdMsg, mode: "dynamic", actPoints: Math.floor(totalStrategyPoints), basePoints: basePoints, capWarnings };
+};
+
+const calcResult = useMemo(() => {
+    let rawInput = settings.mode === 'general' ? genInput.val : dfInput.payVal;
+    if (!rawInput) return { twdBase: 0 };
+    const num = parseFloat(rawInput); if(isNaN(num)) return { twdBase: 0 };
+
+    let spread = settings.cardType === 'jcb' ? 0 : (settings.cardType === 'master' ? 0.8 : 1.0);
+    const bankSpread = 1 + (spread / 100);
+    const rUsd = effectiveRates.usd * bankSpread;
+
+    let twdBase = 0; let targetAmount = 0; let displayOriginal = 0; let displayCode = '';
+    if (settings.mode === 'general') {
+        const targetRate = effectiveRates.krw * bankSpread;
+        if (genInput.type === 'twd') { twdBase = num; targetAmount = twdBase / targetRate; }
+        else if (genInput.type === 'usd') { twdBase = num * rUsd; targetAmount = twdBase / targetRate; }
+        else { targetAmount = num; twdBase = num * targetRate; }
+        displayOriginal = targetAmount; displayCode = 'KRW';
+    } else {
+        twdBase = num * rUsd; targetAmount = num; displayCode = 'USD'; displayOriginal = num;
+    }
+
+    let refundTwd = 0;
+    if (settings.mode === 'general') {
+        let refundNative = 0;
+        if (settings.taxMode === 'auto') {
+            const a = targetAmount;
+            if (a>=15000) { if(a<30000) refundNative=1000; else if(a<50000) refundNative=2000; else if(a<75000) refundNative=3500; else if(a<100000) refundNative=5000; else if(a<125000) refundNative=7500; else if(a<150000) refundNative=9000; else if(a<175000) refundNative=10000; else if(a<200000) refundNative=12000; else if(a<225000) refundNative=13500; else if(a<250000) refundNative=15500; else if(a<275000) refundNative=17000; else if(a<300000) refundNative=19000; else if(a<325000) refundNative=20500; else if(a<350000) refundNative=22000; else if(a<375000) refundNative=24000; else if(a<400000) refundNative=25500; else if(a<450000) refundNative=28000; else if(a<500000) refundNative=32000; else if(a<550000) refundNative=35000; else if(a<600000) refundNative=39000; else if(a<650000) refundNative=42000; else if(a<700000) refundNative=45000; else if(a<750000) refundNative=48000; else if(a<800000) refundNative=52000; else if(a<850000) refundNative=55000; else if(a<900000) refundNative=58000; else if(a<950000) refundNative=61000; else if(a<1000000) refundNative=64000; else refundNative=Math.floor(a*0.065/1000)*1000; }
+        }
+
+        // V125 FIX: Removed bankSpread from tax refund calculation
+        // Tax refund is returned at spot/buy rate, not sell rate + fee
+        refundTwd = Math.round(refundNative * effectiveRates.krw);
+    } else {
+        const rebateUsd = num * (settings.dutyFreeRebate / 100);
+        refundTwd = Math.round(rebateUsd * effectiveRates.usdToCny * effectiveRates.cny);
+    }
+    const displayRefund = refundTwd;
+
+    let effectiveFee = settings.isMobilePay && settings.isBankAccount ? 0 : settings.fee;
+    const spreadCost = settings.isMobilePay ? twdBase * ((settings.mobileSpread||(settings.isBankAccount?1:0))/100) : 0;
+    const feeAmount = Math.round(twdBase * (effectiveFee/100));
+
+    let rewardAmount = 0; let campaignData = null;
+    const activeCard = settings.cardPresets.find(c => c.id === settings.activePresetId);
+
+    let strategyTargetAmount = targetAmount;
+    if (settings.mode === 'dutyfree') {
+        const equivalentLocal = (num * effectiveRates.usd) / effectiveRates.krw;
+        strategyTargetAmount = equivalentLocal;
+    }
+
+    if (activeCard?.useStrategy) {
+        const calculationStrategies = allStrategies[settings.activePresetId] || [];
+        const v95 = calcRewardSystem({
+            totalNTD: twdBase,
+            targetAmount: strategyTargetAmount,
+            strategies: calculationStrategies,
+            rates: effectiveRates,
+            country: settings.country,
+            baseRate: activeCard.reward
+        });
+        rewardAmount = v95.totalPoints;
+        campaignData = { v95 };
+    } else {
+        rewardAmount = Math.round(twdBase * (settings.reward/100));
+        campaignData = { effectiveRate: settings.reward };
+    }
+
+    const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
+    const totalSaved = Math.round(twdBase - finalCost);
+    const refundLabel = settings.mode === 'dutyfree' ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)` : `退稅 (${twdBase>0?((displayRefund/twdBase)*100).toFixed(1):0}%)`;
+
+    return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived: effectiveFee===0, spreadCost: Math.round(spreadCost), targetAmount, displayOriginal, displayCode, refundLabel, displayRefund, campaignData, totalRate: campaignData?.v95?.totalRate || settings.reward };
+}, [genInput, dfInput, settings, effectiveRates, allStrategies]);
+
+const advice = useMemo(() => { if (settings.mode==='general' && calcResult.targetAmount>1000000 && settings.refundMethod==='immediate') return { type: 'warn', msg: '⚠️ 超過 100 萬：已達現場折抵上限，請改用【事後退稅】' }; return null; }, [settings, calcResult]);
+
+const handleModeSwitch = (m) => {
+    if (m === 'dutyfree' && settings.mode === 'general' && genInput.val) {
+        const num = parseFloat(genInput.val);
+        if (!isNaN(num)) {
+            let usdVal = 0;
+            if (genInput.type === 'usd') usdVal = num;
+            else if (genInput.type === 'twd') usdVal = num / effectiveRates.usd;
+            else {
+                usdVal = (num * effectiveRates.krw) / effectiveRates.usd;
+            }
+            if (usdVal > 0) {
+                setDfInput(prev => ({ ...prev, tagPrice: usdVal.toFixed(2) }));
+            }
+        }
+    }
+    updateSetting('mode', m);
+};

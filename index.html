@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./formulas.js"></script>
     
     <style>
         :root {
@@ -38,21 +39,16 @@
             --header-bg-end-gen: rgba(232, 232, 227, 0.82);
             --header-bg-df: rgba(239, 234, 230, 0.92);
             --header-bg-end-df: rgba(228, 229, 225, 0.84);
-            --font-ui: "Avenir Next", "SF Pro Display", "PingFang TC", "Noto Sans TC", sans-serif;
-            --font-display: "Iowan Old Style", "Baskerville", "Noto Serif TC", serif;
-            --shadow-soft: 0 24px 60px rgba(94, 96, 90, 0.09);
-            --shadow-strong: 0 28px 90px rgba(82, 84, 78, 0.14);
         }
         html { height: -webkit-fill-available; }
         body {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             background:
-                radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 30%),
-                radial-gradient(circle at 85% 8%, rgba(201,166,161,0.18), transparent 24%),
-                radial-gradient(circle at 50% 100%, rgba(143,163,157,0.08), transparent 34%),
-                linear-gradient(180deg, #F7F5F0 0%, #EFEEE9 38%, #E8E8E3 100%);
-            font-family: var(--font-ui);
+                radial-gradient(circle at top left, rgba(255,255,255,0.82), transparent 34%),
+                radial-gradient(circle at top right, rgba(201,166,161,0.14), transparent 28%),
+                linear-gradient(180deg, #F2F3F0 0%, var(--app-bg) 52%, #E8E9E5 100%);
+            font-family: "Avenir Next", "SF Pro Display", "Segoe UI", "Noto Sans TC", sans-serif;
             color: var(--text-body);
             height: 100vh;
             height: 100dvh;
@@ -63,58 +59,16 @@
             padding: 0;
             margin: 0;
         }
-        #root {
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            padding-left: max(env(safe-area-inset-left), 12px);
-            padding-right: max(env(safe-area-inset-right), 12px);
-            box-sizing: border-box;
-        }
-        input { background: transparent; border: none; outline: none; width: 100%; font-family: var(--font-ui); color: var(--text-primary); padding: 0; margin: 0; -webkit-appearance: none; border-radius: 0; }
+        #root { height: 100%; display: flex; flex-direction: column; }
+        input { background: transparent; border: none; outline: none; width: 100%; font-family: "Avenir Next", "SF Pro Display", "Segoe UI", "Noto Sans TC", sans-serif; color: var(--text-primary); padding: 0; margin: 0; -webkit-appearance: none; border-radius: 0; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
-        .app-shell {
-            width: 100%;
-            max-width: 430px;
-            height: 100%;
-            margin: 0 auto;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: stretch;
-        }
-        .app-frame {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border-left: 1px solid rgba(255,255,255,0.48);
-            border-right: 1px solid rgba(255,255,255,0.48);
-            background:
-                linear-gradient(180deg, rgba(251,250,247,0.92) 0%, rgba(239,238,233,0.86) 50%, rgba(233,233,228,0.92) 100%);
-            box-shadow: var(--shadow-strong);
-            isolation: isolate;
-        }
-        .app-frame::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(circle at 10% 12%, rgba(255,255,255,0.82), transparent 26%),
-                radial-gradient(circle at 90% 0%, rgba(201,166,161,0.16), transparent 24%);
-            z-index: 0;
-        }
         .app-card {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 1.75rem;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 18px 50px rgba(94, 96, 90, 0.08);
             border: 1px solid var(--border-soft);
             width: 100%;
             transition: transform 0.12s ease, box-shadow 0.2s ease;
@@ -151,160 +105,37 @@
         input:checked + .slider { background-color: rgba(143, 163, 157, 0.95); }
         input:checked + .slider:before { transform: translateX(16px); }
         .mask-linear { mask-image: linear-gradient(to right, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%); }
-        .header-panel {
-            position: relative;
-            border-radius: 0 0 2.25rem 2.25rem;
-            overflow: hidden;
-        }
-        .header-panel::after {
-            content: "";
-            position: absolute;
-            inset: auto 24px 0 24px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(182,184,179,0.5), transparent);
-        }
-        .glass-action {
-            width: 2.95rem;
-            height: 2.95rem;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.58);
-            border: 1px solid rgba(255,255,255,0.72);
-            box-shadow: 0 12px 24px rgba(94, 96, 90, 0.08);
-            color: #4A4A47;
-            transition: transform 0.16s ease, background-color 0.16s ease;
-        }
-        .glass-action:active {
-            transform: scale(0.94);
-        }
-        .mode-segment {
-            background: rgba(255,255,255,0.42);
-            border: 1px solid rgba(255,255,255,0.52);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
-        }
-        .rates-shell {
-            background: linear-gradient(180deg, rgba(255,255,255,0.48) 0%, rgba(247,247,243,0.3) 100%);
-            border: 1px solid rgba(255,255,255,0.58);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.46);
-        }
-        .app-main {
-            position: relative;
-            flex: 1;
-            margin-top: -20px;
-            border-radius: 2.4rem 2.4rem 0 0;
-            background: linear-gradient(180deg, rgba(244,245,241,0.94) 0%, rgba(236,237,234,0.94) 100%);
-            border-top: 1px solid rgba(255,255,255,0.74);
-            box-shadow: 0 -18px 48px -24px rgba(94,96,90,0.18);
-            z-index: 2;
-        }
-        .section-kicker {
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.26em;
-            text-transform: uppercase;
-            color: #8B8D88;
-        }
-        .brand-subtitle {
-            font-size: 11px;
-            letter-spacing: 0.24em;
-            text-transform: uppercase;
-            color: #7B7C78;
-            line-height: 1.45;
-        }
-        .header-meta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.45rem 0.8rem;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.46);
-            border: 1px solid rgba(255,255,255,0.62);
-            box-shadow: 0 10px 24px rgba(113, 115, 110, 0.05);
-            color: #83857F;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-        }
-        .control-card {
-            background: rgba(255,255,255,0.42);
-            border: 1px solid rgba(255,255,255,0.58);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
-        }
     </style>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
-
-        const STORAGE_KEY = 'shopping_app_v125_settings';
-        const STRATEGY_STORAGE_KEY = 'shopping_app_v102_strategies_map'; 
-        const RATE_STORAGE_KEY = 'shopping_app_v87_rates';
-        const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates';
-        const RATE_CACHE_TTL = 3600 * 1000;
-        const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000;
-
-        const DEFAULT_STRATEGIES_MAP = {
-            1: [{ id: 'c1', name: '銀行加碼', rate: 2.2, cap: 660, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }, { id: 'c2', name: 'VISA 滿額', rate: 10.0, cap: 3000, capUnit: 'points', active: true, type: 'threshold', minSpend: 190000, thresholdUnit: 'foreign' }],
-            2: [{ id: 'f1', name: '韓國加碼', rate: 3.0, cap: 600, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
-            3: [{ id: 'q1', name: '切換權益', rate: 3.0, cap: 0, capUnit: 'twd', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
-            4: [{ id: 't1', name: '活動回饋', rate: 10.0, cap: 500, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]
-        };
-
-        const DEFAULT_SETTINGS = {
-            country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
-            taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 36, 
-            cardPresets: [
-                { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, mobileSpread: 0, enabled: true, useStrategy: true },
-                { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true, useStrategy: false },
-                { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true, useStrategy: false },
-                { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true, useStrategy: false } 
-            ],
-            activePresetId: 1
-        };
-
-        const safeGetStorage = (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } };
-        const safeSetStorage = (key, value) => { try { localStorage.setItem(key, value); } catch (e) {} };
-
-        const calcRewardSystem = ({ totalNTD, targetAmount, strategies, rates, country, baseRate = 0 }) => {
-            let totalStrategyPoints = 0; let nextThresholdMsg = null; let minDiffToNext = Infinity; let capWarnings = [];
-            const basePoints = Math.floor(totalNTD * (baseRate / 100));
-            const activeStrategies = strategies.filter(s => s.active);
-            const currentCurrencyRate = rates.krw; 
-
-            activeStrategies.forEach(st => {
-                const threshold = st.minSpend || 0;
-                let isEligible = true; let diff = 0; let currentAmountForCheck = 0; let currencyLabel = '';
-                if (st.thresholdUnit === 'foreign') { currentAmountForCheck = targetAmount; currencyLabel = 'KRW'; } else { currentAmountForCheck = totalNTD; currencyLabel = 'TWD'; }
-                if (currentAmountForCheck < threshold) { isEligible = false; diff = threshold - currentAmountForCheck; }
-
-                if (!isEligible) {
-                    if (diff > 0 && diff < minDiffToNext) {
-                        minDiffToNext = diff;
-                        const projectedTWD = st.thresholdUnit === 'foreign' ? (threshold * currentCurrencyRate) : threshold;
-                        let effectiveCapTWD = Infinity;
-                        if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
-                        const eligibleTWD = Math.min(projectedTWD, effectiveCapTWD);
-                        const estimatedGain = Math.floor(eligibleTWD * (st.rate / 100));
-                        nextThresholdMsg = { name: st.name, diff: Math.ceil(diff), potentialGain: estimatedGain, currency: currencyLabel };
-                    }
-                    return; 
-                }
-                let effectiveCapTWD = Infinity;
-                if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
-                const eligibleTWD = Math.min(totalNTD, effectiveCapTWD);
-                const potentialPoints = totalNTD * (st.rate / 100);
-                const actualPoints = eligibleTWD * (st.rate / 100);
-                if (potentialPoints > 0 && (potentialPoints - actualPoints) / potentialPoints > 0.3) capWarnings.push({ name: st.name, loss: Math.floor(potentialPoints - actualPoints) });
-                totalStrategyPoints += actualPoints;
-            });
-            const finalTotalPoints = basePoints + Math.floor(totalStrategyPoints);
-            const totalRate = totalNTD > 0 ? (finalTotalPoints / totalNTD) * 100 : 0;
-            return { totalPoints: finalTotalPoints, totalRate: isNaN(totalRate) ? "0.0" : totalRate.toFixed(1), suggestionMsg: nextThresholdMsg, mode: "dynamic", actPoints: Math.floor(totalStrategyPoints), basePoints: basePoints, capWarnings };
-        };
+        const {
+            COPY,
+            STORAGE_KEY,
+            STRATEGY_STORAGE_KEY,
+            RATE_STORAGE_KEY,
+            CUSTOM_RATES_STORAGE_KEY,
+            RATE_CACHE_TTL,
+            AUTO_REFRESH_INTERVAL,
+            DEFAULT_STRATEGIES_MAP,
+            DEFAULT_SETTINGS,
+            safeGetStorage,
+            safeSetStorage,
+            normalizeRates,
+            buildCalcResult,
+            buildAdvice,
+            getDisplayVal,
+            getCopyText,
+            getRewardLabel,
+            getErrorMargin,
+            getDutyFreeDiscountStatus,
+            applyDutyFreeDiscount,
+            adjustDutyFreeRebate,
+            convertGeneralInputToDutyFreeTagPrice,
+            fetchExchangeRates
+        } = window.APP_CORE;
 
         const Icon = memo(({ name, size=20 }) => {
             const icons = {
@@ -346,8 +177,8 @@
 
         const InstallPrompt = memo(({ onClose }) => (
             <div className="fixed bottom-4 left-4 right-4 bg-[rgba(244,245,242,0.94)] p-4 rounded-[1.6rem] shadow-[0_20px_40px_rgba(94,96,90,0.14)] z-50 border border-[rgba(200,204,199,0.35)] backdrop-blur-xl animate-fade-in">
-                <div className="flex justify-between items-start mb-2"><h3 className="font-bold text-[#2E2E2E]">安裝到主畫面</h3><button onClick={onClose} className="text-[#757573]"><Icon name="x" size={16}/></button></div>
-                <p className="text-xs text-[#757573] mb-3">請點擊分享按鈕，選擇「加入主畫面」。</p><div className="flex justify-end"><button onClick={onClose} className="text-xs font-bold text-[#B0726B] bg-[rgba(201,166,161,0.12)] px-3 py-1.5 rounded-full border border-[rgba(201,166,161,0.18)]">知道了</button></div>
+                <div className="flex justify-between items-start mb-2"><h3 className="font-bold text-[#2E2E2E]">{COPY.installTitle}</h3><button onClick={onClose} className="text-[#757573]"><Icon name="x" size={16}/></button></div>
+                <p className="text-xs text-[#757573] mb-3">{COPY.installBody}</p><div className="flex justify-end"><button onClick={onClose} className="text-xs font-bold text-[#B0726B] bg-[rgba(201,166,161,0.12)] px-3 py-1.5 rounded-full border border-[rgba(201,166,161,0.18)]">{COPY.confirmLabel}</button></div>
             </div>
         ));
 
@@ -365,7 +196,7 @@
                     <div className="flex items-center gap-2 w-1/2 justify-center border-r border-white/10 relative pr-1">
                         <div className="flex flex-col items-end w-full pl-0">
                             <button onClick={()=>setIsInverseRate(!isInverseRate)} className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.54)] hover:bg-[rgba(255,255,255,0.7)] active:scale-95 transition-all px-2 py-1 rounded-full mb-1 border border-white/50 shadow-sm group w-full justify-center">
-                                <span className="text-[10px] font-bold text-[#484846] tracking-[0.18em] truncate">{isInverseRate ? 'TWD ➔ KRW' : 'KRW ➔ TWD'}</span>
+                                <span className="text-[10px] font-bold text-[#484846] tracking-[0.18em] truncate">{isInverseRate ? COPY.rateHeaderGeneral.inverse : COPY.rateHeaderGeneral.forward}</span>
                                 <div className={`w-3.5 h-3.5 rounded-full bg-[rgba(201,166,161,0.12)] flex items-center justify-center group-hover:bg-[rgba(201,166,161,0.22)] transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-[#C9A6A1]"/></div>
                             </button>
                             <RateInput label="" val={isInverseRate ? formatRate(displayInverse) : formatRate(displayBase)} onChange={v => handleCustomRate('krw', isInverseRate && v ? 1/v : v)} isEditing={editingMap['gen']} setIsEditing={s=>setEditingMap({...editingMap, gen:s})} />
@@ -373,7 +204,7 @@
                     </div>
                     <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
                         <div className="flex flex-col items-end w-full">
-                            <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-[#757573] tracking-[0.24em]">USD ➔ TWD</span></div>
+                            <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-[#757573] tracking-[0.24em]">{COPY.rateHeaderGeneral.usdToTwd}</span></div>
                             <RateInput label="" val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd', v)} isEditing={editingMap['usd']} setIsEditing={s=>setEditingMap({...editingMap, usd:s})} />
                         </div>
                     </div>
@@ -383,30 +214,30 @@
 
         const DutyFreeModeHeader = memo(({ rates, customRates, handleCustomRate, editingMap, setEditingMap }) => (
             <div className="flex justify-between items-end gap-2 mb-1">
-                <RateInput label="USD ➔ CNY" val={customRates.usdToCny || rates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
+                <RateInput label={COPY.rateHeaderDutyFree.usdToCny} val={customRates.usdToCny || rates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
                 <div className="w-px h-10 bg-white/10 self-center"></div>
-                <RateInput label="CNY ➔ TWD" val={customRates.cny || rates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
+                <RateInput label={COPY.rateHeaderDutyFree.cnyToTwd} val={customRates.cny || rates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
                 <div className="w-px h-10 bg-white/10 self-center"></div>
-                <RateInput label="USD ➔ TWD" val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
+                <RateInput label={COPY.rateHeaderDutyFree.usdToTwd} val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
             </div>
         ));
 
         const StrategySettings = memo(({ strategies, setStrategies, onClose, rates, settings, cardName }) => {
             const updateStrategy = (id, field, val) => setStrategies(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
-            const addStrategy = () => setStrategies(prev => [...prev, { id: `c${Date.now()}`, name: '新策略', rate: 0, cap: 0, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]);
-            const deleteStrategy = (id) => { if(window.confirm('確定刪除？')) setStrategies(prev => prev.filter(s => s.id !== id)); };
+            const addStrategy = () => setStrategies(prev => [...prev, { id: `c${Date.now()}`, name: COPY.strategyNamePlaceholder, rate: 0, cap: 0, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]);
+            const deleteStrategy = (id) => { if(window.confirm(COPY.deleteConfirm)) setStrategies(prev => prev.filter(s => s.id !== id)); };
             return (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-[rgba(244,245,242,0.96)] w-full max-w-sm rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(94,96,90,0.16)] h-[75vh] overflow-y-auto flex flex-col border border-white/60 backdrop-blur-xl" onClick={e=>e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-4 pb-2 border-b border-[rgba(200,204,199,0.3)] sticky top-0 bg-[rgba(244,245,242,0.96)] z-10">
                             <div className="flex flex-col">
-                                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="lightning"/> 策略設定</h3>
-                                <span className="text-xs text-[#757573] font-bold pl-7">正在設定：{cardName}</span>
+                                <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2 tracking-tight"><Icon name="lightning"/> {COPY.strategyTitle}</h3>
+                                <span className="text-xs text-[#757573] font-bold pl-7">{COPY.strategyEditingPrefix}{cardName}</span>
                             </div>
                             <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-[rgba(255,255,255,0.65)] rounded-full text-[#757573] hover:bg-white border border-white/50"><Icon name="x" size={18}/></button>
                         </div>
                         <div className="space-y-3 flex-1 pb-4">
-                            <div className="flex justify-between items-center"><p className="text-xs text-[#757573] bg-[rgba(255,255,255,0.46)] p-2 rounded-[1rem] flex-1 mr-2 border border-white/50">設定滿額禮與加碼 (所有項目皆可自訂)。</p><button onClick={addStrategy} className="bg-[rgba(201,166,161,0.14)] text-[#B0726B] p-2 rounded-[1rem] border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.2)]"><Icon name="plus" size={16}/></button></div>
+                            <div className="flex justify-between items-center"><p className="text-xs text-[#757573] bg-[rgba(255,255,255,0.46)] p-2 rounded-[1rem] flex-1 mr-2 border border-white/50">{COPY.strategyHint}</p><button onClick={addStrategy} className="bg-[rgba(201,166,161,0.14)] text-[#B0726B] p-2 rounded-[1rem] border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.2)]"><Icon name="plus" size={16}/></button></div>
                             {strategies.map(st => (
                                 <div key={st.id} className={`p-3 border rounded-2xl transition-all ${st.active ? 'border-[rgba(143,163,157,0.28)] bg-[rgba(143,163,157,0.1)]' : 'border-[rgba(200,204,199,0.3)] bg-[rgba(255,255,255,0.42)] opacity-60'}`}>
                                     <div className="flex justify-between items-center mb-2">
@@ -415,14 +246,14 @@
                                     </div>
                                     {st.active && (
                                         <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">上限</span><button onClick={()=>updateStrategy(st.id, 'capUnit', st.capUnit==='twd'?'points':'twd')} className={`flex items-center gap-0.5 text-[8px] px-1 rounded border font-bold ${st.capUnit==='twd'?'bg-[rgba(255,255,255,0.7)] text-[#757573] border-white/60':'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border-[rgba(143,163,157,0.16)]'}`}><Icon name="swap" size={8}/> {st.capUnit==='twd'?'TWD':'點'}</button></div><input type="number" value={st.cap} onChange={e=>updateStrategy(st.id, 'cap', parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
-                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">低消</span><button onClick={()=>updateStrategy(st.id, 'thresholdUnit', st.thresholdUnit==='foreign'?'twd':'foreign')} className="flex items-center gap-0.5 text-[8px] bg-[rgba(255,255,255,0.7)] px-1 rounded border border-white/60 text-[#757573] font-bold"><Icon name="swap" size={8}/> {st.thresholdUnit==='foreign' ? 'KRW' : 'TWD'}</button></div><input type="number" value={st.minSpend||0} onChange={e=>updateStrategy(st.id, 'minSpend', parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
+                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.capLabel}</span><button onClick={()=>updateStrategy(st.id, 'capUnit', st.capUnit==='twd'?'points':'twd')} className={`flex items-center gap-0.5 text-[8px] px-1 rounded border font-bold ${st.capUnit==='twd'?'bg-[rgba(255,255,255,0.7)] text-[#757573] border-white/60':'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border-[rgba(143,163,157,0.16)]'}`}><Icon name="swap" size={8}/> {st.capUnit==='twd' ? COPY.twdLabel : COPY.pointsLabel}</button></div><input type="number" value={st.cap} onChange={e=>updateStrategy(st.id, 'cap', parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
+                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.thresholdLabel}</span><button onClick={()=>updateStrategy(st.id, 'thresholdUnit', st.thresholdUnit==='foreign'?'twd':'foreign')} className="flex items-center gap-0.5 text-[8px] bg-[rgba(255,255,255,0.7)] px-1 rounded border border-white/60 text-[#757573] font-bold"><Icon name="swap" size={8}/> {st.thresholdUnit==='foreign' ? 'KRW' : COPY.twdLabel}</button></div><input type="number" value={st.minSpend||0} onChange={e=>updateStrategy(st.id, 'minSpend', parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
                                         </div>
                                     )}
                                 </div>
                             ))}
                         </div>
-                        <button onClick={onClose} className="w-full mt-2 py-3 bg-[#2E2E2E] text-[#F4F5F2] rounded-[1.4rem] font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-[#484846]">儲存設定</button>
+                        <button onClick={onClose} className="w-full mt-2 py-3 bg-[#2E2E2E] text-[#F4F5F2] rounded-[1.4rem] font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-[#484846]">{COPY.strategySave}</button>
                     </div>
                 </div>
             );
@@ -432,24 +263,24 @@
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-[rgba(244,245,242,0.96)] w-full max-w-sm rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(94,96,90,0.16)] h-[85vh] overflow-y-auto flex flex-col border border-white/60 backdrop-blur-xl" onClick={e=>e.stopPropagation()}>
-                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-[rgba(200,204,199,0.3)] sticky top-0 bg-[rgba(244,245,242,0.96)] z-10"><h3 className="text-lg font-bold text-[#2E2E2E] flex items-center gap-2 tracking-tight"><Icon name="card"/> 信用卡設定</h3><button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-[rgba(255,255,255,0.65)] rounded-full text-[#757573] hover:bg-white border border-white/50"><Icon name="x" size={18}/></button></div>
+                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-[rgba(200,204,199,0.3)] sticky top-0 bg-[rgba(244,245,242,0.96)] z-10"><h3 className="text-lg font-bold text-[#2E2E2E] flex items-center gap-2 tracking-tight"><Icon name="card"/> {COPY.cardSettingsTitle}</h3><button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-[rgba(255,255,255,0.65)] rounded-full text-[#757573] hover:bg-white border border-white/50"><Icon name="x" size={18}/></button></div>
                         <div className="space-y-4 flex-1 pb-4">
                             {settings.cardPresets.map(card => (
                                 <div key={card.id} className={`p-4 border rounded-[1.5rem] transition-all duration-300 ${card.enabled!==false ? 'border-[rgba(200,204,199,0.3)] bg-[rgba(255,255,255,0.55)] shadow-sm' : 'border-dashed border-[rgba(200,204,199,0.3)] opacity-60 bg-[rgba(255,255,255,0.32)]'}`}>
-                                    <div className="flex justify-between items-center mb-3"><div className="flex items-center gap-3"><input type="checkbox" checked={card.enabled!==false} onChange={e=>updatePreset(card.id, 'enabled', e.target.checked)} className="accent-[#8FA39D] w-5 h-5 rounded cursor-pointer"/><input type="text" value={card.name} onChange={e=>updatePreset(card.id, 'name', e.target.value)} className="font-bold text-[#2E2E2E] w-32 border-b border-transparent focus:border-[rgba(201,166,161,0.4)] transition-colors text-lg" placeholder="卡片名稱"/></div>{card.useStrategy && <span className="text-[10px] bg-[rgba(201,181,106,0.14)] text-[#8B7A3F] px-2 py-0.5 rounded-full font-bold border border-[rgba(201,181,106,0.18)]">智慧攻略</span>}</div>
+                                    <div className="flex justify-between items-center mb-3"><div className="flex items-center gap-3"><input type="checkbox" checked={card.enabled!==false} onChange={e=>updatePreset(card.id, 'enabled', e.target.checked)} className="accent-[#8FA39D] w-5 h-5 rounded cursor-pointer"/><input type="text" value={card.name} onChange={e=>updatePreset(card.id, 'name', e.target.value)} className="font-bold text-[#2E2E2E] w-32 border-b border-transparent focus:border-[rgba(201,166,161,0.4)] transition-colors text-lg" placeholder={COPY.cardNamePlaceholder}/></div>{card.useStrategy && <span className="text-[10px] bg-[rgba(201,181,106,0.14)] text-[#8B7A3F] px-2 py-0.5 rounded-full font-bold border border-[rgba(201,181,106,0.18)]">{COPY.smartStrategyBadge}</span>}</div>
                                     {card.enabled!==false && (
                                         <div className="space-y-3 animate-fade-in">
-                                            <div className="flex gap-2 animate-fade-in"><div className="flex-1 bg-[rgba(255,255,255,0.55)] p-2.5 rounded-2xl flex items-center gap-2 border border-white/60"><span className="text-xs font-bold text-[#B6B8B3] whitespace-nowrap pl-1">基本回饋</span><input type="number" step="0.1" min="0" value={card.reward} onChange={e=>updatePreset(card.id, 'reward', parseFloat(e.target.value))} className="text-xl font-bold text-center w-full bg-transparent"/><span className="text-xs font-bold text-[#B6B8B3] pr-1">%</span></div><button onClick={()=>updatePreset(card.id, 'rewardType', card.rewardType==='cash'?'points':'cash')} className={`px-4 rounded-full text-xs font-bold border active:scale-95 transition-transform ${card.rewardType==='points'?'bg-[rgba(143,163,157,0.14)] text-[#6F827D] border-[rgba(143,163,157,0.18)]':'bg-[rgba(142,154,175,0.14)] text-[#667388] border-[rgba(142,154,175,0.18)]'}`}>{card.rewardType==='points'?'LINE P':'現金'}</button></div>
-                                            <div className="flex items-center justify-between bg-[rgba(201,181,106,0.12)] p-2 rounded-xl border border-[rgba(201,181,106,0.18)] mt-2"><span className="text-xs font-bold text-[#8B7A3F] flex items-center gap-1"><Icon name="lightning" size={12}/> 疊加自訂策略</span><div className="flex items-center gap-2">{card.useStrategy && <button onClick={()=>openStrategySettings(card.id)} className="text-[10px] bg-[rgba(255,255,255,0.7)] px-2 py-1 rounded-full border border-white/60 text-[#8B7A3F] font-bold flex items-center gap-1 active:scale-90 transition-transform"><Icon name="edit" size={10}/> 設定</button>}<label className="switch scale-75"><input type="checkbox" checked={card.useStrategy} onChange={e=>updatePreset(card.id, 'useStrategy', e.target.checked)}/><span className="slider"></span></label></div></div>
-                                            {!card.isMobilePay && <div className="flex gap-2 bg-[rgba(255,255,255,0.42)] p-1.5 rounded-2xl mt-1 border border-white/60">{['jcb', 'visa', 'master'].map(type => (<button key={type} onClick={() => updatePreset(card.id, 'type', type)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold transition-all flex flex-col items-center justify-center ${card.type === type ? 'bg-[rgba(255,255,255,0.82)] text-[#2E2E2E] shadow-sm ring-1 ring-[rgba(200,204,199,0.25)]' : 'text-[#757573] hover:text-[#2E2E2E]'}`}><span className="uppercase font-black tracking-wider">{type}</span><span className="text-[9px] opacity-60 scale-90 mt-0.5">{type==='jcb' ? '(原始)' : (type==='visa' ? '(+1.0%)' : '(+0.8%)')}</span></button>))}</div>}
-                                            <div className="bg-[rgba(255,255,255,0.42)] p-3 rounded-2xl border border-white/60"><div className="flex justify-between items-center"><span className="text-xs font-bold text-[#757573] flex items-center gap-1"><Icon name="shoppingBag" size={14}/> 行動支付/綁定</span><label className="switch scale-75"><input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)}/><span className="slider"></span></label></div>{card.isMobilePay && <div className="mt-3 pt-2 border-t border-[rgba(200,204,199,0.35)] space-y-3 animate-fade-in"><div className="flex justify-between items-center text-xs text-[#757573] font-bold"><span>綁定銀行帳戶/TWQR (免1.5%)</span><label className="switch scale-75"><input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)}/><span className="slider"></span></label></div><div className="space-y-1"><div className="flex justify-between text-[10px] text-[#B6B8B3] font-bold"><span>額外平台手續費/匯差</span><span>{card.mobileSpread||1.0}%</span></div><input type="range" min="0" max="2" step="0.1" value={card.mobileSpread !== undefined ? card.mobileSpread : 1.0} onChange={e=>updatePreset(card.id, 'mobileSpread', parseFloat(e.target.value))} className="w-full h-1.5 bg-[rgba(214,192,179,0.28)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/></div></div>}</div>
+                                            <div className="flex gap-2 animate-fade-in"><div className="flex-1 bg-[rgba(255,255,255,0.55)] p-2.5 rounded-2xl flex items-center gap-2 border border-white/60"><span className="text-xs font-bold text-[#B6B8B3] whitespace-nowrap pl-1">{COPY.baseRewardLabel}</span><input type="number" step="0.1" min="0" value={card.reward} onChange={e=>updatePreset(card.id, 'reward', parseFloat(e.target.value))} className="text-xl font-bold text-center w-full bg-transparent"/><span className="text-xs font-bold text-[#B6B8B3] pr-1">%</span></div><button onClick={()=>updatePreset(card.id, 'rewardType', card.rewardType==='cash'?'points':'cash')} className={`px-4 rounded-full text-xs font-bold border active:scale-95 transition-transform ${card.rewardType==='points'?'bg-[rgba(143,163,157,0.14)] text-[#6F827D] border-[rgba(143,163,157,0.18)]':'bg-[rgba(142,154,175,0.14)] text-[#667388] border-[rgba(142,154,175,0.18)]'}`}>{card.rewardType==='points' ? COPY.linePointShort : COPY.cashRewardShort}</button></div>
+                                            <div className="flex items-center justify-between bg-[rgba(201,181,106,0.12)] p-2 rounded-xl border border-[rgba(201,181,106,0.18)] mt-2"><span className="text-xs font-bold text-[#8B7A3F] flex items-center gap-1"><Icon name="lightning" size={12}/> {COPY.stackStrategyLabel}</span><div className="flex items-center gap-2">{card.useStrategy && <button onClick={()=>openStrategySettings(card.id)} className="text-[10px] bg-[rgba(255,255,255,0.7)] px-2 py-1 rounded-full border border-white/60 text-[#8B7A3F] font-bold flex items-center gap-1 active:scale-90 transition-transform"><Icon name="edit" size={10}/> {COPY.configureLabel}</button>}<label className="switch scale-75"><input type="checkbox" checked={card.useStrategy} onChange={e=>updatePreset(card.id, 'useStrategy', e.target.checked)}/><span className="slider"></span></label></div></div>
+                                            {!card.isMobilePay && <div className="flex gap-2 bg-[rgba(255,255,255,0.42)] p-1.5 rounded-2xl mt-1 border border-white/60">{COPY.cardTypes.map(type => (<button key={type.key} onClick={() => updatePreset(card.id, 'type', type.key)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold transition-all flex flex-col items-center justify-center ${card.type === type.key ? 'bg-[rgba(255,255,255,0.82)] text-[#2E2E2E] shadow-sm ring-1 ring-[rgba(200,204,199,0.25)]' : 'text-[#757573] hover:text-[#2E2E2E]'}`}><span className="uppercase font-black tracking-wider">{type.label}</span><span className="text-[9px] opacity-60 scale-90 mt-0.5">{type.note}</span></button>))}</div>}
+                                            <div className="bg-[rgba(255,255,255,0.42)] p-3 rounded-2xl border border-white/60"><div className="flex justify-between items-center"><span className="text-xs font-bold text-[#757573] flex items-center gap-1"><Icon name="shoppingBag" size={14}/> {COPY.shoppingBindingLabel}</span><label className="switch scale-75"><input type="checkbox" checked={card.isMobilePay} onChange={e=>updatePreset(card.id, 'isMobilePay', e.target.checked)}/><span className="slider"></span></label></div>{card.isMobilePay && <div className="mt-3 pt-2 border-t border-[rgba(200,204,199,0.35)] space-y-3 animate-fade-in"><div className="flex justify-between items-center text-xs text-[#757573] font-bold"><span>{COPY.bankAccountBindingLabel}</span><label className="switch scale-75"><input type="checkbox" checked={card.isBankAccount} onChange={e=>updatePreset(card.id, 'isBankAccount', e.target.checked)}/><span className="slider"></span></label></div><div className="space-y-1"><div className="flex justify-between text-[10px] text-[#B6B8B3] font-bold"><span>{COPY.mobileSpreadLabel}</span><span>{card.mobileSpread||1.0}%</span></div><input type="range" min="0" max="2" step="0.1" value={card.mobileSpread !== undefined ? card.mobileSpread : 1.0} onChange={e=>updatePreset(card.id, 'mobileSpread', parseFloat(e.target.value))} className="w-full h-1.5 bg-[rgba(214,192,179,0.28)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/></div></div>}</div>
                                         </div>
                                     )}
                                 </div>
                             ))}
-                            <div className="bg-[rgba(255,255,255,0.55)] p-5 rounded-[2rem] border border-white/60 shadow-sm mt-2"><div className="flex justify-between mb-3 items-end"><span className="text-sm font-bold text-[#757573]">海外手續費</span><span className="text-2xl font-black text-[#2E2E2E] font-sans leading-none">{settings.fee}%</span></div><input type="range" min="0" max="3" step="0.1" value={settings.fee} onChange={e=>updateSetting('fee', e.target.value)} className="w-full h-2 bg-[rgba(214,192,179,0.28)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/><div className="flex justify-between mt-2 text-[10px] text-[#B6B8B3] font-bold font-sans"><span>0%</span><span>1.5%</span><span>3%</span></div></div>
+                            <div className="bg-[rgba(255,255,255,0.55)] p-5 rounded-[2rem] border border-white/60 shadow-sm mt-2"><div className="flex justify-between mb-3 items-end"><span className="text-sm font-bold text-[#757573]">{COPY.foreignFeeLabel}</span><span className="text-2xl font-black text-[#2E2E2E] font-sans leading-none">{settings.fee}%</span></div><input type="range" min="0" max="3" step="0.1" value={settings.fee} onChange={e=>updateSetting('fee', e.target.value)} className="w-full h-2 bg-[rgba(214,192,179,0.28)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/><div className="flex justify-between mt-2 text-[10px] text-[#B6B8B3] font-bold font-sans"><span>0%</span><span>1.5%</span><span>3%</span></div></div>
                         </div>
-                        <button onClick={onClose} className="w-full mt-2 py-3.5 bg-[#2E2E2E] text-[#F4F5F2] rounded-[1.4rem] font-bold text-lg flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform hover:bg-[#484846]"><Icon name="check"/> 完成設定</button>
+                        <button onClick={onClose} className="w-full mt-2 py-3.5 bg-[#2E2E2E] text-[#F4F5F2] rounded-[1.4rem] font-bold text-lg flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform hover:bg-[#484846]"><Icon name="check"/> {COPY.finishSettings}</button>
                     </div>
                 </div>
             );
@@ -466,7 +297,7 @@
                 : `${displayCode} ${displayOriginal.toLocaleString()}`;
 
             const handleCopy = () => {
-                const text = `[購黑皮試算]\n付款: ${Math.round(displayOriginal).toLocaleString()} ${displayCode}\n+手續費: ${feeAmount+spreadCost}\n-回饋: ${rewardAmount}\n-退稅/返點: ${displayRefund}\n=入手價: NT$${finalCost.toLocaleString()}`;
+                const text = getCopyText(displayOriginal, displayCode, feeAmount, spreadCost, rewardAmount, displayRefund, finalCost);
                 const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); setCopied(true); setTimeout(()=>setCopied(false),2000);
             };
 
@@ -475,56 +306,54 @@
             
             const savedPct = twdBase > 0 ? ((totalSaved / twdBase) * 100).toFixed(1) : '0.0';
 
-            // Reward Label Logic
-            const rewardLabel = settings.rewardType === 'points' ? 'LINE POINTS' : '現金回饋';
+            const rewardLabel = getRewardLabel(settings.rewardType);
             const activeCardRate = campaignData?.v95?.totalRate || campaignData?.effectiveRate || 0;
 
-            // Dynamic Error Margin (V122)
-            const errorMargin = Math.max(5, Math.round(displayRefund * 0.015)); // 1.5% dynamic variance
+            const errorMargin = getErrorMargin(displayRefund);
 
             return (
                 <div className="app-card p-6 mt-2 mb-4 animate-fade-in relative overflow-hidden bg-[rgba(244,245,242,0.88)]">
                     <div className="flex items-center justify-between mb-4 pb-2 border-b border-[rgba(200,204,199,0.3)]">
-                         <div className="flex items-center gap-2"><div className="p-1.5 rounded-lg bg-[rgba(255,255,255,0.7)] text-[#B6B8B3] border border-white/50"><Icon name="receipt" size={14}/></div><h3 className="text-[11px] font-bold text-[#B6B8B3] uppercase tracking-[0.24em]">成本試算明細</h3></div>
-                         <button onClick={handleCopy} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all ${copied ? 'bg-[rgba(143,163,157,0.16)] text-[#6F827D]' : 'bg-[rgba(255,255,255,0.55)] text-[#757573] border border-white/50 hover:bg-white'}`}>{copied ? '已複製' : '複製'}</button>
+                         <div className="flex items-center gap-2"><div className="p-1.5 rounded-lg bg-[rgba(255,255,255,0.7)] text-[#B6B8B3] border border-white/50"><Icon name="receipt" size={14}/></div><h3 className="text-[11px] font-bold text-[#B6B8B3] uppercase tracking-[0.24em]">{COPY.receiptTitle}</h3></div>
+                         <button onClick={handleCopy} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all ${copied ? 'bg-[rgba(143,163,157,0.16)] text-[#6F827D]' : 'bg-[rgba(255,255,255,0.55)] text-[#757573] border border-white/50 hover:bg-white'}`}>{copied ? COPY.copiedLabel : COPY.copyLabel}</button>
                     </div>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between items-start text-slate-500 font-medium h-10">
-                            <div className="flex flex-col justify-center h-full"><span className="text-sm text-[#757573] font-bold">付款金額</span><span className="text-[10px] text-[#B6B8B3] font-mono font-bold tracking-wide">{subValue}</span></div>
+                            <div className="flex flex-col justify-center h-full"><span className="text-sm text-[#757573] font-bold">{COPY.paymentAmountLabel}</span><span className="text-[10px] text-[#B6B8B3] font-mono font-bold tracking-wide">{subValue}</span></div>
                             <span className="font-bold font-mono text-lg text-[#2E2E2E] mt-1">${twdBase.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between items-center text-[#B0726B] leading-none h-8"><span className="font-medium">+ 刷卡手續費 {isWaived ? '(0%)' : `(${settings.fee}%)`}</span><span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span></div>
+                        <div className="flex justify-between items-center text-[#B0726B] leading-none h-8"><span className="font-medium">{COPY.feeLabelPrefix} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span><span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span></div>
                         
                         <div className="flex justify-between items-center text-[#10B981] leading-none h-8">
                             <div className="flex items-center gap-2">
                                 <span className="font-medium">- {rewardLabel} ({activeCardRate}%)</span>
-                                <span className="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">不含手續費</span>
+                                <span className="text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded font-medium">{COPY.rewardExcludingFee}</span>
                             </div>
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
 
                         {(settings.mode === 'dutyfree' || displayRefund > 0) && (
                              <div className="flex justify-between items-center text-[#3B82F6] bg-blue-50 px-4 py-3 rounded-2xl mt-2 mb-4">
-                                <div className="flex flex-col gap-1"><span className="text-sm font-bold flex items-center gap-1">- {refundLabel}</span>{settings.mode === 'general' && (<div className="flex gap-1 mt-1">{isPostTax && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">事後退稅 (機場/市區)</span>}{isImmediate && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">現場折抵</span>}</div>)}</div>
+                                <div className="flex flex-col gap-1"><span className="text-sm font-bold flex items-center gap-1">- {refundLabel}</span>{settings.mode === 'general' && (<div className="flex gap-1 mt-1">{isPostTax && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.postTaxBadge}</span>}{isImmediate && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.immediateBadge}</span>}</div>)}</div>
                                 <div className="flex flex-col items-end">
                                     <span className="font-bold font-mono text-lg">-${displayRefund.toLocaleString()}</span>
                                     {settings.mode === 'general' && (
-                                        <span className="text-[9px] text-slate-400 font-bold mt-0.5 scale-95 origin-right">(預估誤差: ±NT${errorMargin.toLocaleString()})</span>
+                                        <span className="text-[9px] text-slate-400 font-bold mt-0.5 scale-95 origin-right">({COPY.refundErrorPrefix}{errorMargin.toLocaleString()})</span>
                                     )}
                                 </div>
                              </div>
                         )}
                         
-                        {v95Data && v95Data.suggestionMsg && <div className="bg-[rgba(201,181,106,0.12)] border border-[rgba(201,181,106,0.2)] rounded-[1.1rem] p-3 animate-fade-in mb-2"><div className="flex items-start gap-3"><div className="p-1.5 bg-[rgba(201,181,106,0.18)] rounded-full text-[#8B7A3F] mt-0.5"><Icon name="lightning" size={14}/></div><div className="flex-1"><div className="text-xs font-bold text-[#8B7A3F] mb-1">消費門檻提示</div><div className="text-[10px] text-[#8B7A3F] leading-relaxed">再消費約 {v95Data.suggestionMsg.currency} {v95Data.suggestionMsg.diff.toLocaleString()}，可觸發「{v95Data.suggestionMsg.name}」。</div></div></div></div>}
+                        {v95Data && v95Data.suggestionMsg && <div className="bg-[rgba(201,181,106,0.12)] border border-[rgba(201,181,106,0.2)] rounded-[1.1rem] p-3 animate-fade-in mb-2"><div className="flex items-start gap-3"><div className="p-1.5 bg-[rgba(201,181,106,0.18)] rounded-full text-[#8B7A3F] mt-0.5"><Icon name="lightning" size={14}/></div><div className="flex-1"><div className="text-xs font-bold text-[#8B7A3F] mb-1">{COPY.thresholdHintTitle}</div><div className="text-[10px] text-[#8B7A3F] leading-relaxed">{COPY.thresholdHintBody(v95Data.suggestionMsg)}</div></div></div></div>}
                         <div className="my-3 border-t border-dashed border-[rgba(200,204,199,0.35)]"></div>
                         <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs font-bold text-slate-400">總回饋價值</span>
+                            <span className="text-xs font-bold text-slate-400">{COPY.totalSavedLabel}</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-[#10B981] font-bold text-xl tracking-tight">+${totalSaved.toLocaleString()}</span>
                                 <span className="text-[#10B981] font-bold text-lg">({savedPct}%)</span>
                             </div>
                         </div>
-                        <div className="flex justify-between items-end pt-1"><span className="font-bold text-[#2E2E2E] text-lg mb-1">最終入手價 (TWD)</span><span className="text-[3.5rem] font-black text-[#2E2E2E] tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span></div>
+                        <div className="flex justify-between items-end pt-1"><span className="font-bold text-[#2E2E2E] text-lg mb-1">{COPY.finalCostLabel}</span><span className="text-[3.5rem] font-black text-[#2E2E2E] tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span></div>
                     </div>
                 </div>
             );
@@ -532,52 +361,33 @@
 
         const GeneralMode = memo(({ settings, genInput, setGenInput, calcResult, updateSetting, advice, rates }) => {
             const clearInput = () => setGenInput({ ...genInput, val: '' });
-            const getDisplayVal = (field) => {
-                if (!genInput.val || isNaN(parseFloat(genInput.val))) return '';
-                if (genInput.type === field) return genInput.val;
-                const num = parseFloat(genInput.val);
-                const rKrw = rates.krw; const rUsd = rates.usd;
-                const targetRate = rKrw || 1;
-                let twdBase = 0;
-                if (genInput.type === 'usd') twdBase = num * rUsd;
-                else if (genInput.type === 'twd') twdBase = num;
-                else twdBase = num * targetRate;
-                if (field === 'usd') return (twdBase / rUsd).toFixed(2);
-                if (field === 'twd') return Math.round(twdBase).toString();
-                if (field === 'target') return Math.round(twdBase / targetRate).toString();
-                return '';
-            };
 
             return (
                 <div className="block space-y-3 pb-0">
-                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='usd'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">🇺🇸</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">USD</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">$</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('usd')} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'usd' }); }} className="text-[2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'usd' || getDisplayVal('usd')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
-                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='target'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">🇰🇷</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">KRW</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">₩</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('target')} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'target' }); }} className="text-[2.2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'target' || getDisplayVal('target')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
-                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='twd'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">🇹🇼</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">TWD</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">NT</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('twd')} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'twd' }); }} className="text-[2.2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'twd' || getDisplayVal('twd')) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
+                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='usd'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">{COPY.currencies.usd.emoji}</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">{COPY.currencies.usd.label}</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">{COPY.currencies.usd.prefix}</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('usd', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'usd' }); }} className="text-[2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'usd' || getDisplayVal('usd', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
+                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='target'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">{COPY.currencies.target.emoji}</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">{COPY.currencies.target.label}</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">{COPY.currencies.target.prefix}</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('target', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'target' }); }} className="text-[2.2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'target' || getDisplayVal('target', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
+                    <div className={`app-card p-4 flex items-center gap-4 transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] ${genInput.type==='twd'?'border-[rgba(201,166,161,0.3)] shadow-[0_22px_40px_rgba(94,96,90,0.1)]':''}`}><div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm bg-[rgba(255,255,255,0.76)] border border-white/60 flex-shrink-0">{COPY.currencies.twd.emoji}</div><div className="flex-1 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block pl-1">{COPY.currencies.twd.label}</label><div className="flex items-center"><span className="text-lg font-bold text-[#B6B8B3] mr-2">{COPY.currencies.twd.prefix}</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={getDisplayVal('twd', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'twd' }); }} className="text-[2.2rem] font-bold text-[#2E2E2E] placeholder-[#D6D7D2] w-full"/>{(genInput.type === 'twd' || getDisplayVal('twd', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div>
                     
                     <div className="app-card p-4 flex flex-col gap-3 bg-[rgba(244,245,242,0.88)]">
-                        <div className="flex justify-between items-center"><span className="text-sm font-bold flex items-center gap-2 text-[#2E2E2E]"><Icon name="receipt" size={18}/> 退稅設定</span><div className="flex bg-[rgba(255,255,255,0.55)] rounded-full p-1 border border-white/50">{['auto','manual','off'].map(m => (<button key={m} onClick={()=>updateSetting('taxMode',m)} className={`px-3.5 py-1.5 text-[10px] font-bold rounded-full transition-all duration-300 ${settings.taxMode===m ? 'bg-[rgba(201,166,161,0.16)] text-[#2E2E2E] shadow-sm' : 'text-[#757573] hover:text-[#2E2E2E]'}`}>{m==='auto'?'自動':m==='manual'?'手動':'關閉'}</button>))}</div></div>
+                        <div className="flex justify-between items-center"><span className="text-sm font-bold flex items-center gap-2 text-[#2E2E2E]"><Icon name="receipt" size={18}/> {COPY.taxSettingsLabel}</span><div className="flex bg-[rgba(255,255,255,0.55)] rounded-full p-1 border border-white/50">{COPY.taxModeOptions.map(m => (<button key={m.key} onClick={()=>updateSetting('taxMode',m.key)} className={`px-3.5 py-1.5 text-[10px] font-bold rounded-full transition-all duration-300 ${settings.taxMode===m.key ? 'bg-[rgba(201,166,161,0.16)] text-[#2E2E2E] shadow-sm' : 'text-[#757573] hover:text-[#2E2E2E]'}`}>{m.label}</button>))}</div></div>
                         {settings.taxMode !== 'off' && (
                             <div className="flex flex-col gap-3">
-                                <div className="flex gap-2"><button onClick={()=>updateSetting('refundMethod','airport')} className={`flex-1 py-3 rounded-[1.1rem] border transition-all duration-200 ${settings.refundMethod==='airport' ? 'border-[rgba(143,163,157,0.32)] bg-[rgba(143,163,157,0.14)] text-[#484846]' : 'border-[rgba(200,204,199,0.35)] text-[#757573] bg-[rgba(255,255,255,0.35)]'}`}><span className="text-xs font-bold">事後退稅</span></button><button onClick={()=>updateSetting('refundMethod','immediate')} className={`flex-1 py-3 rounded-[1.1rem] border transition-all duration-200 ${settings.refundMethod==='immediate' ? 'border-[rgba(201,166,161,0.32)] bg-[rgba(201,166,161,0.14)] text-[#484846]' : 'border-[rgba(200,204,199,0.35)] text-[#757573] bg-[rgba(255,255,255,0.35)]'}`}><span className="text-xs font-bold">現場折抵</span></button></div>
+                                <div className="flex gap-2">{COPY.refundMethodOptions.map(option => (<button key={option.key} onClick={()=>updateSetting('refundMethod',option.key)} className={`flex-1 py-3 rounded-[1.1rem] border transition-all duration-200 ${settings.refundMethod===option.key ? option.key==='airport' ? 'border-[rgba(143,163,157,0.32)] bg-[rgba(143,163,157,0.14)] text-[#484846]' : 'border-[rgba(201,166,161,0.32)] bg-[rgba(201,166,161,0.14)] text-[#484846]' : 'border-[rgba(200,204,199,0.35)] text-[#757573] bg-[rgba(255,255,255,0.35)]'}`}><span className="text-xs font-bold">{option.label}</span></button>))}</div>
                                 
                                 {(() => {
                                     if (calcResult.refundTwd > 0 && settings.mode === 'general') {
-                                        // Arbitrage calculation: Gain from Airport = Refund * (Reward% - Fee%)
-                                        // If Fee is 0 (Bank Account), gain is higher.
-                                        // If Reward < Fee, immediate is better.
                                         const rewardRate = settings.reward / 100;
                                         const feeRate = settings.isBankAccount ? 0 : (settings.fee / 100);
                                         const netGain = Math.round(calcResult.refundTwd * (rewardRate - feeRate));
                                         
                                         if (netGain > 0) {
-                                            return <div className="text-[11px] p-3 rounded-[1.1rem] flex items-center gap-3 border border-[rgba(143,163,157,0.28)] bg-[rgba(143,163,157,0.12)] text-[#484846]"><div className="p-1.5 rounded-full bg-[rgba(143,163,157,0.24)] text-[#6F827D]"><Icon name="diamond" size={14}/></div><div className="flex flex-col"><span className="font-bold">刷卡回饋套利</span><span className="opacity-80">選【事後退稅】可多賺約 NT${netGain}</span></div></div>;
+                                            return <div className="text-[11px] p-3 rounded-[1.1rem] flex items-center gap-3 border border-[rgba(143,163,157,0.28)] bg-[rgba(143,163,157,0.12)] text-[#484846]"><div className="p-1.5 rounded-full bg-[rgba(143,163,157,0.24)] text-[#6F827D]"><Icon name="diamond" size={14}/></div><div className="flex flex-col"><span className="font-bold">{COPY.arbitrageTitle}</span><span className="opacity-80">{COPY.arbitrageBody(netGain)}</span></div></div>;
                                         } else {
-                                            return <div className="text-[11px] p-3 rounded-[1.1rem] flex items-center gap-3 border border-[rgba(200,204,199,0.32)] bg-[rgba(255,255,255,0.45)] text-[#757573]"><div className="p-1.5 rounded-full bg-[rgba(214,192,179,0.22)] text-[#8B756A]"><Icon name="thumbsUp" size={14}/></div><span className="font-bold">推薦【現場折抵】：直接扣抵最省事</span></div>;
+                                            return <div className="text-[11px] p-3 rounded-[1.1rem] flex items-center gap-3 border border-[rgba(200,204,199,0.32)] bg-[rgba(255,255,255,0.45)] text-[#757573]"><div className="p-1.5 rounded-full bg-[rgba(214,192,179,0.22)] text-[#8B756A]"><Icon name="thumbsUp" size={14}/></div><span className="font-bold">{COPY.immediateRecommend}</span></div>;
                                         }
                                     }
-                                    // Tax threshold warning for General Mode
                                     if (calcResult.targetAmount > 0 && calcResult.targetAmount < 15000 && settings.mode === 'general') {
-                                        return <div className="text-[10px] p-3 rounded-[1.1rem] flex items-start gap-2 bg-[rgba(201,181,106,0.12)] text-[#757573] border border-[rgba(201,181,106,0.24)]"><Icon name="alert" size={14} /><span className="mt-0.5 font-medium">未達退稅門檻 (需滿 15,000 KRW)</span></div>;
+                                        return <div className="text-[10px] p-3 rounded-[1.1rem] flex items-start gap-2 bg-[rgba(201,181,106,0.12)] text-[#757573] border border-[rgba(201,181,106,0.24)]"><Icon name="alert" size={14} /><span className="mt-0.5 font-medium">{COPY.taxThresholdWarning}</span></div>;
                                     }
                                     return null;
                                 })()}
@@ -590,10 +400,9 @@
         });
 
         const DutyFreeMode = memo(({ settings, dfInput, setDfInput, updateSetting, calcResult, rates }) => {
-            const applyDiscount = (percent) => { if(!dfInput.tagPrice) return; const orig = parseFloat(dfInput.tagPrice); if(isNaN(orig)) return; setDfInput({...dfInput, payVal: (orig*(percent/100)).toFixed(2).replace(/\.00$/, '')}); };
-            const getDiscountStatus = () => { if(!dfInput.tagPrice || !dfInput.payVal) return null; const o = parseFloat(dfInput.tagPrice); const f = parseFloat(dfInput.payVal); if(isNaN(o)||isNaN(f)||o===0) return null; const pct = Math.round((f/o)*100); return { isSafe: (f/o)>=0.7, text: `${(f/o)>=0.7?'安全':'注意'} (${pct%10===0?pct/10:(pct/10).toFixed(1)}折)` }; };
-            const status = getDiscountStatus();
-            const adjustRebate = (d) => updateSetting('dutyFreeRebate', Math.max(0, Math.min(40, (parseFloat(settings.dutyFreeRebate)||0)+d)));
+            const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInput.tagPrice, percent); if (nextPay) setDfInput({...dfInput, payVal: nextPay}); };
+            const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
+            const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
 
             const inputNum = parseFloat(dfInput.payVal);
             const instantTwd = inputNum > 0 ? Math.round(inputNum * rates.usd) : 0;
@@ -601,18 +410,18 @@
 
             return (
                 <div className="space-y-4 animate-fade-in pb-2">
-                    <div className="app-card p-5 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">吊牌原價 (USD)</label><div className="flex items-center"><span className="text-2xl font-bold text-[#B6B8B3] mr-2">$</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={dfInput.tagPrice} onChange={(e)=>setDfInput({...dfInput, tagPrice: e.target.value})} className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight"/>{dfInput.tagPrice && <button onClick={()=>setDfInput({...dfInput, tagPrice: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}</div></div>
-                    <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{[95, 90, 85, 80].map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{d}折</button>))}</div>
+                    <div className="app-card p-5 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreeOriginalLabel}</label><div className="flex items-center"><span className="text-2xl font-bold text-[#B6B8B3] mr-2">$</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={dfInput.tagPrice} onChange={(e)=>setDfInput({...dfInput, tagPrice: e.target.value})} className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight"/>{dfInput.tagPrice && <button onClick={()=>setDfInput({...dfInput, tagPrice: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}</div></div>
+                    <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
                     <div className="app-card p-5 relative">
-                        <label className="text-[9px] font-bold text-[#8FA39D] uppercase tracking-[0.28em] block mb-2">打折後實付款 (USD)</label>
+                        <label className="text-[9px] font-bold text-[#8FA39D] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreePaidLabel}</label>
                         <div className="flex items-center"><span className="text-2xl font-bold text-[#B6B8B3] mr-2">$</span><input type="number" min="0" inputMode="decimal" placeholder="0" value={dfInput.payVal} onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})} className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight"/>{dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}</div>
                         <div className="flex justify-between items-center mt-4 bg-[rgba(255,255,255,0.46)] p-2.5 rounded-[1.1rem] border border-white/50">
-                            <span className="text-xs font-bold text-[#484846] flex items-center gap-1">≈ 即時匯率換算 NT$ {instantTwd.toLocaleString()} <span className="text-[10px] bg-[rgba(214,192,179,0.18)] text-[#757573] px-1.5 rounded-full">匯率 {instantRate.toFixed(2)}</span></span>
+                            <span className="text-xs font-bold text-[#484846] flex items-center gap-1">{COPY.dutyFreeInstantRatePrefix} {instantTwd.toLocaleString()} <span className="text-[10px] bg-[rgba(214,192,179,0.18)] text-[#757573] px-1.5 rounded-full">{COPY.dutyFreeRateLabel} {instantRate.toFixed(2)}</span></span>
                             {status && <div className={`text-[9px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1 ${status.isSafe ? 'bg-[rgba(143,163,157,0.16)] text-[#6F827D]' : 'bg-[rgba(176,114,107,0.12)] text-[#B0726B]'}`}><Icon name={status.isSafe ? 'check' : 'alert'} size={10}/> {status.text}</div>}
                         </div>
                     </div>
                     <div className="app-card p-4 bg-[rgba(214,192,179,0.12)] border-[rgba(214,192,179,0.24)]">
-                        <div className="flex justify-between items-center mb-3"><label className="text-xs font-bold text-[#6E5F57] pl-1">返點設定 (Rebate %)</label><div className="flex items-center bg-[rgba(255,255,255,0.76)] px-3 py-1.5 rounded-[1.1rem] border border-white/50 shadow-sm"><input type="number" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-12 text-lg font-black text-[#6E5F57] text-right bg-transparent outline-none"/><span className="text-sm text-[#B6B8B3] font-bold ml-1">%</span></div></div>
+                        <div className="flex justify-between items-center mb-3"><label className="text-xs font-bold text-[#6E5F57] pl-1">{COPY.dutyFreeRebateLabel}</label><div className="flex items-center bg-[rgba(255,255,255,0.76)] px-3 py-1.5 rounded-[1.1rem] border border-white/50 shadow-sm"><input type="number" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-12 text-lg font-black text-[#6E5F57] text-right bg-transparent outline-none"/><span className="text-sm text-[#B6B8B3] font-bold ml-1">%</span></div></div>
                         <div className="flex items-center gap-3"><button onClick={()=>adjustRebate(-0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="minus" size={14}/></button><div className="flex-1 relative h-6 flex items-center"><input type="range" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-full h-2 bg-gradient-to-r from-[rgba(214,192,179,0.45)] to-[rgba(201,166,161,0.72)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/></div><button onClick={()=>adjustRebate(0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="plus" size={14}/></button></div>
                     </div>
                 </div>
@@ -625,7 +434,7 @@
             const [allStrategies, setAllStrategies] = useState(() => { try { const s = safeGetStorage(STRATEGY_STORAGE_KEY); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_STRATEGIES_MAP)); } catch{ return DEFAULT_STRATEGIES_MAP; }});
             const [showStrategySettings, setShowStrategySettings] = useState(false);
             const [customRates, setCustomRates] = useState(() => { try { const s = safeGetStorage(CUSTOM_RATES_STORAGE_KEY); return s ? JSON.parse(s) : { krw:'', usd:'', usdToCny:'', cny:'' }; } catch{ return {}; }});
-            const [lastUpdated, setLastUpdated] = useState('載入中...');
+            const [lastUpdated, setLastUpdated] = useState(COPY.loadingStatus);
             const [showSettings, setShowSettings] = useState(false);
             const [isRefreshing, setIsRefreshing] = useState(false);
             const [screenshotMode, setScreenshotMode] = useState(false);
@@ -711,18 +520,14 @@
 
             const fetchRates = useCallback(async () => {
                 setIsRefreshing(true); 
-                setLastUpdated('更新中...');
+                setLastUpdated(COPY.updatingStatus);
                 setCustomRates({}); // Force clear custom rates on refresh
                 try {
-                    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
-                    const d = await res.json();
-                    if (d.rates.TWD) {
-                        const newRates = { usd: d.rates.TWD, krw: d.rates.TWD / d.rates.KRW, cny: d.rates.TWD / d.rates.CNY, usdToCny: d.rates.CNY };
-                        const t = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
-                        setRates(newRates); setLastUpdated(t);
-                        safeSetStorage(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr: t, timestamp: Date.now() }));
-                    }
-                } catch(e) { setLastUpdated('離線模式'); } finally { setTimeout(()=>setIsRefreshing(false),800); }
+                    const newRates = await fetchExchangeRates();
+                    const t = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+                    setRates(newRates); setLastUpdated(t);
+                    safeSetStorage(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr: t, timestamp: Date.now() }));
+                } catch(e) { setLastUpdated(COPY.offlineStatus); } finally { setTimeout(()=>setIsRefreshing(false),800); }
             }, []);
 
             const debouncedSave = useCallback((ns) => { clearTimeout(saveTimeoutRef.current); saveTimeoutRef.current = setTimeout(() => safeSetStorage(STORAGE_KEY, JSON.stringify(ns)), 800); }, []);
@@ -731,165 +536,49 @@
             const applyPreset = useCallback((c) => setSettings(p => { const n = { ...p, activePresetId: c.id, cardType: c.type, reward: c.reward, rewardType: c.rewardType, isMobilePay: c.isMobilePay||false, isBankAccount: c.isBankAccount||false, mobileSpread: c.mobileSpread??1.0 }; debouncedSave(n); return n; }), [debouncedSave]);
             const handleCustomRate = (t, v) => setCustomRates(p => ({ ...p, [t]: v===undefined||v===null?'':v.toString() }));
             
-            const effectiveRates = useMemo(() => ({ ...rates, krw: parseFloat(customRates.krw)||rates.krw, usd: parseFloat(customRates.usd)||rates.usd, usdToCny: parseFloat(customRates.usdToCny)||rates.usdToCny, cny: parseFloat(customRates.cny)||rates.cny }), [rates, customRates]);
+            const effectiveRates = useMemo(() => normalizeRates(rates, customRates), [rates, customRates]);
 
-            // Centralized Calculation Logic
-            const calcResult = useMemo(() => {
-                let rawInput = settings.mode === 'general' ? genInput.val : dfInput.payVal;
-                if (!rawInput) return { twdBase: 0 };
-                const num = parseFloat(rawInput); if(isNaN(num)) return { twdBase: 0 };
+            const calcResult = useMemo(() => buildCalcResult({ settings, genInput, dfInput, effectiveRates, allStrategies }), [genInput, dfInput, settings, effectiveRates, allStrategies]);
 
-                let spread = settings.cardType === 'jcb' ? 0 : (settings.cardType === 'master' ? 0.8 : 1.0);
-                const bankSpread = 1 + (spread / 100);
-                const rUsd = effectiveRates.usd * bankSpread;
-                
-                let twdBase = 0; let targetAmount = 0; let displayOriginal = 0; let displayCode = '';
-                if (settings.mode === 'general') {
-                    const targetRate = effectiveRates.krw * bankSpread;
-                    if (genInput.type === 'twd') { twdBase = num; targetAmount = twdBase / targetRate; }
-                    else if (genInput.type === 'usd') { twdBase = num * rUsd; targetAmount = twdBase / targetRate; }
-                    else { targetAmount = num; twdBase = num * targetRate; }
-                    displayOriginal = targetAmount; displayCode = 'KRW';
-                } else {
-                    twdBase = num * rUsd; targetAmount = num; displayCode = 'USD'; displayOriginal = num;
-                }
-
-                let refundTwd = 0;
-                if (settings.mode === 'general') {
-                    let refundNative = 0;
-                    if (settings.taxMode === 'auto') {
-                        const a = targetAmount;
-                        if (a>=15000) { if(a<30000) refundNative=1000; else if(a<50000) refundNative=2000; else if(a<75000) refundNative=3500; else if(a<100000) refundNative=5000; else if(a<125000) refundNative=7500; else if(a<150000) refundNative=9000; else if(a<175000) refundNative=10000; else if(a<200000) refundNative=12000; else if(a<225000) refundNative=13500; else if(a<250000) refundNative=15500; else if(a<275000) refundNative=17000; else if(a<300000) refundNative=19000; else if(a<325000) refundNative=20500; else if(a<350000) refundNative=22000; else if(a<375000) refundNative=24000; else if(a<400000) refundNative=25500; else if(a<450000) refundNative=28000; else if(a<500000) refundNative=32000; else if(a<550000) refundNative=35000; else if(a<600000) refundNative=39000; else if(a<650000) refundNative=42000; else if(a<700000) refundNative=45000; else if(a<750000) refundNative=48000; else if(a<800000) refundNative=52000; else if(a<850000) refundNative=55000; else if(a<900000) refundNative=58000; else if(a<950000) refundNative=61000; else if(a<1000000) refundNative=64000; else refundNative=Math.floor(a*0.065/1000)*1000; }
-                    }
-
-                    // V125 FIX: Removed bankSpread from tax refund calculation
-                    // Tax refund is returned at spot/buy rate, not sell rate + fee
-                    refundTwd = Math.round(refundNative * effectiveRates.krw);
-                } else {
-                    const rebateUsd = num * (settings.dutyFreeRebate / 100);
-                    refundTwd = Math.round(rebateUsd * effectiveRates.usdToCny * effectiveRates.cny);
-                }
-                const displayRefund = refundTwd;
-                
-                let effectiveFee = settings.isMobilePay && settings.isBankAccount ? 0 : settings.fee;
-                const spreadCost = settings.isMobilePay ? twdBase * ((settings.mobileSpread||(settings.isBankAccount?1:0))/100) : 0;
-                const feeAmount = Math.round(twdBase * (effectiveFee/100));
-
-                let rewardAmount = 0; let campaignData = null;
-                const activeCard = settings.cardPresets.find(c => c.id === settings.activePresetId);
-                
-                let strategyTargetAmount = targetAmount;
-                if (settings.mode === 'dutyfree') {
-                    const equivalentLocal = (num * effectiveRates.usd) / effectiveRates.krw;
-                    strategyTargetAmount = equivalentLocal;
-                }
-
-                if (activeCard?.useStrategy) {
-                    const calculationStrategies = allStrategies[settings.activePresetId] || [];
-                    const v95 = calcRewardSystem({ 
-                        totalNTD: twdBase, 
-                        targetAmount: strategyTargetAmount, 
-                        strategies: calculationStrategies, 
-                        rates: effectiveRates, 
-                        country: settings.country, 
-                        baseRate: activeCard.reward 
-                    });
-                    rewardAmount = v95.totalPoints; 
-                    campaignData = { v95 };
-                } else {
-                    rewardAmount = Math.round(twdBase * (settings.reward/100)); 
-                    campaignData = { effectiveRate: settings.reward };
-                }
-
-                const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
-                const totalSaved = Math.round(twdBase - finalCost);
-                const refundLabel = settings.mode === 'dutyfree' ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)` : `退稅 (${twdBase>0?((displayRefund/twdBase)*100).toFixed(1):0}%)`;
-
-                return { twdBase: Math.round(twdBase), finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, isWaived: effectiveFee===0, spreadCost: Math.round(spreadCost), targetAmount, displayOriginal, displayCode, refundLabel, displayRefund, campaignData, totalRate: campaignData?.v95?.totalRate || settings.reward };
-            }, [genInput, dfInput, settings, effectiveRates, allStrategies]);
-
-            const advice = useMemo(() => { if (settings.mode==='general' && calcResult.targetAmount>1000000 && settings.refundMethod==='immediate') return { type: 'warn', msg: '⚠️ 超過 100 萬：已達現場折抵上限，請改用【事後退稅】' }; return null; }, [settings, calcResult]);
+            const advice = useMemo(() => buildAdvice(settings, calcResult), [settings, calcResult]);
             
             const handleModeSwitch = (m) => {
                 if (m === 'dutyfree' && settings.mode === 'general' && genInput.val) {
-                    const num = parseFloat(genInput.val);
-                    if (!isNaN(num)) {
-                        let usdVal = 0;
-                        if (genInput.type === 'usd') usdVal = num;
-                        else if (genInput.type === 'twd') usdVal = num / effectiveRates.usd;
-                        else { 
-                            usdVal = (num * effectiveRates.krw) / effectiveRates.usd;
-                        }
-                        if (usdVal > 0) {
-                            setDfInput(prev => ({ ...prev, tagPrice: usdVal.toFixed(2) }));
-                        }
-                    }
+                    const usdVal = convertGeneralInputToDutyFreeTagPrice(genInput, effectiveRates);
+                    if (usdVal) setDfInput(prev => ({ ...prev, tagPrice: usdVal }));
                 }
                 updateSetting('mode', m); 
             };
 
             return (
-                    <div className={`app-shell ${screenshotMode?'screenshot-mode':''}`}>
-                    <div className="app-frame">
+                    <div className={`h-full flex flex-col max-w-md mx-auto bg-[rgba(244,245,242,0.7)] shadow-[0_30px_80px_rgba(94,96,90,0.14)] relative overflow-hidden border-x border-white/40 ${screenshotMode?'screenshot-mode':''}`}>
                     {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} openStrategySettings={handleOpenStrategySettings} />}
-                    {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={handleCloseStrategySettings} rates={effectiveRates} settings={settings} cardName={settings.cardPresets.find(c => c.id === editingStrategyCardId)?.name || '未知卡片'} />}
+                    {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={handleCloseStrategySettings} rates={effectiveRates} settings={settings} cardName={settings.cardPresets.find(c => c.id === editingStrategyCardId)?.name || COPY.unknownCard} />}
                     {showInstallPrompt && <InstallPrompt onClose={()=>setShowInstallPrompt(false)}/>}
                     
-                    <header className={`header-panel flex-none px-5 pt-safe pb-8 z-20 transition-all duration-700 ${settings.mode==='dutyfree'?'header-dutyfree':'header-general'}`}>
-                        <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-5 pt-2 gap-3">
-                            <div className="min-w-0 flex-1 pl-1">
-                                <div className="header-meta mb-3">
-                                    <span>Seoul</span>
-                                    <span className="opacity-45">•</span>
-                                    <span>{settings.mode === 'dutyfree' ? 'Duty Free' : 'General'}</span>
-                                </div>
-                                <h1 className="text-[2.55rem] leading-none tracking-[-0.05em] flex items-center gap-3 text-[#2E2E2E] whitespace-nowrap">
-                                    <div className="w-11 h-11 rounded-[1.1rem] bg-[rgba(255,255,255,0.52)] border border-white/60 shadow-[0_14px_28px_rgba(94,96,90,0.08)] flex items-center justify-center text-[#C9A6A1] shrink-0"><Icon name="plane" size={20}/></div>
-                                    <span className="font-black">購黑皮</span>
-                                </h1>
-                                <p className="brand-subtitle mt-3 pl-[3.5rem]">Calm travel calculator for Seoul shopping</p>
+                    <header className={`flex-none px-4 pt-safe pb-10 shadow-[0_10px_40px_rgba(94,96,90,0.08)] z-20 transition-all duration-700 border-b border-white/30 ${settings.mode==='dutyfree'?'header-dutyfree':'header-general'}`}>
+                        <div className="flex justify-between items-center mb-3 pt-2">
+                            <div>
+                                <h1 className="text-[2rem] font-black tracking-[-0.04em] flex items-center gap-2 text-[#2E2E2E]"><div className="cursor-pointer active:opacity-50 text-[#C9A6A1]"><Icon name="plane" size={24}/></div> 購黑皮</h1>
+                                <p className="text-[11px] tracking-[0.24em] uppercase text-[#757573] mt-1 pl-8">{COPY.appSubtitle}</p>
                             </div>
-                            <div className="flex items-center gap-2 shrink-0 pt-1">
-                                <div className="glass-action text-lg font-bold">🇰🇷</div>
-                                <button onClick={()=>window.open('https://www.google.com/search?q=KRW+TWD')} className="glass-action"><Icon name="search"/></button>
-                                <button onClick={()=>setShowSettings(true)} className="glass-action"><Icon name="settings"/></button>
-                                <button onClick={fetchRates} className={`glass-action ${isRefreshing?'text-[#B0726B]':''}`}><Icon name="refresh" className={isRefreshing?'spin-anim':''}/></button>
-                            </div>
+                            <div className="flex items-center gap-2"><div className="w-10 h-10 bg-[rgba(255,255,255,0.54)] backdrop-blur-md rounded-full font-bold shadow-sm border border-white/50 text-lg flex items-center justify-center text-[#484846]">🇰🇷</div><button onClick={()=>window.open('https://www.google.com/search?q=KRW+TWD')} className="w-10 h-10 bg-[rgba(255,255,255,0.54)] backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/50 text-[#484846]"><Icon name="search"/></button><button onClick={()=>setShowSettings(true)} className="w-10 h-10 bg-[rgba(255,255,255,0.54)] backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/50 text-[#484846]"><Icon name="settings"/></button><button onClick={fetchRates} className={`w-10 h-10 bg-[rgba(255,255,255,0.54)] backdrop-blur-md rounded-full flex items-center justify-center shadow-sm active:scale-90 transition-all border border-white/50 text-[#484846] ${isRefreshing?'text-[#B0726B]':''}`}><Icon name="refresh" className={isRefreshing?'spin-anim':''}/></button></div>
                         </div>
-                        <div className="control-card flex flex-col gap-3 mb-1 p-3 rounded-[1.8rem] w-full overflow-hidden backdrop-blur-md">
-                             <div className="flex items-center justify-between gap-3">
-                                <div className="flex shrink-0 bg-[rgba(255,255,255,0.56)] p-1 rounded-full border border-white/60">
-                                    <button onClick={()=>handleModeSwitch('general')} className={`px-4 py-2 rounded-full text-[11px] font-bold tracking-[0.12em] transition-all ${settings.mode==='general'?'bg-[rgba(255,255,255,0.92)] text-[#2E2E2E] shadow-sm':'text-[#757573] hover:text-[#2E2E2E]'}`}>一般</button>
-                                    <button onClick={()=>handleModeSwitch('dutyfree')} className={`px-4 py-2 rounded-full text-[11px] font-bold tracking-[0.12em] transition-all ${settings.mode==='dutyfree'?'bg-[rgba(255,255,255,0.92)] text-[#2E2E2E] shadow-sm':'text-[#757573] hover:text-[#2E2E2E]'}`}>免稅</button>
-                                </div>
-                                <div className="flex-1 text-right min-w-0">
-                                    <div className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#8B8D88]">Active Card</div>
-                                    <div className="text-sm font-bold text-[#3E3F3C] truncate mt-1">{settings.cardPresets.find(c => c.id === settings.activePresetId)?.name}</div>
-                                </div>
-                             </div>
-                             <div className="flex overflow-x-auto no-scrollbar gap-2 flex-1 items-center pr-3">
-                                {settings.cardPresets.filter(c=>c.enabled!==false).map(c => (
-                                    <button key={c.id} onClick={()=>applyPreset(c)} className={`whitespace-nowrap px-4 py-2.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 ${settings.activePresetId===c.id ? 'bg-[rgba(201,166,161,0.16)] text-[#2E2E2E] border border-[rgba(201,166,161,0.2)] shadow-sm' : 'text-[#757573] bg-[rgba(255,255,255,0.38)] border border-transparent hover:text-[#2E2E2E]'}`}>
-                                        {c.isMobilePay && <Icon name="mobile" size={9} className="opacity-60"/>}
-                                        {c.name}
-                                    </button>
-                                ))}
-                             </div>
+                        <div className="flex items-center gap-2 mb-1 bg-[rgba(255,255,255,0.4)] p-1.5 rounded-[1.25rem] w-full backdrop-blur-md border border-white/40 overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+                             <div className="flex shrink-0 border-r border-[rgba(182,184,179,0.32)] pr-2 mr-1"><button onClick={()=>handleModeSwitch('general')} className={`px-3.5 py-2 rounded-full text-[10px] font-bold tracking-[0.18em] transition-all ${settings.mode==='general'?'bg-[rgba(255,255,255,0.82)] text-[#2E2E2E] shadow-sm':'text-[#757573] hover:text-[#2E2E2E]'}`}>{COPY.modeButtons.general}</button><button onClick={()=>handleModeSwitch('dutyfree')} className={`px-3.5 py-2 rounded-full text-[10px] font-bold tracking-[0.18em] transition-all ${settings.mode==='dutyfree'?'bg-[rgba(255,255,255,0.82)] text-[#2E2E2E] shadow-sm':'text-[#757573] hover:text-[#2E2E2E]'}`}>{COPY.modeButtons.dutyfree}</button></div>
+                             <div className="flex overflow-x-auto no-scrollbar gap-1.5 flex-1 mask-linear items-center">{settings.cardPresets.filter(c=>c.enabled!==false).map(c => (<button key={c.id} onClick={()=>applyPreset(c)} className={`whitespace-nowrap px-3.5 py-2 rounded-full text-[10px] font-bold transition-all flex items-center gap-1.5 ${settings.activePresetId===c.id ? 'bg-[rgba(201,166,161,0.16)] text-[#2E2E2E] border border-[rgba(201,166,161,0.18)] shadow-sm' : 'text-[#757573] bg-[rgba(255,255,255,0.34)] border border-transparent hover:text-[#2E2E2E]'}`}>{c.isMobilePay && <Icon name="mobile" size={9} className="opacity-60"/>} {c.name}</button>))}</div>
                         </div>
-                        <div className="rates-shell mt-2 rounded-[1.65rem] p-3 border backdrop-blur-sm">
+                        <div className="mt-2 bg-[rgba(255,255,255,0.38)] rounded-[1.4rem] p-2.5 border border-white/50 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
                             {settings.mode === 'dutyfree' ? <DutyFreeModeHeader rates={effectiveRates} customRates={customRates} handleCustomRate={handleCustomRate} editingMap={editingMap} setEditingMap={setEditingMap} /> : <GeneralModeHeader settings={settings} rates={effectiveRates} customRates={customRates} handleCustomRate={handleCustomRate} editingMap={editingMap} setEditingMap={setEditingMap} isInverseRate={isInverseRate} setIsInverseRate={setIsInverseRate} />}
-                            <div className="flex justify-between items-center text-[9px] text-[#757573] px-1 mt-2"><span className="flex items-center gap-1 opacity-80"><Icon name="refresh" size={8}/> 1 KRW ≈ {effectiveRates.krw.toFixed(5)} TWD</span><span className="flex items-center gap-1 opacity-80">{lastUpdated}</span></div>
-                        </div>
+                            <div className="flex justify-between items-center text-[9px] text-[#757573] px-1 mt-1"><span className="flex items-center gap-1 opacity-80"><Icon name="refresh" size={8}/> {COPY.rateFooterPrefix} {effectiveRates.krw.toFixed(5)} {COPY.rateFooterSuffix}</span><span className="flex items-center gap-1 opacity-80">{lastUpdated}</span></div>
                         </div>
                     </header>
-                    <main className="app-main overflow-y-auto no-scrollbar px-5 pt-5 pb-safe" onClick={()=>screenshotMode && setScreenshotMode(false)}>
-                        <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[rgba(240,241,237,0.98)] to-transparent pointer-events-none -mt-2 mb-2"></div>
+                    <main className="flex-1 rounded-t-[2.6rem] -mt-6 bg-[rgba(236,237,234,0.88)] p-5 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/70 shadow-[0_-18px_45px_-20px_rgba(94,96,90,0.18)] backdrop-blur-sm" onClick={()=>screenshotMode && setScreenshotMode(false)}>
+                        <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[rgba(236,237,234,0.96)] to-transparent pointer-events-none -mt-2 mb-2"></div>
                         {settings.mode === 'general' ? <GeneralMode settings={settings} genInput={genInput} setGenInput={setGenInput} calcResult={calcResult} updateSetting={updateSetting} advice={advice} rates={effectiveRates}/> : <DutyFreeMode settings={settings} dfInput={dfInput} setDfInput={setDfInput} updateSetting={updateSetting} calcResult={calcResult} rates={effectiveRates}/>}
                         <BreakdownPanel calcResult={calcResult} settings={settings} rates={effectiveRates} inputVal={settings.mode==='general'?genInput.val:dfInput.payVal} campaignData={calcResult.campaignData} />
-                        <div className="mt-8 mb-4 flex justify-center opacity-40 py-4 cursor-pointer" onClick={()=>setScreenshotMode(!screenshotMode)}><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{screenshotMode ? "Exit Screenshot Mode" : "Screenshot Mode"}</span></div>
+                        <div className="mt-8 mb-4 flex justify-center opacity-40 py-4 cursor-pointer" onClick={()=>setScreenshotMode(!screenshotMode)}><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{screenshotMode ? COPY.exitScreenshotMode : COPY.screenshotMode}</span></div>
                     </main>
-                    </div>
                 </div>
             );
         };
