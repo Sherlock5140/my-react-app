@@ -40,7 +40,15 @@
             --header-bg-df: rgba(239, 234, 230, 0.92);
             --header-bg-end-df: rgba(228, 229, 225, 0.84);
         }
-        html { height: -webkit-fill-available; }
+        html {
+            height: -webkit-fill-available;
+            min-height: 100%;
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.82), transparent 34%),
+                radial-gradient(circle at top right, rgba(201,166,161,0.14), transparent 28%),
+                linear-gradient(180deg, #F2F3F0 0%, var(--app-bg) 52%, #E8E9E5 100%);
+            overflow: hidden;
+        }
         body {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -50,6 +58,7 @@
                 linear-gradient(180deg, #F2F3F0 0%, var(--app-bg) 52%, #E8E9E5 100%);
             font-family: "Avenir Next", "SF Pro Display", "Segoe UI", "Noto Sans TC", sans-serif;
             color: var(--text-body);
+            min-height: 100vh;
             height: 100vh;
             height: 100dvh;
             width: 100%;
@@ -58,8 +67,17 @@
             -webkit-user-select: none;
             padding: 0;
             margin: 0;
+            display: flex;
+            justify-content: center;
         }
-        #root { height: 100%; display: flex; flex-direction: column; }
+        #root {
+            height: 100%;
+            width: 100%;
+            max-width: 430px;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+        }
         input { background: transparent; border: none; outline: none; width: 100%; font-family: "Avenir Next", "SF Pro Display", "Segoe UI", "Noto Sans TC", sans-serif; color: var(--text-primary); padding: 0; margin: 0; -webkit-appearance: none; border-radius: 0; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -73,7 +91,7 @@
             width: 100%;
             transition: transform 0.12s ease, box-shadow 0.2s ease;
         }
-        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
+        .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 10px); }
         .pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
         .spin-anim { animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -96,8 +114,29 @@
         .rate-input { background: transparent; color: var(--text-primary); font-weight: 700; font-size: 1.3rem; font-family: "Avenir Next", "SF Pro Display", sans-serif; border-bottom: 1px solid rgba(72,72,70,0.14); padding: 0; width: 100%; text-align: center; line-height: 32px; height: 32px; transition: border-color 0.2s; }
         .rate-input:focus { border-bottom: 2px solid rgba(201,166,161,0.75); }
         .rate-input::placeholder { color: rgba(117,117,115,0.45); }
+        .rate-input-container {
+            width: 100%;
+            max-width: 10.75rem;
+            margin: 0 auto;
+        }
+        .rate-panel-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .rate-panel-cell {
+            min-width: 0;
+        }
+        .rate-panel-cell--split {
+            border-right: 1px solid rgba(255,255,255,0.18);
+            padding-right: 0.75rem;
+        }
+        .rate-panel-cell--tail {
+            padding-left: 0.75rem;
+        }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .screenshot-mode header { padding-top: 40px; } .screenshot-mode main { padding-bottom: 40px; }
+        .screenshot-mode header { padding-top: 40px; } .screenshot-mode main { padding-bottom: 28px; }
         .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(206, 209, 202, 0.85); transition: .4s; border-radius: 34px; }
@@ -105,6 +144,12 @@
         input:checked + .slider { background-color: rgba(143, 163, 157, 0.95); }
         input:checked + .slider:before { transform: translateX(16px); }
         .mask-linear { mask-image: linear-gradient(to right, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%); }
+        .floating-shot-toggle {
+            position: absolute;
+            right: 1rem;
+            bottom: max(env(safe-area-inset-bottom), 10px);
+            z-index: 60;
+        }
     </style>
 </head>
 <body>
@@ -192,9 +237,9 @@
             };
 
             return (
-                <div className="flex justify-between items-center mb-1">
-                    <div className="flex items-center gap-2 w-1/2 justify-center border-r border-white/10 relative pr-1">
-                        <div className="flex flex-col items-end w-full pl-0">
+                <div className="rate-panel-grid mb-1">
+                    <div className="rate-panel-cell rate-panel-cell--split">
+                        <div className="flex flex-col w-full">
                             <button onClick={()=>setIsInverseRate(!isInverseRate)} className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.54)] hover:bg-[rgba(255,255,255,0.7)] active:scale-95 transition-all px-2 py-1 rounded-full mb-1 border border-white/50 shadow-sm group w-full justify-center">
                                 <span className="text-[10px] font-bold text-[#484846] tracking-[0.18em] truncate">{isInverseRate ? COPY.rateHeaderGeneral.inverse : COPY.rateHeaderGeneral.forward}</span>
                                 <div className={`w-3.5 h-3.5 rounded-full bg-[rgba(201,166,161,0.12)] flex items-center justify-center group-hover:bg-[rgba(201,166,161,0.22)] transition-colors ${isInverseRate ? 'rotate-180' : ''} duration-300`}><Icon name="swap" size={10} className="text-[#C9A6A1]"/></div>
@@ -202,8 +247,8 @@
                             <RateInput label="" val={isInverseRate ? formatRate(displayInverse) : formatRate(displayBase)} onChange={v => handleCustomRate('krw', isInverseRate && v ? 1/v : v)} isEditing={editingMap['gen']} setIsEditing={s=>setEditingMap({...editingMap, gen:s})} />
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 w-1/2 justify-center pl-1">
-                        <div className="flex flex-col items-end w-full">
+                    <div className="rate-panel-cell rate-panel-cell--tail">
+                        <div className="flex flex-col w-full">
                             <div className="flex items-center justify-center w-full mb-1 h-[22px]"><span className="text-[10px] font-bold text-[#757573] tracking-[0.24em]">{COPY.rateHeaderGeneral.usdToTwd}</span></div>
                             <RateInput label="" val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd', v)} isEditing={editingMap['usd']} setIsEditing={s=>setEditingMap({...editingMap, usd:s})} />
                         </div>
@@ -213,12 +258,10 @@
         });
 
         const DutyFreeModeHeader = memo(({ rates, customRates, handleCustomRate, editingMap, setEditingMap }) => (
-            <div className="flex justify-between items-end gap-2 mb-1">
-                <RateInput label={COPY.rateHeaderDutyFree.usdToCny} val={customRates.usdToCny || rates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/>
-                <div className="w-px h-10 bg-white/10 self-center"></div>
-                <RateInput label={COPY.rateHeaderDutyFree.cnyToTwd} val={customRates.cny || rates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/>
-                <div className="w-px h-10 bg-white/10 self-center"></div>
-                <RateInput label={COPY.rateHeaderDutyFree.usdToTwd} val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/>
+            <div className="grid grid-cols-3 gap-2 mb-1">
+                <div className="min-w-0"><RateInput label={COPY.rateHeaderDutyFree.usdToCny} val={customRates.usdToCny || rates.usdToCny} onChange={v=>handleCustomRate('usdToCny',v)} isEditing={editingMap['u2c']} setIsEditing={s=>setEditingMap({...editingMap, u2c:s})}/></div>
+                <div className="min-w-0"><RateInput label={COPY.rateHeaderDutyFree.cnyToTwd} val={customRates.cny || rates.cny} onChange={v=>handleCustomRate('cny',v)} isEditing={editingMap['c2t']} setIsEditing={s=>setEditingMap({...editingMap, c2t:s})}/></div>
+                <div className="min-w-0"><RateInput label={COPY.rateHeaderDutyFree.usdToTwd} val={customRates.usd || rates.usd} onChange={v=>handleCustomRate('usd',v)} isEditing={editingMap['u2t']} setIsEditing={s=>setEditingMap({...editingMap, u2t:s})}/></div>
             </div>
         ));
 
@@ -551,12 +594,12 @@
             };
 
             return (
-                    <div className={`h-full flex flex-col max-w-md mx-auto bg-[rgba(244,245,242,0.7)] shadow-[0_30px_80px_rgba(94,96,90,0.14)] relative overflow-hidden border-x border-white/40 ${screenshotMode?'screenshot-mode':''}`}>
+                    <div className={`h-full min-h-[100dvh] w-full flex flex-col bg-[rgba(244,245,242,0.72)] shadow-[0_30px_80px_rgba(94,96,90,0.14)] relative overflow-hidden border-x border-white/40 ${screenshotMode?'screenshot-mode':''}`}>
                     {showSettings && <CardSettings settings={settings} updatePreset={updatePreset} updateSetting={updateSetting} onClose={()=>setShowSettings(false)} openStrategySettings={handleOpenStrategySettings} />}
                     {showStrategySettings && <StrategySettings strategies={currentStrategies} setStrategies={setCurrentStrategies} onClose={handleCloseStrategySettings} rates={effectiveRates} settings={settings} cardName={settings.cardPresets.find(c => c.id === editingStrategyCardId)?.name || COPY.unknownCard} />}
                     {showInstallPrompt && <InstallPrompt onClose={()=>setShowInstallPrompt(false)}/>}
                     
-                    <header className={`flex-none px-4 pt-safe pb-10 shadow-[0_10px_40px_rgba(94,96,90,0.08)] z-20 transition-all duration-700 border-b border-white/30 ${settings.mode==='dutyfree'?'header-dutyfree':'header-general'}`}>
+                    <header className={`flex-none px-4 pt-safe pb-8 shadow-[0_10px_40px_rgba(94,96,90,0.08)] z-20 transition-all duration-700 border-b border-white/30 ${settings.mode==='dutyfree'?'header-dutyfree':'header-general'}`}>
                         <div className="flex justify-between items-center mb-3 pt-2">
                             <div>
                                 <h1 className="text-[2rem] font-black tracking-[-0.04em] flex items-center gap-2 text-[#2E2E2E]"><div className="cursor-pointer active:opacity-50 text-[#C9A6A1]"><Icon name="plane" size={24}/></div> 購黑皮</h1>
@@ -573,12 +616,12 @@
                             <div className="flex justify-between items-center text-[9px] text-[#757573] px-1 mt-1"><span className="flex items-center gap-1 opacity-80"><Icon name="refresh" size={8}/> {COPY.rateFooterPrefix} {effectiveRates.krw.toFixed(5)} {COPY.rateFooterSuffix}</span><span className="flex items-center gap-1 opacity-80">{lastUpdated}</span></div>
                         </div>
                     </header>
-                    <main className="flex-1 rounded-t-[2.6rem] -mt-6 bg-[rgba(236,237,234,0.88)] p-5 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/70 shadow-[0_-18px_45px_-20px_rgba(94,96,90,0.18)] backdrop-blur-sm" onClick={()=>screenshotMode && setScreenshotMode(false)}>
+                    <main className="flex-1 min-h-0 rounded-t-[2.4rem] -mt-5 bg-[rgba(236,237,234,0.9)] px-5 pt-4 overflow-y-auto no-scrollbar pb-safe relative z-30 border-t border-white/70 shadow-[0_-18px_45px_-20px_rgba(94,96,90,0.18)] backdrop-blur-sm" onClick={()=>screenshotMode && setScreenshotMode(false)}>
                         <div className="sticky top-0 z-40 h-6 w-full bg-gradient-to-b from-[rgba(236,237,234,0.96)] to-transparent pointer-events-none -mt-2 mb-2"></div>
                         {settings.mode === 'general' ? <GeneralMode settings={settings} genInput={genInput} setGenInput={setGenInput} calcResult={calcResult} updateSetting={updateSetting} advice={advice} rates={effectiveRates}/> : <DutyFreeMode settings={settings} dfInput={dfInput} setDfInput={setDfInput} updateSetting={updateSetting} calcResult={calcResult} rates={effectiveRates}/>}
                         <BreakdownPanel calcResult={calcResult} settings={settings} rates={effectiveRates} inputVal={settings.mode==='general'?genInput.val:dfInput.payVal} campaignData={calcResult.campaignData} />
-                        <div className="mt-8 mb-4 flex justify-center opacity-40 py-4 cursor-pointer" onClick={()=>setScreenshotMode(!screenshotMode)}><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{screenshotMode ? COPY.exitScreenshotMode : COPY.screenshotMode}</span></div>
                     </main>
+                    <button className="floating-shot-toggle opacity-35 px-3 py-1.5 rounded-full bg-[rgba(255,255,255,0.52)] border border-white/55 text-[9px] font-bold text-slate-400 uppercase tracking-widest backdrop-blur-md active:scale-95 transition-all" onClick={()=>setScreenshotMode(!screenshotMode)}>{screenshotMode ? COPY.exitScreenshotMode : COPY.screenshotMode}</button>
                 </div>
             );
         };
