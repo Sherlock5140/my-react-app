@@ -37,8 +37,13 @@
         rewardExcludingFee: '不含手續費',
         postTaxBadge: '事後退稅 (機場/市區)',
         immediateBadge: '現場折抵',
+        immediateAppliedLabel: '現場折抵（結帳時已扣）',
+        chargedAmountLabel: '實際刷卡金額',
         refundErrorPrefix: '預估誤差: ±NT$',
         taxSettingsLabel: '退稅設定',
+        taxAutoHint: '自動模式會在背景綜合 Global Blue、Global Tax Free、Easy Tax Refund 與加權平均模型，自動輸出較穩定的估算值；實際金額仍以店家與退稅單為準。',
+        taxManualLabel: '手動退稅額',
+        taxManualHint: '依退稅單或店家結帳畫面的實際退稅額輸入（KRW）。',
         taxModeOptions: [
             { key: 'auto', label: '自動' },
             { key: 'manual', label: '手動' },
@@ -49,8 +54,12 @@
             { key: 'immediate', label: '現場折抵' }
         ],
         arbitrageTitle: '刷卡回饋套利',
-        arbitrageBody: (netGain) => `選【事後退稅】可多賺約 NT$${netGain}`,
-        immediateRecommend: '推薦【現場折抵】：直接扣抵最省事',
+        airportBetterActive: (netGain) => `已選【事後退稅】，比現場折抵多省約 NT$${netGain}`,
+        airportBetterSwitch: (netGain) => `改選【事後退稅】可多省約 NT$${netGain}`,
+        immediateBetterActive: (netGain) => `已選【現場折抵】，比事後退稅多省約 NT$${netGain}`,
+        immediateBetterSwitch: (netGain) => `改選【現場折抵】可多省約 NT$${netGain}`,
+        methodsNearEqual: '兩種退稅方式差異很小，可依現場流程方便性選擇',
+        methodDiffFormula: '差額來源 = 退稅額 × (回饋率 - 成本率)',
         taxThresholdWarning: '未達退稅門檻 (需滿 15,000 KRW)',
         overLimitAdvice: '⚠️ 超過 100 萬：已達現場折抵上限，請改用【事後退稅】',
         dutyFreeOriginalLabel: '吊牌原價 (USD)',
@@ -104,6 +113,94 @@
     const CUSTOM_RATES_STORAGE_KEY = 'shopping_app_v87_custom_rates';
     const RATE_CACHE_TTL = 3600 * 1000;
     const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000;
+    const KOREA_REFUND_TABLE_GLOBAL_BLUE = [
+        { max: 29999, refund: 1000 },
+        { max: 49999, refund: 1500 },
+        { max: 74999, refund: 3500 },
+        { max: 99999, refund: 5000 },
+        { max: 124999, refund: 6500 },
+        { max: 149999, refund: 8000 },
+        { max: 174999, refund: 9500 },
+        { max: 199999, refund: 11000 },
+        { max: 224999, refund: 12500 },
+        { max: 249999, refund: 14000 },
+        { max: 274999, refund: 16000 },
+        { max: 299999, refund: 17000 },
+        { max: 324999, refund: 19000 },
+        { max: 349999, refund: 21000 },
+        { max: 374999, refund: 23000 },
+        { max: 399999, refund: 24500 },
+        { max: 424999, refund: 26000 },
+        { max: 449999, refund: 28000 },
+        { max: 474999, refund: 30000 },
+        { max: 499999, refund: 32000 }
+    ];
+    const KOREA_REFUND_TABLE_GLOBAL_TAX_FREE = [
+        { max: 29999, refund: 1000 },
+        { max: 49999, refund: 2000 },
+        { max: 74999, refund: 3000 },
+        { max: 99999, refund: 5000 },
+        { max: 124999, refund: 7000 },
+        { max: 149999, refund: 8000 },
+        { max: 174999, refund: 9000 },
+        { max: 199999, refund: 10000 },
+        { max: 224999, refund: 12200 },
+        { max: 249999, refund: 13000 },
+        { max: 274999, refund: 15000 },
+        { max: 299999, refund: 17000 },
+        { max: 324999, refund: 19000 },
+        { max: 349999, refund: 21000 },
+        { max: 374999, refund: 23000 },
+        { max: 399999, refund: 25000 },
+        { max: 424999, refund: 27000 },
+        { max: 449999, refund: 28000 },
+        { max: 474999, refund: 30000 },
+        { max: 499999, refund: 32000 }
+    ];
+    const KOREA_REFUND_TABLE_EASY_TAX = [
+        { max: 29999, refund: 1000 },
+        { max: 49999, refund: 2000 },
+        { max: 74999, refund: 3000 },
+        { max: 99999, refund: 5000 },
+        { max: 124999, refund: 6000 },
+        { max: 149999, refund: 8000 },
+        { max: 174999, refund: 9000 },
+        { max: 199999, refund: 10000 },
+        { max: 224999, refund: 12000 },
+        { max: 249999, refund: 13000 },
+        { max: 274999, refund: 15000 },
+        { max: 299999, refund: 17000 },
+        { max: 324999, refund: 19000 },
+        { max: 349999, refund: 21000 },
+        { max: 374999, refund: 23000 },
+        { max: 399999, refund: 25000 },
+        { max: 424999, refund: 27000 },
+        { max: 449999, refund: 28000 },
+        { max: 474999, refund: 30000 },
+        { max: 499999, refund: 32000 }
+    ];
+    const KOREA_REFUND_TABLE_WEIGHTED = [
+        { max: 29999, refund: 1000 },
+        { max: 49999, refund: 1800 },
+        { max: 74999, refund: 3200 },
+        { max: 99999, refund: 5000 },
+        { max: 124999, refund: 6500 },
+        { max: 149999, refund: 8000 },
+        { max: 174999, refund: 9200 },
+        { max: 199999, refund: 10300 },
+        { max: 224999, refund: 12200 },
+        { max: 249999, refund: 13500 },
+        { max: 274999, refund: 15500 },
+        { max: 299999, refund: 17000 },
+        { max: 324999, refund: 19000 },
+        { max: 349999, refund: 21000 },
+        { max: 374999, refund: 23000 },
+        { max: 399999, refund: 24800 },
+        { max: 424999, refund: 26500 },
+        { max: 449999, refund: 28000 },
+        { max: 474999, refund: 30000 },
+        { max: 499999, refund: 32000 }
+    ];
 
     const DEFAULT_STRATEGIES_MAP = {
         1: [{ id: 'c1', name: '銀行加碼', rate: 2.2, cap: 660, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }, { id: 'c2', name: 'VISA 滿額', rate: 10.0, cap: 3000, capUnit: 'points', active: true, type: 'threshold', minSpend: 190000, thresholdUnit: 'foreign' }],
@@ -114,7 +211,7 @@
 
     const DEFAULT_SETTINGS = {
         country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
-        taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 36,
+        taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 36, manualRefundKRW: '',
         cardPresets: [
             { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, mobileSpread: 0, enabled: true, useStrategy: true },
             { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true, useStrategy: false },
@@ -130,6 +227,25 @@
 
     function safeSetStorage(key, value) {
         try { localStorage.setItem(key, value); } catch (e) {}
+    }
+
+    function lookupRefundFromTable(amount, table, fallbackRate = 0.064) {
+        if (!amount || amount < 15000) return 0;
+        const matched = table.find((row) => amount <= row.max);
+        if (matched) return matched.refund;
+        return Math.round((amount * fallbackRate) / 100) * 100;
+    }
+
+    function estimateKoreaRefundKRW(amount) {
+        if (!amount || amount < 15000) return 0;
+        const providerValues = [
+            lookupRefundFromTable(amount, KOREA_REFUND_TABLE_GLOBAL_BLUE, 0.062),
+            lookupRefundFromTable(amount, KOREA_REFUND_TABLE_GLOBAL_TAX_FREE, 0.065),
+            lookupRefundFromTable(amount, KOREA_REFUND_TABLE_EASY_TAX, 0.064),
+            lookupRefundFromTable(amount, KOREA_REFUND_TABLE_WEIGHTED, 0.064)
+        ].sort((a, b) => a - b);
+        const centerAverage = (providerValues[1] + providerValues[2]) / 2;
+        return Math.round(centerAverage / 100) * 100;
     }
 
     function calcRewardSystem({ totalNTD, targetAmount, strategies, rates, country, baseRate = 0 }) {
@@ -214,8 +330,9 @@
         let targetAmount = 0;
         let displayOriginal = 0;
         let displayCode = '';
+        let targetRate = 0;
         if (settings.mode === 'general') {
-            const targetRate = effectiveRates.krw * bankSpread;
+            targetRate = effectiveRates.krw * bankSpread;
             if (genInput.type === 'twd') {
                 twdBase = num;
                 targetAmount = twdBase / targetRate;
@@ -235,42 +352,16 @@
             displayOriginal = num;
         }
 
+        const grossTwdBase = twdBase;
+        const grossTargetAmount = targetAmount;
+
         let refundTwd = 0;
+        let refundNative = 0;
         if (settings.mode === 'general') {
-            let refundNative = 0;
-            if (settings.taxMode === 'auto') {
-                const a = targetAmount;
-                if (a >= 15000) {
-                    if (a < 30000) refundNative = 1000;
-                    else if (a < 50000) refundNative = 2000;
-                    else if (a < 75000) refundNative = 3500;
-                    else if (a < 100000) refundNative = 5000;
-                    else if (a < 125000) refundNative = 7500;
-                    else if (a < 150000) refundNative = 9000;
-                    else if (a < 175000) refundNative = 10000;
-                    else if (a < 200000) refundNative = 12000;
-                    else if (a < 225000) refundNative = 13500;
-                    else if (a < 250000) refundNative = 15500;
-                    else if (a < 275000) refundNative = 17000;
-                    else if (a < 300000) refundNative = 19000;
-                    else if (a < 325000) refundNative = 20500;
-                    else if (a < 350000) refundNative = 22000;
-                    else if (a < 375000) refundNative = 24000;
-                    else if (a < 400000) refundNative = 25500;
-                    else if (a < 450000) refundNative = 28000;
-                    else if (a < 500000) refundNative = 32000;
-                    else if (a < 550000) refundNative = 35000;
-                    else if (a < 600000) refundNative = 39000;
-                    else if (a < 650000) refundNative = 42000;
-                    else if (a < 700000) refundNative = 45000;
-                    else if (a < 750000) refundNative = 48000;
-                    else if (a < 800000) refundNative = 52000;
-                    else if (a < 850000) refundNative = 55000;
-                    else if (a < 900000) refundNative = 58000;
-                    else if (a < 950000) refundNative = 61000;
-                    else if (a < 1000000) refundNative = 64000;
-                    else refundNative = Math.floor(a * 0.065 / 1000) * 1000;
-                }
+            if (settings.taxMode === 'manual') {
+                refundNative = Math.max(0, parseFloat(settings.manualRefundKRW) || 0);
+            } else if (settings.taxMode === 'auto') {
+                refundNative = estimateKoreaRefundKRW(grossTargetAmount);
             }
             refundTwd = Math.round(refundNative * effectiveRates.krw);
         } else {
@@ -278,16 +369,22 @@
             refundTwd = Math.round(rebateUsd * effectiveRates.usdToCny * effectiveRates.cny);
         }
 
+        const isImmediateTaxRefund = settings.mode === 'general' && settings.taxMode !== 'off' && settings.refundMethod === 'immediate';
+        const paymentTargetAmount = isImmediateTaxRefund ? Math.max(grossTargetAmount - refundNative, 0) : grossTargetAmount;
+        const paymentTwdBase = isImmediateTaxRefund ? Math.round(paymentTargetAmount * targetRate) : grossTwdBase;
+        const postPurchaseRefundTwd = isImmediateTaxRefund ? 0 : refundTwd;
+
         const displayRefund = refundTwd;
         const effectiveFee = settings.isMobilePay && settings.isBankAccount ? 0 : settings.fee;
-        const spreadCost = settings.isMobilePay ? twdBase * ((settings.mobileSpread || (settings.isBankAccount ? 1 : 0)) / 100) : 0;
-        const feeAmount = Math.round(twdBase * (effectiveFee / 100));
+        const mobileSpread = settings.mobileSpread ?? (settings.isBankAccount ? 1 : 0);
+        const spreadCost = settings.isMobilePay ? paymentTwdBase * (mobileSpread / 100) : 0;
+        const feeAmount = Math.round(paymentTwdBase * (effectiveFee / 100));
 
         let rewardAmount = 0;
         let campaignData = null;
         const activeCard = settings.cardPresets.find((c) => c.id === settings.activePresetId);
 
-        let strategyTargetAmount = targetAmount;
+        let strategyTargetAmount = paymentTargetAmount;
         if (settings.mode === 'dutyfree') {
             strategyTargetAmount = (num * effectiveRates.usd) / effectiveRates.krw;
         }
@@ -295,7 +392,7 @@
         if (activeCard && activeCard.useStrategy) {
             const calculationStrategies = allStrategies[settings.activePresetId] || [];
             const v95 = calcRewardSystem({
-                totalNTD: twdBase,
+                totalNTD: paymentTwdBase,
                 targetAmount: strategyTargetAmount,
                 strategies: calculationStrategies,
                 rates: effectiveRates,
@@ -305,18 +402,19 @@
             rewardAmount = v95.totalPoints;
             campaignData = { v95 };
         } else {
-            rewardAmount = Math.round(twdBase * (settings.reward / 100));
+            rewardAmount = Math.round(paymentTwdBase * (settings.reward / 100));
             campaignData = { effectiveRate: settings.reward };
         }
 
-        const finalCost = Math.round(twdBase + feeAmount + spreadCost - rewardAmount - refundTwd);
-        const totalSaved = Math.round(twdBase - finalCost);
+        const finalCost = Math.round(paymentTwdBase + feeAmount + spreadCost - rewardAmount - postPurchaseRefundTwd);
+        const totalSaved = Math.round(grossTwdBase - finalCost);
         const refundLabel = settings.mode === 'dutyfree'
             ? `返點 (${settings.dutyFreeRebate}% | USD>CNY>TWD)`
-            : `退稅 (${twdBase > 0 ? ((displayRefund / twdBase) * 100).toFixed(1) : 0}%)`;
+            : `退稅 (${grossTwdBase > 0 ? ((displayRefund / grossTwdBase) * 100).toFixed(1) : 0}%)`;
 
         return {
-            twdBase: Math.round(twdBase),
+            twdBase: Math.round(paymentTwdBase),
+            grossTwdBase: Math.round(grossTwdBase),
             finalCost,
             totalSaved,
             refundTwd,
@@ -324,11 +422,12 @@
             rewardAmount,
             isWaived: effectiveFee === 0,
             spreadCost: Math.round(spreadCost),
-            targetAmount,
+            targetAmount: grossTargetAmount,
             displayOriginal,
             displayCode,
             refundLabel,
             displayRefund,
+            isImmediateTaxRefund,
             campaignData,
             totalRate: campaignData && campaignData.v95 ? campaignData.v95.totalRate : settings.reward
         };
@@ -406,15 +505,21 @@
     }
 
     async function fetchExchangeRates() {
-        const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`);
-        const data = await res.json();
-        if (!data.rates.TWD) throw new Error('Missing rates');
-        return {
-            usd: data.rates.TWD,
-            krw: data.rates.TWD / data.rates.KRW,
-            cny: data.rates.TWD / data.rates.CNY,
-            usdToCny: data.rates.CNY
-        };
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 5000);
+        try {
+            const res = await fetch(`https://api.exchangerate-api.com/v4/latest/USD?t=${Date.now()}`, { signal: controller.signal });
+            const data = await res.json();
+            if (!data.rates.TWD) throw new Error('Missing rates');
+            return {
+                usd: data.rates.TWD,
+                krw: data.rates.TWD / data.rates.KRW,
+                cny: data.rates.TWD / data.rates.CNY,
+                usdToCny: data.rates.CNY
+            };
+        } finally {
+            clearTimeout(id);
+        }
     }
 
     window.APP_CORE = Object.freeze({
@@ -441,6 +546,7 @@
         applyDutyFreeDiscount,
         adjustDutyFreeRebate,
         convertGeneralInputToDutyFreeTagPrice,
-        fetchExchangeRates
+        fetchExchangeRates,
+        estimateKoreaRefundKRW
     });
 })();
