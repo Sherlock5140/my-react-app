@@ -2,7 +2,7 @@
     const COPY = {
         strategyTitle: '策略設定',
         strategyEditingPrefix: '正在設定：',
-        strategyHint: '設定滿額禮與加碼 (所有項目皆可自訂)。',
+        strategyHint: '設定在基本回饋之外額外累加的活動加碼（所有項目皆可自訂）。',
         strategySave: '儲存設定',
         strategyNamePlaceholder: '新策略',
         capLabel: '上限',
@@ -10,17 +10,23 @@
         twdLabel: 'TWD',
         pointsLabel: '點',
         cardSettingsTitle: '信用卡設定',
+        cardSettingsHint: '調整每張卡片的回饋、卡別、行動支付與活動加碼。既有設定會直接沿用。',
         cardNamePlaceholder: '卡片名稱',
-        smartStrategyBadge: '智慧攻略',
+        smartStrategyBadge: '活動加碼',
         baseRewardLabel: '基本回饋',
         linePointShort: 'LINE P',
         cashRewardShort: '現金',
-        stackStrategyLabel: '疊加自訂策略',
-        configureLabel: '設定',
-        shoppingBindingLabel: '行動支付/綁定',
-        bankAccountBindingLabel: '綁定銀行帳戶/TWQR (免1.5%)',
-        mobileSpreadLabel: '額外平台手續費/匯差',
+        basicCardSectionLabel: '基本卡片',
+        boostSectionLabel: '加碼活動',
+        stackStrategyLabel: '在基本回饋上疊加活動',
+        configureLabel: '編輯內容',
+        paymentCostSectionLabel: '支付成本',
+        shoppingBindingLabel: '行動支付',
+        shoppingBindingHint: '開啟後可搭配 LINE Pay、街口等付款情境。',
+        bankAccountBindingLabel: '綁定銀行帳戶 / TWQR（免 1.5%）',
+        bankAccountBindingHint: '這是重要差異：啟用後可免海外 1.5% 手續費。',
         foreignFeeLabel: '海外手續費',
+        foreignFeeHint: '整體共用，會套用到所有一般模式刷卡試算。',
         finishSettings: '完成設定',
         receiptTitle: '成本試算明細',
         copyLabel: '複製',
@@ -29,6 +35,9 @@
         feeLabelPrefix: '+ 刷卡手續費',
         totalSavedLabel: '總回饋價值',
         finalCostLabel: '最終入手價 (TWD)',
+        baseRewardSummaryLabel: '基本回饋',
+        bonusRewardSummaryLabel: '活動加碼',
+        capProgressHint: ({ name, amount }) => `再刷 NT$${amount.toLocaleString()} 可吃滿「${name}」`,
         thresholdHintTitle: '消費門檻提示',
         thresholdHintBody: ({ currency, diff, name }) => `再消費約 ${currency} ${diff.toLocaleString()}，可觸發「${name}」。`,
         rewardExcludingFee: '不含手續費',
@@ -66,7 +75,7 @@
         dutyFreeSafe: '安全',
         dutyFreeWarning: '注意',
         dutyFreeRebateLabel: '返點設定 (Rebate %)',
-        appSubtitle: 'Calm travel calculator for Seoul shopping',
+        appSubtitle: 'Seoul Shopping Calculator',
         deleteConfirm: '確定刪除？',
         loadingStatus: '載入中...',
         updatingStatus: '更新中...',
@@ -198,7 +207,11 @@
     ];
 
     const DEFAULT_STRATEGIES_MAP = {
-        1: [{ id: 'c1', name: '銀行加碼', rate: 2.2, cap: 660, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }, { id: 'c2', name: 'VISA 滿額', rate: 10.0, cap: 3000, capUnit: 'points', active: true, type: 'threshold', minSpend: 190000, thresholdUnit: 'foreign' }],
+        1: [
+            { id: 'lp-global-10', name: 'LINE Pay 通用', rate: 10.0, cap: 1000, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd', layer: 'channel', requires: {} },
+            { id: 'visa-global-12', name: 'Visa 指定加碼', rate: 12.0, cap: 1200, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd', layer: 'network', requires: { cardType: 'visa' } },
+            { id: 'ctbc-bonus-52', name: '中信額外 5.2%', rate: 5.2, cap: 520, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd', layer: 'issuer', requires: {} }
+        ],
         2: [{ id: 'f1', name: '韓國加碼', rate: 3.0, cap: 600, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
         3: [{ id: 'q1', name: '切換權益', rate: 3.0, cap: 0, capUnit: 'twd', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }],
         4: [{ id: 't1', name: '活動回饋', rate: 10.0, cap: 500, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]
@@ -208,10 +221,10 @@
         country: 'KR', mode: 'general', fee: 1.5, reward: 3.0, rewardType: 'points',
         taxMode: 'auto', refundMethod: 'airport', dutyFreeRebate: 36, manualRefundKRW: '',
         cardPresets: [
-            { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, mobileSpread: 0, enabled: true, useStrategy: true },
+            { id: 1, name: '中信 LINE Pay', type: 'visa', reward: 2.8, rewardType: 'points', isMobilePay: false, isBankAccount: false, enabled: true, useStrategy: true },
             { id: 2, name: '富邦 J', type: 'jcb', reward: 3.0, rewardType: 'points', isMobilePay: false, enabled: true, useStrategy: false },
             { id: 3, name: '國泰CUBE', type: 'master', reward: 3.0, rewardType: 'cash', isMobilePay: false, enabled: true, useStrategy: false },
-            { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, mobileSpread: 1.0, enabled: true, useStrategy: false }
+            { id: 4, name: '台灣Pay', type: 'visa', reward: 2.0, rewardType: 'cash', isMobilePay: true, isBankAccount: true, enabled: true, useStrategy: false }
         ],
         activePresetId: 1
     };
@@ -222,6 +235,70 @@
 
     function safeSetStorage(key, value) {
         try { localStorage.setItem(key, value); } catch (e) {}
+    }
+
+    function cloneStrategiesMap(map) {
+        return JSON.parse(JSON.stringify(map));
+    }
+
+    function isLegacyCtbcStrategySet(strategies) {
+        if (!Array.isArray(strategies)) return true;
+        if (strategies.length === 2 && strategies[0]?.id === 'c1' && strategies[1]?.id === 'c2') return true;
+        if (strategies.some((st) => st?.name === '銀行加碼') || strategies.some((st) => st?.name === 'VISA 滿額')) return true;
+        return false;
+    }
+
+    function upgradeStrategiesMap(existingMap) {
+        const nextMap = cloneStrategiesMap(existingMap || DEFAULT_STRATEGIES_MAP);
+        if (isLegacyCtbcStrategySet(nextMap[1])) {
+            nextMap[1] = cloneStrategiesMap(DEFAULT_STRATEGIES_MAP[1]);
+        } else if (Array.isArray(nextMap[1])) {
+            nextMap[1] = nextMap[1].map((strategy) => {
+                if (strategy?.id === 'lp-global-10') {
+                    return {
+                        ...strategy,
+                        name: 'LINE Pay 通用',
+                        rate: 10.0,
+                        cap: 1000,
+                        capUnit: 'points',
+                        layer: 'channel',
+                        requires: {}
+                    };
+                }
+                if (strategy?.id === 'visa-global-12') {
+                    return {
+                        ...strategy,
+                        name: 'Visa 指定加碼',
+                        rate: 12.0,
+                        cap: 1200,
+                        capUnit: 'points',
+                        layer: 'network',
+                        requires: { cardType: 'visa' }
+                    };
+                }
+                if (strategy?.id === 'ctbc-bonus-52') {
+                    return {
+                        ...strategy,
+                        name: '中信額外 5.2%',
+                        rate: 5.2,
+                        cap: 520,
+                        capUnit: 'points',
+                        layer: 'issuer',
+                        requires: {}
+                    };
+                }
+                return strategy;
+            });
+        }
+        return nextMap;
+    }
+
+    function isStrategyEligible(strategy, context) {
+        const requires = strategy?.requires || {};
+        if (requires.isMobilePay === true && !context.isMobilePay) return false;
+        if (requires.isBankAccount === true && !context.isBankAccount) return false;
+        if (requires.cardType && requires.cardType !== context.cardType) return false;
+        return true;
     }
 
     function lookupRefundFromTable(amount, table, fallbackRate = 0.064) {
@@ -243,16 +320,50 @@
         return Math.round(centerAverage / 100) * 100;
     }
 
-    function calcRewardSystem({ totalNTD, targetAmount, strategies, rates, country, baseRate = 0 }) {
+    function calcPercentReward(amount, rate) {
+        return Math.floor((amount * (rate / 100)) + 1e-6);
+    }
+
+    function calcRewardSystem({ totalNTD, targetAmount, strategies, rates, country, baseRate = 0, context = {} }) {
         let totalStrategyPoints = 0;
         let nextThresholdMsg = null;
         let minDiffToNext = Infinity;
         const capWarnings = [];
-        const basePoints = Math.floor(totalNTD * (baseRate / 100));
+        const basePoints = calcPercentReward(totalNTD, baseRate);
         const activeStrategies = strategies.filter((s) => s.active);
         const currentCurrencyRate = rates.krw;
+        const layers = [{
+            id: 'base',
+            name: COPY.baseRewardSummaryLabel,
+            layer: 'base',
+            rate: baseRate,
+            reward: basePoints,
+            cap: null,
+            capUnit: 'points',
+            spendToCap: null,
+            remainingSpendToCap: null,
+            isEligible: baseRate > 0,
+            isCapped: false
+        }];
 
         activeStrategies.forEach((st) => {
+            const eligibleForContext = isStrategyEligible(st, context);
+            if (!eligibleForContext) {
+                layers.push({
+                    id: st.id,
+                    name: st.name,
+                    layer: st.layer || 'promo',
+                    rate: st.rate,
+                    reward: 0,
+                    cap: st.cap && st.cap > 0 ? st.cap : null,
+                    capUnit: st.capUnit || 'points',
+                    spendToCap: null,
+                    remainingSpendToCap: null,
+                    isEligible: false,
+                    isCapped: false
+                });
+                return;
+            }
             const threshold = st.minSpend || 0;
             let currentAmountForCheck = 0;
             let currencyLabel = '';
@@ -271,33 +382,57 @@
                     let effectiveCapTWD = Infinity;
                     if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
                     const eligibleTWD = Math.min(projectedTWD, effectiveCapTWD);
-                    const estimatedGain = Math.floor(eligibleTWD * (st.rate / 100));
+                    const estimatedGain = calcPercentReward(eligibleTWD, st.rate);
                     nextThresholdMsg = { name: st.name, diff: Math.ceil(diff), potentialGain: estimatedGain, currency: currencyLabel };
                 }
                 return;
             }
 
             let effectiveCapTWD = Infinity;
-            if (st.cap && st.cap > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
+            if (st.cap && st.cap > 0 && st.rate > 0) effectiveCapTWD = st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100));
             const eligibleTWD = Math.min(totalNTD, effectiveCapTWD);
             const potentialPoints = totalNTD * (st.rate / 100);
-            const actualPoints = eligibleTWD * (st.rate / 100);
+            const actualPoints = calcPercentReward(eligibleTWD, st.rate);
             if (potentialPoints > 0 && (potentialPoints - actualPoints) / potentialPoints > 0.3) {
                 capWarnings.push({ name: st.name, loss: Math.floor(potentialPoints - actualPoints) });
             }
+            const spendToCap = st.cap && st.cap > 0 && st.rate > 0
+                ? Math.ceil(st.capUnit === 'twd' ? st.cap : (st.cap / (st.rate / 100)))
+                : null;
+            const remainingSpendToCap = spendToCap === null ? null : Math.max(Math.ceil(spendToCap - totalNTD), 0);
+            const capValue = st.cap && st.cap > 0 ? st.cap : null;
+            layers.push({
+                id: st.id,
+                name: st.name,
+                layer: st.layer || 'promo',
+                rate: st.rate,
+                reward: actualPoints,
+                cap: capValue,
+                capUnit: st.capUnit || 'points',
+                spendToCap,
+                remainingSpendToCap,
+                isEligible: true,
+                isCapped: spendToCap !== null && totalNTD >= spendToCap
+            });
             totalStrategyPoints += actualPoints;
         });
 
-        const finalTotalPoints = basePoints + Math.floor(totalStrategyPoints);
+        const bonusPoints = Math.floor(totalStrategyPoints);
+        const finalTotalPoints = basePoints + bonusPoints;
         const totalRate = totalNTD > 0 ? (finalTotalPoints / totalNTD) * 100 : 0;
+        const nextCapLayer = layers
+            .filter((layer) => layer.layer !== 'base' && layer.remainingSpendToCap !== null && layer.remainingSpendToCap > 0)
+            .sort((a, b) => a.remainingSpendToCap - b.remainingSpendToCap)[0] || null;
         return {
             totalPoints: finalTotalPoints,
             totalRate: isNaN(totalRate) ? '0.0' : totalRate.toFixed(1),
             suggestionMsg: nextThresholdMsg,
             mode: 'dynamic',
-            actPoints: Math.floor(totalStrategyPoints),
+            actPoints: bonusPoints,
             basePoints,
-            capWarnings
+            capWarnings,
+            layers,
+            nextCapLayer
         };
     }
 
@@ -370,13 +505,14 @@
         const postPurchaseRefundTwd = isImmediateTaxRefund ? 0 : refundTwd;
 
         const displayRefund = refundTwd;
-        const effectiveFee = settings.isMobilePay && settings.isBankAccount ? 0 : settings.fee;
-        const mobileSpread = settings.mobileSpread ?? (settings.isBankAccount ? 1 : 0);
-        const spreadCost = settings.isMobilePay ? paymentTwdBase * (mobileSpread / 100) : 0;
+        const effectiveFee = settings.isBankAccount ? 0 : settings.fee;
+        const spreadCost = 0;
         const feeAmount = Math.round(paymentTwdBase * (effectiveFee / 100));
 
         let rewardAmount = 0;
         let campaignData = null;
+        let baseRewardAmount = 0;
+        let bonusRewardAmount = 0;
         const activeCard = settings.cardPresets.find((c) => c.id === settings.activePresetId);
 
         let strategyTargetAmount = paymentTargetAmount;
@@ -392,13 +528,50 @@
                 strategies: calculationStrategies,
                 rates: effectiveRates,
                 country: settings.country,
-                baseRate: activeCard.reward
+                baseRate: activeCard.reward,
+                context: {
+                    isMobilePay: !!activeCard.isMobilePay,
+                    isBankAccount: !!activeCard.isBankAccount,
+                    cardType: activeCard.type
+                }
             });
             rewardAmount = v95.totalPoints;
-            campaignData = { v95 };
+            baseRewardAmount = v95.basePoints;
+            bonusRewardAmount = v95.actPoints;
+            campaignData = {
+                v95,
+                rewardBreakdown: {
+                    baseRewardAmount,
+                    bonusRewardAmount,
+                    nextCapLayer: v95.nextCapLayer,
+                    layers: v95.layers
+                }
+            };
         } else {
-            rewardAmount = Math.round(paymentTwdBase * (settings.reward / 100));
-            campaignData = { effectiveRate: settings.reward };
+            rewardAmount = calcPercentReward(paymentTwdBase, settings.reward);
+            baseRewardAmount = rewardAmount;
+            bonusRewardAmount = 0;
+            campaignData = {
+                effectiveRate: settings.reward,
+                rewardBreakdown: {
+                    baseRewardAmount,
+                    bonusRewardAmount,
+                    nextCapLayer: null,
+                    layers: [{
+                        id: 'base',
+                        name: COPY.baseRewardSummaryLabel,
+                        layer: 'base',
+                        rate: settings.reward,
+                        reward: rewardAmount,
+                        cap: null,
+                        capUnit: 'points',
+                        spendToCap: null,
+                        remainingSpendToCap: null,
+                        isEligible: settings.reward > 0,
+                        isCapped: false
+                    }]
+                }
+            };
         }
 
         const finalCost = Math.round(paymentTwdBase + feeAmount + spreadCost - rewardAmount - postPurchaseRefundTwd);
@@ -415,6 +588,8 @@
             refundTwd,
             feeAmount,
             rewardAmount,
+            baseRewardAmount,
+            bonusRewardAmount,
             isWaived: effectiveFee === 0,
             spreadCost: Math.round(spreadCost),
             targetAmount: grossTargetAmount,
@@ -526,6 +701,7 @@
         RATE_CACHE_TTL,
         AUTO_REFRESH_INTERVAL,
         DEFAULT_STRATEGIES_MAP,
+        upgradeStrategiesMap,
         DEFAULT_SETTINGS,
         safeGetStorage,
         safeSetStorage,

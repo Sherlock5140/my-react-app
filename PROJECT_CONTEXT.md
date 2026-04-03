@@ -292,3 +292,101 @@ Entry format:
   Type: UI, Optimization
   Summary: 移除右下角只有微調 padding 的 Screenshot Mode 浮動按鈕，並清掉目前沒有任何觸發入口的 InstallPrompt 元件、對應 state 與 copy 文案，收斂頁面上低價值且未實際運作的 UI 功能。
   Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 01:59 CST
+  Updated by: Codex
+  Type: UI, Optimization
+  Summary: 重新整理信用卡設定頁的資訊架構，在不更動既有卡片資料結構的前提下，將每張卡片改為「基本卡片 / 加碼活動 / 支付成本」三段式版面，補上提示文字並重新命名行動支付、銀行帳戶綁定、平台匯差等欄位；同步把 header 英文副標改為更貼近功能含義的 `Seoul Shopping Calculator`。
+  Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:02 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 依回饋補強信用卡設定中「綁定銀行帳戶 / TWQR」的重要提示，將標題直接改為含 `免 1.5%` 的版本，並新增醒目的 `免 1.5%` 小標與更明確的說明文字，避免這個影響試算結果的關鍵條件被看漏。
+  Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:03 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 重新校正策略相關文案，將原本容易誤解為單獨滿額禮的描述改為更貼近實際邏輯的「在基本回饋上疊加活動」，並同步調整策略設定提示與 badge 名稱，明確表達這是信用卡基本回饋之外的額外加碼。
+  Files: `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:17 CST
+  Updated by: Codex
+  Type: Optimization, UI
+  Summary: 在備份目前版本後，先對既有回饋模型做相容升級：公式正式拆出 `基本回饋` 與 `活動加碼` 兩段計算，策略層新增每層回饋、cap、吃滿上限所需消費與下一個最接近 cap 的活動輸出；明細卡同步顯示基本回饋/活動加碼拆分與「再刷多少可吃滿」提示，作為後續多層活動規則引擎的過渡版本。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:20 CST
+  Updated by: Codex
+  Type: Data, Optimization
+  Summary: 將中信 LINE Pay Visa 預設策略直接更新為本次活動結構：`LINE Pay 通用 10%`、`Visa 指定加碼 12%`、`中信額外 5.2%`（520 點上限），保留 2.8% 為卡片基本回饋；另外新增舊版預設策略 migration，只有偵測到仍是舊的 `銀行加碼 / VISA 滿額` 預設組合時才自動升級，避免覆蓋使用者自訂策略。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:24 CST
+  Updated by: Codex
+  Type: UI, Data
+  Summary: 依補充資料修正中信活動各層 cap，將 `LINE Pay 通用 10%` 設為 1000 點上限、`Visa 指定加碼 12%` 設為 1200 點上限；同時進一步拉開信用卡設定頁三個分區的色塊與視覺層次，讓基本卡片、活動加碼、支付成本更容易一眼分辨。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:28 CST
+  Updated by: Codex
+  Type: Bug Fix, Data
+  Summary: 修正百分比回饋計算的浮點誤差，避免像 `10000 × 2.8%` 被錯算成 279 點。新增安全百分比回饋計算函式後，中信 LINE Pay Visa 驗算已回到 `基本 280 + 加碼 2720 = 3000 點 / 30.0%` 的正確結果。
+  Files: `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:30 CST
+  Updated by: Codex
+  Type: Bug Fix, Data
+  Summary: 修正中信預設策略 migration 同步不完整的問題。原先已升級為 `LINE Pay 通用 / Visa 指定加碼 / 中信額外 5.2%` 的本機資料，若 cap 仍停留在舊值或 0，現在會在載入時一併補正為 `1000 / 1200 / 520` 點上限，避免策略設定視窗與實際公式不同步。
+  Files: `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:34 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 補上活動加碼與行動支付之間的依賴提示。當卡片已啟用活動加碼但未開啟行動支付時，信用卡設定頁會直接顯示 LINE Pay / 通路加碼不生效的警示，避免公式條件藏在設定內造成誤解。
+  Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:35 CST
+  Updated by: Codex
+  Type: Bug Fix, Optimization
+  Summary: 依規則收斂行動支付成本邏輯，移除先前誤加的 `平台匯差 / 額外成本` 概念與 slider，公式改為行動支付本身不產生額外費用；支付成本只保留真正會影響結果的 `綁定銀行帳戶 / TWQR 免 1.5%` 條件。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:37 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 將原本殘留舊語意的「支付成本」區塊改名為「活動條件」，並把「行動支付」改成更直接的「LINE Pay 通路」，避免在已移除額外成本後仍讓人誤會這一區是在設定費用。
+  Files: `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:38 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 移除我額外長出的獨立條件區塊，將 LINE Pay 條件收回到「加碼活動」設定內，只保留一個精簡的 `使用 LINE Pay` 開關與 `免 1.5%` 條件，避免畫面多出一整欄與原本設定流程脫節。
+  Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:42 CST
+  Updated by: Codex
+  Type: Bug Fix, UI
+  Summary: 收回先前多做的 LINE Pay 通路開關，避免把公式條件硬塞成新的操作流程。中信 LINE Pay 預設三層活動改為直接由卡片公式判斷，不再要求額外開啟 `LINE Pay 通路`；信用卡設定頁同步回到以 `支付成本` 與 `免 1.5%` 為主，保留其他卡片的行動支付開關但移除中信卡上多餘的條件欄位。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 02:42 CST
+  Updated by: Codex
+  Type: Cache
+  Summary: 為手機端延遲更新補強快取版本管理。首頁 icon 與 `apple-touch-icon` 改帶版本 query string，`sw.js` cache name 也同步升版，降低 iPhone 主畫面與 Safari 持續命中舊快取導致畫面、圖示與資料不同步的機率。
+  Files: `index.html`, `sw.js`, `PROJECT_CONTEXT.md`
