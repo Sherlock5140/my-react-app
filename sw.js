@@ -1,8 +1,10 @@
-const CACHE_NAME = '購黑皮-v1-20260404';
+const CACHE_NAME = '購黑皮-v2-20260404-iconpng';
 const APP_SHELL = [
   './',
   './index.html',
-  './formulas.js'
+  './formulas.js',
+  './icon.svg',
+  './apple-touch-icon.png'
 ];
 
 const APP_SHELL_PATHS = new Set(

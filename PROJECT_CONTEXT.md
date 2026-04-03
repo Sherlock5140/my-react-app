@@ -271,3 +271,10 @@ Entry format:
   Type: UI
   Summary: 依最新方向把主畫面圖示再收斂為單一計算機設計，移除收據與價格牌等混合語意，只保留圓角裝置、顯示幕與鍵盤按鍵，讓 icon 更乾淨俐落且更像獨立工具 App。
   Files: `icon.svg`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 01:46 CST
+  Updated by: Codex
+  Type: UI, PWA
+  Summary: 修正 iPhone 主畫面圖示未連動更新的問題。新增標準 `apple-touch-icon.png`，將 index.html 的 apple-touch-icon 從 SVG 改為 PNG，並同步把 `icon.svg` 與 `apple-touch-icon.png` 納入 Service Worker app shell 並更新 cache 名稱，降低手機端沿用舊 icon 的機率。
+  Files: `index.html`, `sw.js`, `apple-touch-icon.png`, `PROJECT_CONTEXT.md`
