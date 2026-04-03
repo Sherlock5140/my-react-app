@@ -285,3 +285,10 @@ Entry format:
   Type: UI, PWA
   Summary: 將頁面標題與 iPhone 主畫面名稱從帶版本號的 `購黑皮 V125` 收斂為純 `購黑皮`，避免加到主畫面後顯示過長且像測試版名稱的文字。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 01:51 CST
+  Updated by: Codex
+  Type: UI, Optimization
+  Summary: 移除右下角只有微調 padding 的 Screenshot Mode 浮動按鈕，並清掉目前沒有任何觸發入口的 InstallPrompt 元件、對應 state 與 copy 文案，收斂頁面上低價值且未實際運作的 UI 功能。
+  Files: `index.html`, `formulas.js`, `PROJECT_CONTEXT.md`

@@ -1,8 +1,5 @@
 (function () {
     const COPY = {
-        installTitle: '安裝到主畫面',
-        installBody: '請點擊分享按鈕，選擇「加入主畫面」。',
-        confirmLabel: '知道了',
         strategyTitle: '策略設定',
         strategyEditingPrefix: '正在設定：',
         strategyHint: '設定滿額禮與加碼 (所有項目皆可自訂)。',
@@ -69,8 +66,6 @@
         dutyFreeSafe: '安全',
         dutyFreeWarning: '注意',
         dutyFreeRebateLabel: '返點設定 (Rebate %)',
-        screenshotMode: 'Screenshot Mode',
-        exitScreenshotMode: 'Exit Screenshot Mode',
         appSubtitle: 'Calm travel calculator for Seoul shopping',
         deleteConfirm: '確定刪除？',
         loadingStatus: '載入中...',
