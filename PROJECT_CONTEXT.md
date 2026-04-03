@@ -278,3 +278,10 @@ Entry format:
   Type: UI, PWA
   Summary: 修正 iPhone 主畫面圖示未連動更新的問題。新增標準 `apple-touch-icon.png`，將 index.html 的 apple-touch-icon 從 SVG 改為 PNG，並同步把 `icon.svg` 與 `apple-touch-icon.png` 納入 Service Worker app shell 並更新 cache 名稱，降低手機端沿用舊 icon 的機率。
   Files: `index.html`, `sw.js`, `apple-touch-icon.png`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 01:47 CST
+  Updated by: Codex
+  Type: UI, PWA
+  Summary: 將頁面標題與 iPhone 主畫面名稱從帶版本號的 `購黑皮 V125` 收斂為純 `購黑皮`，避免加到主畫面後顯示過長且像測試版名稱的文字。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
