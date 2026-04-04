@@ -452,10 +452,42 @@
         };
     }
 
+    function evaluateMathExpression(raw) {
+        if (raw === null || raw === undefined) return NaN;
+        if (typeof raw === 'number') return Number.isFinite(raw) ? raw : NaN;
+        const normalized = String(raw)
+            .replace(/,/g, '')
+            .replace(/\s+/g, '')
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/');
+        if (!normalized) return NaN;
+        if (!/^[\d+\-*/().]+$/.test(normalized)) return NaN;
+        if (!/\d/.test(normalized)) return NaN;
+        try {
+            const result = Function(`"use strict"; return (${normalized});`)();
+            if (!Number.isFinite(result) || result < 0) return NaN;
+            return result;
+        } catch (e) {
+            return NaN;
+        }
+    }
+
+    function commitExpressionInput(raw, mode = 'integer') {
+        if (raw === null || raw === undefined) return '';
+        const text = String(raw).trim();
+        if (!text) return '';
+        const value = evaluateMathExpression(text);
+        if (isNaN(value)) return text;
+        if (mode === 'decimal2') {
+            return value.toFixed(2).replace(/\.?0+$/, '');
+        }
+        return Math.round(value).toString();
+    }
+
     function buildCalcResult({ settings, genInput, dfInput, effectiveRates, allStrategies }) {
         const rawInput = settings.mode === 'general' ? genInput.val : dfInput.payVal;
         if (!rawInput) return { twdBase: 0 };
-        const num = parseFloat(rawInput);
+        const num = evaluateMathExpression(rawInput);
         if (isNaN(num)) return { twdBase: 0 };
 
         const spread = settings.cardType === 'jcb' ? 0 : (settings.cardType === 'master' ? 0.8 : 1.0);
@@ -617,9 +649,10 @@
     }
 
     function getDisplayVal(field, genInput, rates) {
-        if (!genInput.val || isNaN(parseFloat(genInput.val))) return '';
+        if (!genInput.val) return '';
         if (genInput.type === field) return genInput.val;
-        const num = parseFloat(genInput.val);
+        const num = evaluateMathExpression(genInput.val);
+        if (isNaN(num)) return '';
         const rKrw = rates.krw;
         const rUsd = rates.usd;
         const targetRate = rKrw || 1;
@@ -647,8 +680,8 @@
 
     function getDutyFreeDiscountStatus(tagPrice, payVal) {
         if (!tagPrice || !payVal) return null;
-        const original = parseFloat(tagPrice);
-        const finalValue = parseFloat(payVal);
+        const original = evaluateMathExpression(tagPrice);
+        const finalValue = evaluateMathExpression(payVal);
         if (isNaN(original) || isNaN(finalValue) || original === 0) return null;
         const pct = Math.round((finalValue / original) * 100);
         const fold = pct % 10 === 0 ? pct / 10 : (pct / 10).toFixed(1);
@@ -660,7 +693,7 @@
 
     function applyDutyFreeDiscount(tagPrice, percent) {
         if (!tagPrice) return '';
-        const original = parseFloat(tagPrice);
+        const original = evaluateMathExpression(tagPrice);
         if (isNaN(original)) return '';
         return (original * (percent / 100)).toFixed(2).replace(/\.00$/, '');
     }
@@ -671,7 +704,7 @@
 
     function convertGeneralInputToDutyFreeTagPrice(genInput, effectiveRates) {
         if (!genInput.val) return '';
-        const num = parseFloat(genInput.val);
+        const num = evaluateMathExpression(genInput.val);
         if (isNaN(num)) return '';
         let usdVal = 0;
         if (genInput.type === 'usd') usdVal = num;
@@ -713,6 +746,8 @@
         safeSetStorage,
         calcRewardSystem,
         normalizeRates,
+        evaluateMathExpression,
+        commitExpressionInput,
         buildCalcResult,
         buildAdvice,
         getDisplayVal,

@@ -502,3 +502,10 @@ Entry format:
   Type: Bug Fix
   Summary: BreakdownPanel 公式及文字全面審查。確認退稅門檻 15,000 KRW 在三個位置（lookupRefundFromTable、estimateKoreaRefundKRW、index.html 判斷）皆正確。所有計算公式與截圖數字交叉驗證無誤。修正唯一顯示 bug：displayOriginal 未四捨五入，從 TWD 或 USD 換算出的 KRW 值帶浮點小數（如 466,598.059），改為 Math.round(targetAmount)，與 getCopyText 行為一致。
   Files: `formulas.js`
+
+- 2026-04-04
+  Updated at: 2026-04-04 13:09 CST
+  Updated by: Codex
+  Type: Feature
+  Summary: 金額輸入欄位新增四則運算表達式支援，使用者可直接輸入 `+ - * / ()` 算式，於 blur 或 Enter 確認後自動收斂成結果值，再沿用當下最新匯率與既有試算公式。一般購物三個幣別欄位與免稅購物的原價 / 實付款欄位皆同步支援；核心換算、免稅折扣判斷與一般轉免稅預填也改成讀取算式結果，不新增額外欄位。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
