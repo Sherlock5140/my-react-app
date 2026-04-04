@@ -404,3 +404,10 @@ Entry format:
   Type: UI, Formula
   Summary: 修正現場折抵時的回饋率顯示語意。原本 `LINE POINTS (30.0%)` 容易讓人誤會是以原價計算，現在改成 `LINE POINTS (實刷 30.0%)`，明示回饋率是套用在現場折抵後的實際刷卡金額上，與公式一致。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:48 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 依需求移除回饋主標中的 `實刷` 字樣，將現場折抵的回饋基準改為在主列下方補一行公式提示：`實刷金額 × 回饋率 ≈ 回饋金額`。提示字色與活動加碼下方的 cap 進度說明一致，讓主列維持乾淨、下方再補足理解所需資訊。
+  Files: `index.html`, `PROJECT_CONTEXT.md`

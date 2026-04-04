@@ -553,7 +553,9 @@
 
             const rewardLabel = getRewardLabel(settings.rewardType);
             const activeCardRate = campaignData?.v95?.totalRate || campaignData?.effectiveRate || 0;
-            const rewardRateText = isImmediateTaxRefund ? `實刷 ${activeCardRate}%` : `${activeCardRate}%`;
+            const rewardFormulaText = isImmediateTaxRefund
+                ? `實刷金額 $${twdBase.toLocaleString()} × ${activeCardRate}% ≈ 回饋 $${rewardAmount.toLocaleString()}`
+                : null;
 
             const errorMargin = getErrorMargin(displayRefund);
 
@@ -576,11 +578,16 @@
                         
                         <div className="flex justify-between items-center text-[#10B981] leading-none min-h-[2rem]">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium">- {rewardLabel} ({rewardRateText})</span>
+                                <span className="font-medium">- {rewardLabel} ({activeCardRate}%)</span>
                                 <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
                             </div>
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
+                        {rewardFormulaText && (
+                            <div className="mt-[-0.45rem] text-[10px] text-[#8E918C] font-medium">
+                                {rewardFormulaText}
+                            </div>
+                        )}
                         {rewardBreakdown && (
                             <div className="mt-[-0.35rem] mb-1 rounded-[1rem] bg-[rgba(255,255,255,0.36)] border border-white/55 px-3 py-2">
                                 <div className="flex items-center justify-between text-[10px] text-[#757573] font-bold">
