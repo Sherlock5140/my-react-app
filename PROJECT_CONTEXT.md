@@ -495,3 +495,10 @@ Entry format:
   Type: UI
   Summary: 依確認版本微調綠色卡文案：區塊標題改為 `優惠內容`，主列改成 `LINE POINTS 回饋 (30.0%)` / `現金回饋 (3.0%)` 的語氣，移除原本重複且不自然的 `回饋點數` 前綴。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:51 CST
+  Updated by: Claude Code
+  Type: Bug Fix
+  Summary: BreakdownPanel 公式及文字全面審查。確認退稅門檻 15,000 KRW 在三個位置（lookupRefundFromTable、estimateKoreaRefundKRW、index.html 判斷）皆正確。所有計算公式與截圖數字交叉驗證無誤。修正唯一顯示 bug：displayOriginal 未四捨五入，從 TWD 或 USD 換算出的 KRW 值帶浮點小數（如 466,598.059），改為 Math.round(targetAmount)，與 getCopyText 行為一致。
+  Files: `formulas.js`

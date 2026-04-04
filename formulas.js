@@ -479,7 +479,7 @@
                 targetAmount = num;
                 twdBase = num * targetRate;
             }
-            displayOriginal = targetAmount;
+            displayOriginal = Math.round(targetAmount);
             displayCode = 'KRW';
         } else {
             twdBase = num * rUsd;
