@@ -390,3 +390,10 @@ Entry format:
   Type: Cache
   Summary: 為手機端延遲更新補強快取版本管理。首頁 icon 與 `apple-touch-icon` 改帶版本 query string，`sw.js` cache name 也同步升版，降低 iPhone 主畫面與 Safari 持續命中舊快取導致畫面、圖示與資料不同步的機率。
   Files: `index.html`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:34 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 微調成本試算明細內活動加碼下方的 cap 進度提示字色，將「再刷 NT$... 可吃滿...」由過淡的淺灰改為較深的暖灰，保留低干擾感但提高手機閱讀清晰度。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
