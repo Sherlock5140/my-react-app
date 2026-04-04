@@ -869,10 +869,6 @@
                 setDfInput({ ...dfInput, [field]: String(dfInput[field] || '').slice(0, -1) });
                 setActiveField(field);
             };
-            useEffect(() => {
-                if (!useMathKeypad || !activeField) return;
-                const node = fieldRefs.current[activeField];
-                if (!node) return;
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
                 const isActive = activeField === field;
