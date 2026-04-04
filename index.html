@@ -581,16 +581,14 @@
                                 <span className="text-[11px] font-bold text-[#6F827D] tracking-[0.04em]">{COPY.benefitSectionLabel}</span>
                             </div>
                             <div className="mt-3 flex justify-between items-start text-[#10B981] min-h-[2.2rem]">
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[11px] font-bold leading-none">{COPY.rewardValueLabel} {rewardLabel}</span>
-                                    </div>
-                                    <span className="text-[11px] font-bold leading-none mt-1">({activeCardRate}%)</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[11px] font-bold leading-none">{COPY.rewardValueLabel} {rewardLabel}</span>
+                                    <span className="text-[11px] font-bold leading-none">({activeCardRate}%)</span>
                                 </div>
                                 <span className="text-[1.2rem] font-bold text-[#10B981] tracking-[-0.02em]">+${rewardAmount.toLocaleString()}</span>
                             </div>
                             {rewardFormulaText && (
-                                <div className="mt-[-0.25rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
+                                <div className="mt-[-0.55rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
                                     {rewardFormulaText}
                                 </div>
                             )}

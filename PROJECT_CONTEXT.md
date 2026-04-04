@@ -481,3 +481,10 @@ Entry format:
   Type: UI
   Summary: 依需求移除回饋主列中的 `不含手續費` 膠囊，避免與下方已獨立列出的手續費成本重複說明，讓回饋主列只保留必要資訊。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:28 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 將回饋主列左側資訊改回單行並排，讓 `LINE POINTS (30.0%)` 放在同一行；同時微調下方公式提示的上距，維持主列與說明之間的緊密度。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
