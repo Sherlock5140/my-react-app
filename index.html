@@ -709,6 +709,18 @@
                 setGenInput({ val: String(currentValue || '').slice(0, -1), type: field });
                 setActiveField(field);
             };
+            useEffect(() => {
+                if (!useMathKeypad || !activeField) return;
+                const node = fieldRefs.current[activeField];
+                if (!node) return;
+                requestAnimationFrame(() => {
+                    const mainEl = document.querySelector('main');
+                    if (!mainEl) return;
+                    const nodeTop = node.getBoundingClientRect().top;
+                    const mainTop = mainEl.getBoundingClientRect().top;
+                    mainEl.scrollTop = mainEl.scrollTop + nodeTop - mainTop - 16;
+                });
+            }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
                 const isActive = activeField === field;
@@ -788,13 +800,10 @@
             };
 
             return (
-                <div className="block space-y-4 pb-2">
+                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[30rem]' : 'pb-2'}`}>
                     {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
-                    {useMathKeypad && activeField === 'usd' && <MathKeypad inline={true} visible={true} onInsert={(t) => appendGeneralToken('usd', t)} onBackspace={() => backspaceGeneralToken('usd')} onClear={() => setGenInput({ val: '', type: 'usd' })} onDone={() => commitGeneralInput('usd', 'decimal2')} />}
                     {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
-                    {useMathKeypad && activeField === 'target' && <MathKeypad inline={true} visible={true} onInsert={(t) => appendGeneralToken('target', t)} onBackspace={() => backspaceGeneralToken('target')} onClear={() => setGenInput({ val: '', type: 'target' })} onDone={() => commitGeneralInput('target', 'integer')} />}
                     {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
-                    {useMathKeypad && activeField === 'twd' && <MathKeypad inline={true} visible={true} onInsert={(t) => appendGeneralToken('twd', t)} onBackspace={() => backspaceGeneralToken('twd')} onClear={() => setGenInput({ val: '', type: 'twd' })} onDone={() => commitGeneralInput('twd', 'integer')} />}
                     
                     <div className="section-card rounded-[2rem] p-5 flex flex-col gap-4">
                         <div className="flex justify-between items-center gap-3"><span className="text-[1rem] font-black flex items-center gap-2 text-[#2E2E2E] tracking-[-0.02em]"><Icon name="receipt" size={18}/> {COPY.taxSettingsLabel}</span><div className="soft-pill flex rounded-full p-1 border border-white/50">{COPY.taxModeOptions.map(m => (<button key={m.key} onClick={()=>updateSetting('taxMode',m.key)} className={`px-3.5 py-1.5 text-[10px] font-bold rounded-full transition-all duration-300 ${settings.taxMode===m.key ? 'bg-[rgba(255,255,255,0.9)] text-[#2E2E2E] shadow-sm' : 'text-[#757573] hover:text-[#2E2E2E]'}`}>{m.label}</button>))}</div></div>
@@ -838,6 +847,13 @@
                         )}
                         {advice && <div className={`text-[10px] p-3.5 rounded-[1.25rem] flex items-start gap-2 ${advice.type==='good' ? 'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border border-[rgba(143,163,157,0.24)]' : 'bg-[rgba(176,114,107,0.1)] text-[#B0726B] border border-[rgba(176,114,107,0.22)]'}`}><Icon name={advice.type==='good'?'thumbsUp':'alert'} size={14} /><span className="mt-0.5 font-medium">{advice.msg}</span></div>}
                     </div>
+                    <MathKeypad
+                        visible={useMathKeypad && !!activeField}
+                        onInsert={(token) => appendGeneralToken(activeField, token)}
+                        onBackspace={() => backspaceGeneralToken(activeField)}
+                        onClear={() => setGenInput({ val: '', type: activeField })}
+                        onDone={() => commitGeneralInput(activeField, fieldModeMap[activeField] || 'integer')}
+                    />
                 </div>
             );
         });
@@ -869,6 +885,18 @@
                 setDfInput({ ...dfInput, [field]: String(dfInput[field] || '').slice(0, -1) });
                 setActiveField(field);
             };
+            useEffect(() => {
+                if (!useMathKeypad || !activeField) return;
+                const node = fieldRefs.current[activeField];
+                if (!node) return;
+                requestAnimationFrame(() => {
+                    const mainEl = document.querySelector('main');
+                    if (!mainEl) return;
+                    const nodeTop = node.getBoundingClientRect().top;
+                    const mainTop = mainEl.getBoundingClientRect().top;
+                    mainEl.scrollTop = mainEl.scrollTop + nodeTop - mainTop - 16;
+                });
+            }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
                 const isActive = activeField === field;
@@ -947,9 +975,8 @@
             const instantRate = rates.usd;
 
             return (
-                <div className="space-y-4 animate-fade-in pb-2">
+                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[30rem]' : 'pb-2'}`}>
                     {renderDutyFreeField('tagPrice', COPY.dutyFreeOriginalLabel)}
-                    {useMathKeypad && activeField === 'tagPrice' && <MathKeypad inline={true} visible={true} onInsert={(t) => appendDutyFreeToken('tagPrice', t)} onBackspace={() => backspaceDutyFreeToken('tagPrice')} onClear={() => setDfInput({ ...dfInput, tagPrice: '' })} onDone={() => commitDutyFreeField('tagPrice', 'decimal2')} />}
                     <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
                     <div
                         ref={(node) => { fieldRefs.current.payVal = node; }}
@@ -1019,11 +1046,17 @@
                             {status && <div className={`text-[9px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1 ${status.isSafe ? 'bg-[rgba(143,163,157,0.16)] text-[#6F827D]' : 'bg-[rgba(176,114,107,0.12)] text-[#B0726B]'}`}><Icon name={status.isSafe ? 'check' : 'alert'} size={10}/> {status.text}</div>}
                         </div>
                     </div>
-                    {useMathKeypad && activeField === 'payVal' && <MathKeypad inline={true} visible={true} onInsert={(t) => appendDutyFreeToken('payVal', t)} onBackspace={() => backspaceDutyFreeToken('payVal')} onClear={() => setDfInput({ ...dfInput, payVal: '' })} onDone={() => commitDutyFreeField('payVal', 'decimal2')} />}
                     <div className="app-card p-4 bg-[rgba(214,192,179,0.12)] border-[rgba(214,192,179,0.24)]">
                         <div className="flex justify-between items-center mb-3"><label className="text-xs font-bold text-[#6E5F57] pl-1">{COPY.dutyFreeRebateLabel}</label><div className="flex items-center bg-[rgba(255,255,255,0.76)] px-3 py-1.5 rounded-[1.1rem] border border-white/50 shadow-sm"><input type="number" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-12 text-lg font-black text-[#6E5F57] text-right bg-transparent outline-none"/><span className="text-sm text-[#B6B8B3] font-bold ml-1">%</span></div></div>
                         <div className="flex items-center gap-3"><button onClick={()=>adjustRebate(-0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="minus" size={14}/></button><div className="flex-1 relative h-6 flex items-center"><input type="range" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-full h-2 bg-gradient-to-r from-[rgba(214,192,179,0.45)] to-[rgba(201,166,161,0.72)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/></div><button onClick={()=>adjustRebate(0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="plus" size={14}/></button></div>
                     </div>
+                    <MathKeypad
+                        visible={useMathKeypad && !!activeField}
+                        onInsert={(token) => appendDutyFreeToken(activeField, token)}
+                        onBackspace={() => backspaceDutyFreeToken(activeField)}
+                        onClear={() => setDfInput({ ...dfInput, [activeField]: '' })}
+                        onDone={() => commitDutyFreeField(activeField, 'decimal2')}
+                    />
                 </div>
             );
         });

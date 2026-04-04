@@ -25,7 +25,7 @@
         return Math.round(evaluated).toLocaleString('en-US');
     }
 
-    const MathKeypad = memo(({ visible, inline, onInsert, onBackspace, onClear, onDone }) => {
+    const MathKeypad = memo(({ visible, onInsert, onBackspace, onClear, onDone }) => {
         if (!visible) return null;
         const rows = [
             ['7', '8', '9', '+'],
@@ -35,9 +35,7 @@
         ];
         return (
             React.createElement('div', {
-                className: inline
-                    ? 'animate-fade-in'
-                    : 'fixed inset-x-0 bottom-0 z-[90] px-3 pb-[max(env(safe-area-inset-bottom),0.9rem)] animate-fade-in'
+                className: 'fixed inset-x-0 bottom-0 z-[90] px-3 pb-[max(env(safe-area-inset-bottom),0.9rem)] animate-fade-in'
             },
                 React.createElement('div', {
                     className: 'overflow-hidden rounded-[2.15rem] border border-[rgba(255,255,255,0.86)] bg-[linear-gradient(180deg,rgba(249,248,245,0.97)_0%,rgba(241,239,235,0.96)_100%)] shadow-[0_-24px_56px_rgba(94,90,84,0.16)] backdrop-blur-2xl'
