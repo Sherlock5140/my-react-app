@@ -425,3 +425,10 @@ Entry format:
   Type: UI
   Summary: 再次收緊回饋主列與實刷公式提示之間的上下間距，直接縮短回饋主列高度並將下方公式再上提，避免兩行之間保留過多留白。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:59 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 在成本試算明細標題下方新增小型圖例，直接標示 `＋ 增加成本`、`－ 抵減成本`，降低手續費、回饋與現場折抵同時出現時的誤判成本；保留原本正負號結構，但讓閱讀邏輯更直觀。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
