@@ -33,9 +33,9 @@
         copiedLabel: '已複製',
         paymentAmountLabel: '付款金額',
         feeLabelPrefix: '+ 刷卡手續費',
-        benefitSectionLabel: '回饋總價值',
+        benefitSectionLabel: '優惠內容',
         benefitTotalLabel: '優惠合計',
-        rewardValueLabel: '回饋點數',
+        rewardValueLabel: '',
         costSectionLabel: '手續費成本',
         feeCostLabel: '刷卡手續費',
         netSavedLabel: '總回饋價值',
@@ -638,7 +638,7 @@
     }
 
     function getRewardLabel(rewardType) {
-        return rewardType === 'points' ? 'LINE POINTS' : '現金回饋';
+        return rewardType === 'points' ? 'LINE POINTS 回饋' : '現金回饋';
     }
 
     function getErrorMargin(displayRefund) {

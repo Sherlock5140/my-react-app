@@ -488,3 +488,10 @@ Entry format:
   Type: UI
   Summary: 將回饋主列左側資訊改回單行並排，讓 `LINE POINTS (30.0%)` 放在同一行；同時微調下方公式提示的上距，維持主列與說明之間的緊密度。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:33 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 依確認版本微調綠色卡文案：區塊標題改為 `優惠內容`，主列改成 `LINE POINTS 回饋 (30.0%)` / `現金回饋 (3.0%)` 的語氣，移除原本重複且不自然的 `回饋點數` 前綴。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
