@@ -684,6 +684,7 @@
             const [activeField, setActiveField] = useState(null);
             const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
             const fieldModeMap = { usd: 'decimal2', target: 'integer', twd: 'integer' };
+            const fieldRefs = useRef({});
             const clearInput = () => setGenInput({ ...genInput, val: '' });
             const commitGeneralInput = (field, mode = 'integer') => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
@@ -708,13 +709,24 @@
                 setGenInput({ val: String(currentValue || '').slice(0, -1), type: field });
                 setActiveField(field);
             };
+            useEffect(() => {
+                if (!useMathKeypad || !activeField) return;
+                const node = fieldRefs.current[activeField];
+                if (!node) return;
+                requestAnimationFrame(() => {
+                    node.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                });
+            }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
                 const isActive = activeField === field;
                 const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
                 const previewValue = showPreview ? getPreviewNumberText(currentValue, mode, evaluateMathExpression) : '';
                 return (
-                    <div className={`currency-card ${genInput.type===field?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}>
+                    <div
+                        ref={(node) => { fieldRefs.current[field] = node; }}
+                        className={`currency-card ${genInput.type===field?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)] scroll-mt-24`}
+                    >
                         <div className="flex items-center gap-4">
                             <div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{emoji}</div>
                             <div className="flex-1 relative">
@@ -723,17 +735,17 @@
                                     <span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2 self-center">{prefix}</span>
                                     <div className="flex-1 relative">
                                         {showPreview ? (
-                                            <>
-                                                {useMathKeypad ? (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setActiveField(field)}
-                                                        className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
-                                                    >
-                                                        <span>{currentValue}</span>
-                                                        {isActive && <span className="math-inline-caret" />}
-                                                    </button>
-                                                ) : (
+                                            useMathKeypad ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveField(field)}
+                                                    className="flex flex-col items-end w-full bg-transparent pr-12 text-right"
+                                                >
+                                                    <span className="text-[0.9rem] font-medium text-[#A7A8A2] tracking-[-0.01em] leading-snug">{currentValue}{isActive && <span className="math-inline-caret" />}</span>
+                                                    <span className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-tight`}>{previewValue}</span>
+                                                </button>
+                                            ) : (
+                                                <>
                                                     <input
                                                         type="text"
                                                         inputMode="text"
@@ -743,19 +755,19 @@
                                                         onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
                                                         onBlur={() => commitGeneralInput(field, mode)}
                                                         onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
-                                                        className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                        className="absolute top-0 right-0 w-full bg-transparent pr-12 text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
                                                     />
-                                                )}
-                                                <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-1`}>
-                                                    {previewValue}
-                                                </div>
-                                            </>
+                                                    <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-12`}>
+                                                        {previewValue}
+                                                    </div>
+                                                </>
+                                            )
                                         ) : (
                                             useMathKeypad ? (
                                                 <button
                                                     type="button"
                                                     onClick={() => setActiveField(field)}
-                                                    className={`${sizeClass} flex w-full justify-end bg-transparent font-black text-[#2E2E2E] tracking-[-0.04em] text-right`}
+                                                    className={`${sizeClass} flex w-full justify-end bg-transparent pr-12 font-black text-[#2E2E2E] tracking-[-0.04em] text-right`}
                                                 >
                                                     <span className={currentValue ? '' : 'text-[#D6D7D2]'}>{currentValue || '0'}</span>
                                                     {isActive && <span className="math-inline-caret" />}
@@ -770,11 +782,11 @@
                                                     onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
                                                     onBlur={() => commitGeneralInput(field, mode)}
                                                     onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
-                                                    className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em] bg-transparent`}
+                                                    className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full pr-12 tracking-[-0.04em] bg-transparent`}
                                                 />
                                             )
                                         )}
-                                        {(genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}
+                                        {(genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
                                     </div>
                                 </div>
                             </div>
@@ -784,7 +796,7 @@
             };
 
             return (
-                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[21rem]' : 'pb-0'}`}>
+                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[18.5rem]' : 'pb-0'}`}>
                     {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
                     {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
                     {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
@@ -845,6 +857,7 @@
         const DutyFreeMode = memo(({ settings, dfInput, setDfInput, updateSetting, calcResult, rates }) => {
             const [activeField, setActiveField] = useState(null);
             const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
+            const fieldRefs = useRef({});
             const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInput.tagPrice, percent); if (nextPay) setDfInput({...dfInput, payVal: nextPay}); };
             const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
             const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
@@ -868,29 +881,40 @@
                 setDfInput({ ...dfInput, [field]: String(dfInput[field] || '').slice(0, -1) });
                 setActiveField(field);
             };
+            useEffect(() => {
+                if (!useMathKeypad || !activeField) return;
+                const node = fieldRefs.current[activeField];
+                if (!node) return;
+                requestAnimationFrame(() => {
+                    node.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                });
+            }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
                 const isActive = activeField === field;
                 const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
                 const previewValue = showPreview ? getPreviewNumberText(currentValue, 'decimal2', evaluateMathExpression) : '';
                 return (
-                    <div className="app-card p-5 relative">
+                    <div
+                        ref={(node) => { fieldRefs.current[field] = node; }}
+                        className="app-card relative scroll-mt-24 p-5"
+                    >
                         <label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">{label}</label>
                         <div className="flex items-center min-h-[4.2rem]">
                             <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
                             <div className="flex-1 relative">
                                 {showPreview ? (
-                                    <>
-                                        {useMathKeypad ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => setActiveField(field)}
-                                                className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
-                                            >
-                                                <span>{currentValue}</span>
-                                                {isActive && <span className="math-inline-caret" />}
-                                            </button>
-                                        ) : (
+                                    useMathKeypad ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveField(field)}
+                                            className="flex flex-col items-end w-full bg-transparent pr-12 text-right"
+                                        >
+                                            <span className="text-[0.9rem] font-medium text-[#A7A8A2] tracking-[-0.01em] leading-snug">{currentValue}{isActive && <span className="math-inline-caret" />}</span>
+                                            <span className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-tight">{previewValue}</span>
+                                        </button>
+                                    ) : (
+                                        <>
                                             <input
                                                 type="text"
                                                 inputMode="text"
@@ -900,19 +924,19 @@
                                                 onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
                                                 onBlur={() => commitDutyFreeField(field, 'decimal2')}
                                                 onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
-                                                className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                className="absolute top-0 right-0 w-full bg-transparent pr-12 text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
                                             />
-                                        )}
-                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
-                                            {previewValue}
-                                        </div>
-                                    </>
+                                            <div className="pr-12 pt-5 text-right text-[3rem] font-black leading-none tracking-tight text-[#2E2E2E]">
+                                                {previewValue}
+                                            </div>
+                                        </>
+                                    )
                                 ) : (
                                     useMathKeypad ? (
                                         <button
                                             type="button"
                                             onClick={() => setActiveField(field)}
-                                            className="flex w-full justify-end bg-transparent text-right text-[3rem] font-black text-[#2E2E2E] tracking-tight"
+                                            className="flex w-full justify-end bg-transparent pr-12 text-right text-[3rem] font-black tracking-tight text-[#2E2E2E]"
                                         >
                                             <span className={currentValue ? '' : 'text-[#D6D7D2]'}>{currentValue || '0'}</span>
                                             {isActive && <span className="math-inline-caret" />}
@@ -927,11 +951,11 @@
                                             onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
                                             onBlur={() => commitDutyFreeField(field, 'decimal2')}
                                             onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
-                                            className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
+                                            className="w-full bg-transparent pr-12 text-[3rem] font-black tracking-tight text-[#2E2E2E] placeholder-[#D6D7D2]"
                                         />
                                     )
                                 )}
-                                {currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
+                                {currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
                             </div>
                         </div>
                     </div>
@@ -943,10 +967,13 @@
             const instantRate = rates.usd;
 
             return (
-                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[21rem]' : 'pb-2'}`}>
+                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[18.5rem]' : 'pb-2'}`}>
                     {renderDutyFreeField('tagPrice', COPY.dutyFreeOriginalLabel)}
                     <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
-                    <div className="app-card p-5 relative">
+                    <div
+                        ref={(node) => { fieldRefs.current.payVal = node; }}
+                        className="app-card relative scroll-mt-24 p-5"
+                    >
                         <label className="text-[9px] font-bold text-[#8FA39D] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreePaidLabel}</label>
                         <div className="flex items-center min-h-[4.2rem]">
                             <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
@@ -957,7 +984,7 @@
                                             <button
                                                 type="button"
                                                 onClick={() => setActiveField('payVal')}
-                                                className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
+                                                className="absolute top-0 right-0 flex w-full justify-end bg-transparent pr-12 text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
                                             >
                                                 <span>{dfInput.payVal}</span>
                                                 <span className="math-inline-caret" />
@@ -972,10 +999,10 @@
                                                 onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
                                                 onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
                                                 onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
-                                                className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                className="absolute top-0 right-0 w-full bg-transparent pr-12 text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
                                             />
                                         )}
-                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
+                                        <div className="pr-12 pt-5 text-right text-[3rem] font-black leading-none tracking-tight text-[#2E2E2E]">
                                             {getPreviewNumberText(dfInput.payVal, 'decimal2', evaluateMathExpression)}
                                         </div>
                                     </>
@@ -984,7 +1011,7 @@
                                         <button
                                             type="button"
                                             onClick={() => setActiveField('payVal')}
-                                            className="flex w-full justify-end bg-transparent text-right text-[3rem] font-black text-[#2E2E2E] tracking-tight"
+                                            className="flex w-full justify-end bg-transparent pr-12 text-right text-[3rem] font-black tracking-tight text-[#2E2E2E]"
                                         >
                                             <span className={dfInput.payVal ? '' : 'text-[#D6D7D2]'}>{dfInput.payVal || '0'}</span>
                                             {activeField === 'payVal' && <span className="math-inline-caret" />}
@@ -999,11 +1026,11 @@
                                             onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
                                             onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
                                             onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
-                                            className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
+                                            className="w-full bg-transparent pr-12 text-[3rem] font-black tracking-tight text-[#2E2E2E] placeholder-[#D6D7D2]"
                                         />
                                     )
                                 )}
-                                {dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
+                                {dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
                             </div>
                         </div>
                         <div className="flex justify-between items-center mt-4 bg-[rgba(255,255,255,0.46)] p-2.5 rounded-[1.1rem] border border-white/50">

@@ -530,3 +530,17 @@ Entry format:
   Type: UI, Infra
   Summary: 將數學鍵盤 / 算式輸入輔助邏輯抽到 `math-ui.js`，把匯率載入、快取、背景刷新與自訂匯率覆寫抽到 `rate-manager.js`，讓 `index.html` 回到偏組裝層；同時更新 service worker cache shell 納入新檔，避免快取漏載。
   Files: `index.html`, `math-ui.js`, `rate-manager.js`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 14:51 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 修正行動端算式鍵盤視覺與排版：金額欄位右側加上安全留白避免輸入值被清除鈕遮住，欄位啟動時會自動捲動到較易閱讀的位置，並將自訂數學鍵盤改為和整體玻璃卡片一致的淺色高質感樣式，同時縮減鍵盤開啟時造成的額外留白。
+  Files: `index.html`, `math-ui.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 15:01 CST
+  Updated by: Claude Code
+  Type: UI, Bug Fix
+  Summary: 修正鍵盤相關四項問題。(1) 台幣欄被鍵盤遮住 + 中間空白：scrollIntoView 從 block:'center' 改為 block:'start'，讓點選欄位後捲動到畫面頂部，確保 TWD 在鍵盤上方清楚可見，GeneralMode 和 DutyFreeMode 皆修正。(2) 算式截圖效果：移除 absolute 絕對定位的算式覆蓋層，改為正常流布局——算式文字小號顯示於上，計算結果大號顯示於下，視覺乾淨不疊加。(3) 鍵盤顏色：暖化背景漸層（移除偏綠色調，對齊 section-card 暖灰奶油系），DONE 按鈕加入玫瑰系漸層與深玫瑰文字色，提升識別度與主題一致性。(4) SW 版本 bump 至 v5-20260404-1501。
+  Files: `index.html`, `math-ui.js`, `sw.js`, `PROJECT_CONTEXT.md`

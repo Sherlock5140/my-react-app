@@ -38,27 +38,27 @@
                 className: 'fixed inset-x-0 bottom-0 z-[90] px-3 pb-[max(env(safe-area-inset-bottom),0.9rem)] animate-fade-in'
             },
                 React.createElement('div', {
-                    className: 'overflow-hidden rounded-[2rem] border border-[rgba(255,255,255,0.72)] bg-[rgba(33,37,43,0.94)] shadow-[0_-24px_60px_rgba(17,24,39,0.3)] backdrop-blur-2xl'
+                    className: 'overflow-hidden rounded-[2.15rem] border border-[rgba(255,255,255,0.86)] bg-[linear-gradient(180deg,rgba(249,248,245,0.97)_0%,rgba(241,239,235,0.96)_100%)] shadow-[0_-24px_56px_rgba(94,90,84,0.16)] backdrop-blur-2xl'
                 },
                     React.createElement('div', { className: 'flex items-center gap-2 px-3 pt-3 pb-2' },
                         ['(', ')'].map((key) => React.createElement('button', {
                             key,
                             type: 'button',
                             onClick: () => onInsert(key),
-                            className: 'flex-1 rounded-[1rem] border border-white/10 bg-white/5 px-3 py-2 text-[1.05rem] font-semibold text-white/90 active:scale-[0.98]'
+                            className: 'flex-1 rounded-[1rem] border border-[rgba(255,255,255,0.82)] bg-[rgba(255,255,255,0.62)] px-3 py-2 text-[1.05rem] font-semibold text-[#5A5654] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)] active:scale-[0.98]'
                         }, key)),
                         React.createElement('button', {
                             type: 'button',
                             onClick: onClear,
-                            className: 'rounded-[1rem] border border-white/10 bg-white/5 px-4 py-2 text-[0.82rem] font-bold tracking-[0.18em] text-white/70 active:scale-[0.98]'
+                            className: 'rounded-[1rem] border border-[rgba(210,204,200,0.88)] bg-[rgba(238,235,231,0.88)] px-4 py-2 text-[0.82rem] font-bold tracking-[0.18em] text-[#7A7470] shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] active:scale-[0.98]'
                         }, 'CLEAR'),
                         React.createElement('button', {
                             type: 'button',
                             onClick: onDone,
-                            className: 'rounded-[1rem] bg-white px-4 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#20242A] active:scale-[0.98]'
+                            className: 'rounded-[1rem] border border-[rgba(201,166,161,0.38)] bg-[linear-gradient(180deg,rgba(219,196,190,0.32)_0%,rgba(201,166,161,0.26)_100%)] px-4 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#7A4A46] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_20px_rgba(185,148,142,0.14)] active:scale-[0.98]'
                         }, 'DONE')
                     ),
-                    React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-white/10 p-px' },
+                    React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-[rgba(210,204,200,0.48)] p-px' },
                         rows.flat().map((key) => {
                             const isOperator = /[+\-×÷]/.test(key);
                             return React.createElement('button', {
@@ -71,7 +71,7 @@
                                     }
                                     onInsert(key);
                                 },
-                                className: `min-h-[4.4rem] bg-[rgba(40,45,53,0.96)] transition active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-light text-white/80' : 'text-[2rem] font-light text-white'} ${key === '⌫' ? 'text-[1.3rem] font-semibold tracking-[0.08em]' : ''}`
+                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-light text-[#B58E88]' : 'text-[2rem] font-light text-[#3C3A38]'} ${key === '⌫' ? 'text-[1.3rem] font-semibold tracking-[0.08em] text-[#7A7470]' : ''}`
                             }, key);
                         })
                     )
