@@ -29,8 +29,6 @@
         foreignFeeHint: '整體共用，會套用到所有一般模式刷卡試算。',
         finishSettings: '完成設定',
         receiptTitle: '成本試算明細',
-        receiptLegendPlus: '＋ 增加成本',
-        receiptLegendMinus: '－ 抵減成本',
         copyLabel: '複製',
         copiedLabel: '已複製',
         paymentAmountLabel: '付款金額',

@@ -432,3 +432,10 @@ Entry format:
   Type: UI
   Summary: 在成本試算明細標題下方新增小型圖例，直接標示 `＋ 增加成本`、`－ 抵減成本`，降低手續費、回饋與現場折抵同時出現時的誤判成本；保留原本正負號結構，但讓閱讀邏輯更直觀。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:03 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 依需求移除成本試算明細標題下方的 `＋ 增加成本 / － 抵減成本` 圖例，回到更乾淨的版面呈現，避免額外標示破壞視覺整體性。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
