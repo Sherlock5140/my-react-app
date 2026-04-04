@@ -1,8 +1,10 @@
-const CACHE_NAME = '購黑皮-v3-20260404-0242';
+const CACHE_NAME = '購黑皮-v4-20260404-1442';
 const APP_SHELL = [
   './',
   './index.html',
   './formulas.js',
+  './rate-manager.js',
+  './math-ui.js',
   './icon.svg',
   './apple-touch-icon.png'
 ];

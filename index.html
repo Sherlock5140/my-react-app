@@ -21,6 +21,8 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./formulas.js"></script>
+    <script src="./rate-manager.js"></script>
+    <script src="./math-ui.js"></script>
     
     <style>
         :root {
@@ -215,6 +217,19 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .math-inline-caret {
+            display: inline-block;
+            width: 2px;
+            height: 0.94em;
+            margin-left: 0.12em;
+            border-radius: 999px;
+            background: #4A6BFF;
+            vertical-align: -0.08em;
+            animation: caretBlink 1s steps(1, end) infinite;
+        }
+        @keyframes caretBlink {
+            50% { opacity: 0; }
+        }
         .header-general,
         .header-dutyfree {
             position: relative;
@@ -308,6 +323,15 @@
             convertGeneralInputToDutyFreeTagPrice,
             fetchExchangeRates
         } = window.APP_CORE;
+        const {
+            useRateManager
+        } = window.APP_RATE_MANAGER;
+        const {
+            MathKeypad,
+            detectCoarsePointer,
+            hasExpressionOperators,
+            getPreviewNumberText
+        } = window.APP_MATH_UI;
 
         const Icon = memo(({ name, size=20, className='' }) => {
             const icons = {
@@ -658,6 +682,8 @@
 
         const GeneralMode = memo(({ settings, genInput, setGenInput, calcResult, updateSetting, advice, rates, refundMethodComparison }) => {
             const [activeField, setActiveField] = useState(null);
+            const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
+            const fieldModeMap = { usd: 'decimal2', target: 'integer', twd: 'integer' };
             const clearInput = () => setGenInput({ ...genInput, val: '' });
             const commitGeneralInput = (field, mode = 'integer') => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
@@ -672,20 +698,21 @@
                     e.currentTarget.blur();
                 }
             };
-            const hasExpressionOperators = (value) => /[+\-*/()×÷]/.test(String(value || ''));
-            const getPreviewNumberText = (value, mode = 'integer') => {
-                const evaluated = evaluateMathExpression(value);
-                if (isNaN(evaluated)) return '';
-                if (mode === 'decimal2') {
-                    return evaluated.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-                }
-                return Math.round(evaluated).toLocaleString('en-US');
+            const appendGeneralToken = (field, token) => {
+                const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
+                setGenInput({ val: `${currentValue || ''}${token}`, type: field });
+                setActiveField(field);
+            };
+            const backspaceGeneralToken = (field) => {
+                const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
+                setGenInput({ val: String(currentValue || '').slice(0, -1), type: field });
+                setActiveField(field);
             };
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
                 const isActive = activeField === field;
                 const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
-                const previewValue = showPreview ? getPreviewNumberText(currentValue, mode) : '';
+                const previewValue = showPreview ? getPreviewNumberText(currentValue, mode, evaluateMathExpression) : '';
                 return (
                     <div className={`currency-card ${genInput.type===field?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}>
                         <div className="flex items-center gap-4">
@@ -697,6 +724,43 @@
                                     <div className="flex-1 relative">
                                         {showPreview ? (
                                             <>
+                                                {useMathKeypad ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setActiveField(field)}
+                                                        className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
+                                                    >
+                                                        <span>{currentValue}</span>
+                                                        {isActive && <span className="math-inline-caret" />}
+                                                    </button>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        inputMode="text"
+                                                        placeholder="0"
+                                                        value={currentValue}
+                                                        onFocus={() => setActiveField(field)}
+                                                        onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
+                                                        onBlur={() => commitGeneralInput(field, mode)}
+                                                        onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
+                                                        className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                    />
+                                                )}
+                                                <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-1`}>
+                                                    {previewValue}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            useMathKeypad ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveField(field)}
+                                                    className={`${sizeClass} flex w-full justify-end bg-transparent font-black text-[#2E2E2E] tracking-[-0.04em] text-right`}
+                                                >
+                                                    <span className={currentValue ? '' : 'text-[#D6D7D2]'}>{currentValue || '0'}</span>
+                                                    {isActive && <span className="math-inline-caret" />}
+                                                </button>
+                                            ) : (
                                                 <input
                                                     type="text"
                                                     inputMode="text"
@@ -706,24 +770,9 @@
                                                     onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
                                                     onBlur={() => commitGeneralInput(field, mode)}
                                                     onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
-                                                    className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                    className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em] bg-transparent`}
                                                 />
-                                                <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-1`}>
-                                                    {previewValue}
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <input
-                                                type="text"
-                                                inputMode="text"
-                                                placeholder="0"
-                                                value={currentValue}
-                                                onFocus={() => setActiveField(field)}
-                                                onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
-                                                onBlur={() => commitGeneralInput(field, mode)}
-                                                onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
-                                                className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em] bg-transparent`}
-                                            />
+                                            )
                                         )}
                                         {(genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}
                                     </div>
@@ -735,7 +784,7 @@
             };
 
             return (
-                <div className="block space-y-4 pb-0">
+                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[21rem]' : 'pb-0'}`}>
                     {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
                     {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
                     {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
@@ -782,12 +831,20 @@
                         )}
                         {advice && <div className={`text-[10px] p-3.5 rounded-[1.25rem] flex items-start gap-2 ${advice.type==='good' ? 'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border border-[rgba(143,163,157,0.24)]' : 'bg-[rgba(176,114,107,0.1)] text-[#B0726B] border border-[rgba(176,114,107,0.22)]'}`}><Icon name={advice.type==='good'?'thumbsUp':'alert'} size={14} /><span className="mt-0.5 font-medium">{advice.msg}</span></div>}
                     </div>
+                    <MathKeypad
+                        visible={useMathKeypad && !!activeField}
+                        onInsert={(token) => appendGeneralToken(activeField, token)}
+                        onBackspace={() => backspaceGeneralToken(activeField)}
+                        onClear={() => setGenInput({ val: '', type: activeField })}
+                        onDone={() => commitGeneralInput(activeField, fieldModeMap[activeField] || 'integer')}
+                    />
                 </div>
             );
         });
 
         const DutyFreeMode = memo(({ settings, dfInput, setDfInput, updateSetting, calcResult, rates }) => {
             const [activeField, setActiveField] = useState(null);
+            const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
             const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInput.tagPrice, percent); if (nextPay) setDfInput({...dfInput, payVal: nextPay}); };
             const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
             const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
@@ -803,17 +860,19 @@
                     e.currentTarget.blur();
                 }
             };
-            const hasExpressionOperators = (value) => /[+\-*/()×÷]/.test(String(value || ''));
-            const getPreviewNumberText = (value) => {
-                const evaluated = evaluateMathExpression(value);
-                if (isNaN(evaluated)) return '';
-                return evaluated.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            const appendDutyFreeToken = (field, token) => {
+                setDfInput({ ...dfInput, [field]: `${dfInput[field] || ''}${token}` });
+                setActiveField(field);
+            };
+            const backspaceDutyFreeToken = (field) => {
+                setDfInput({ ...dfInput, [field]: String(dfInput[field] || '').slice(0, -1) });
+                setActiveField(field);
             };
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
                 const isActive = activeField === field;
                 const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
-                const previewValue = showPreview ? getPreviewNumberText(currentValue) : '';
+                const previewValue = showPreview ? getPreviewNumberText(currentValue, 'decimal2', evaluateMathExpression) : '';
                 return (
                     <div className="app-card p-5 relative">
                         <label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">{label}</label>
@@ -822,6 +881,43 @@
                             <div className="flex-1 relative">
                                 {showPreview ? (
                                     <>
+                                        {useMathKeypad ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setActiveField(field)}
+                                                className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
+                                            >
+                                                <span>{currentValue}</span>
+                                                {isActive && <span className="math-inline-caret" />}
+                                            </button>
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                inputMode="text"
+                                                placeholder="0"
+                                                value={currentValue}
+                                                onFocus={() => setActiveField(field)}
+                                                onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
+                                                onBlur={() => commitDutyFreeField(field, 'decimal2')}
+                                                onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
+                                                className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                            />
+                                        )}
+                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
+                                            {previewValue}
+                                        </div>
+                                    </>
+                                ) : (
+                                    useMathKeypad ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveField(field)}
+                                            className="flex w-full justify-end bg-transparent text-right text-[3rem] font-black text-[#2E2E2E] tracking-tight"
+                                        >
+                                            <span className={currentValue ? '' : 'text-[#D6D7D2]'}>{currentValue || '0'}</span>
+                                            {isActive && <span className="math-inline-caret" />}
+                                        </button>
+                                    ) : (
                                         <input
                                             type="text"
                                             inputMode="text"
@@ -831,24 +927,9 @@
                                             onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
                                             onBlur={() => commitDutyFreeField(field, 'decimal2')}
                                             onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
-                                            className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                            className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
                                         />
-                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
-                                            {previewValue}
-                                        </div>
-                                    </>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        inputMode="text"
-                                        placeholder="0"
-                                        value={currentValue}
-                                        onFocus={() => setActiveField(field)}
-                                        onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
-                                        onBlur={() => commitDutyFreeField(field, 'decimal2')}
-                                        onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
-                                        className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
-                                    />
+                                    )
                                 )}
                                 {currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
                             </div>
@@ -862,7 +943,7 @@
             const instantRate = rates.usd;
 
             return (
-                <div className="space-y-4 animate-fade-in pb-2">
+                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[21rem]' : 'pb-2'}`}>
                     {renderDutyFreeField('tagPrice', COPY.dutyFreeOriginalLabel)}
                     <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
                     <div className="app-card p-5 relative">
@@ -872,6 +953,43 @@
                             <div className="flex-1 relative">
                                 {activeField === 'payVal' && hasExpressionOperators(dfInput.payVal) && !isNaN(evaluateMathExpression(dfInput.payVal)) ? (
                                     <>
+                                        {useMathKeypad ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setActiveField('payVal')}
+                                                className="absolute top-0 right-0 flex w-full justify-end bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] tracking-[-0.02em]"
+                                            >
+                                                <span>{dfInput.payVal}</span>
+                                                <span className="math-inline-caret" />
+                                            </button>
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                inputMode="text"
+                                                placeholder="0"
+                                                value={dfInput.payVal}
+                                                onFocus={() => setActiveField('payVal')}
+                                                onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
+                                                onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
+                                                onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
+                                                className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                            />
+                                        )}
+                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
+                                            {getPreviewNumberText(dfInput.payVal, 'decimal2', evaluateMathExpression)}
+                                        </div>
+                                    </>
+                                ) : (
+                                    useMathKeypad ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveField('payVal')}
+                                            className="flex w-full justify-end bg-transparent text-right text-[3rem] font-black text-[#2E2E2E] tracking-tight"
+                                        >
+                                            <span className={dfInput.payVal ? '' : 'text-[#D6D7D2]'}>{dfInput.payVal || '0'}</span>
+                                            {activeField === 'payVal' && <span className="math-inline-caret" />}
+                                        </button>
+                                    ) : (
                                         <input
                                             type="text"
                                             inputMode="text"
@@ -881,24 +999,9 @@
                                             onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
                                             onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
                                             onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
-                                            className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                            className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
                                         />
-                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
-                                            {getPreviewNumberText(dfInput.payVal)}
-                                        </div>
-                                    </>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        inputMode="text"
-                                        placeholder="0"
-                                        value={dfInput.payVal}
-                                        onFocus={() => setActiveField('payVal')}
-                                        onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
-                                        onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
-                                        onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
-                                        className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
-                                    />
+                                    )
                                 )}
                                 {dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
                             </div>
@@ -912,13 +1015,19 @@
                         <div className="flex justify-between items-center mb-3"><label className="text-xs font-bold text-[#6E5F57] pl-1">{COPY.dutyFreeRebateLabel}</label><div className="flex items-center bg-[rgba(255,255,255,0.76)] px-3 py-1.5 rounded-[1.1rem] border border-white/50 shadow-sm"><input type="number" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-12 text-lg font-black text-[#6E5F57] text-right bg-transparent outline-none"/><span className="text-sm text-[#B6B8B3] font-bold ml-1">%</span></div></div>
                         <div className="flex items-center gap-3"><button onClick={()=>adjustRebate(-0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="minus" size={14}/></button><div className="flex-1 relative h-6 flex items-center"><input type="range" min="0" max="40" step="0.5" value={settings.dutyFreeRebate} onChange={(e)=>{updateSetting('dutyFreeRebate',e.target.value);}} className="w-full h-2 bg-gradient-to-r from-[rgba(214,192,179,0.45)] to-[rgba(201,166,161,0.72)] rounded-full appearance-none cursor-pointer accent-[#C9A6A1]"/></div><button onClick={()=>adjustRebate(0.5)} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.76)] border border-white/50 text-[#6E5F57] flex items-center justify-center shadow-sm active:scale-90"><Icon name="plus" size={14}/></button></div>
                     </div>
+                    <MathKeypad
+                        visible={useMathKeypad && !!activeField}
+                        onInsert={(token) => appendDutyFreeToken(activeField, token)}
+                        onBackspace={() => backspaceDutyFreeToken(activeField)}
+                        onClear={() => setDfInput({ ...dfInput, [activeField]: '' })}
+                        onDone={() => commitDutyFreeField(activeField, 'decimal2')}
+                    />
                 </div>
             );
         });
 
         const App = () => {
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-            const [rates, setRates] = useState({ krw: 0.023, usd: 32.5, usdToCny: 7.2, cny: 4.5 });
             const [allStrategies, setAllStrategies] = useState(() => {
                 try {
                     const s = safeGetStorage(STRATEGY_STORAGE_KEY);
@@ -928,13 +1037,28 @@
                 }
             });
             const [showStrategySettings, setShowStrategySettings] = useState(false);
-            const [customRates, setCustomRates] = useState(() => { try { const s = safeGetStorage(CUSTOM_RATES_STORAGE_KEY); return s ? JSON.parse(s) : { krw:'', usd:'', usdToCny:'', cny:'' }; } catch{ return {}; }});
-            const [lastUpdated, setLastUpdated] = useState(COPY.loadingStatus);
             const [showSettings, setShowSettings] = useState(false);
-            const [isRefreshing, setIsRefreshing] = useState(false);
             const [isInverseRate, setIsInverseRate] = useState(true);
             const [editingMap, setEditingMap] = useState({}); 
             const saveTimeoutRef = useRef(null);
+            const {
+                customRates,
+                lastUpdated,
+                isRefreshing,
+                fetchRates,
+                handleCustomRate,
+                effectiveRates
+            } = useRateManager({
+                COPY,
+                safeGetStorage,
+                safeSetStorage,
+                RATE_STORAGE_KEY,
+                CUSTOM_RATES_STORAGE_KEY,
+                RATE_CACHE_TTL,
+                AUTO_REFRESH_INTERVAL,
+                fetchExchangeRates,
+                normalizeRates
+            });
 
             // Separate State for Memory Function
             const [genInput, setGenInput] = useState({ val: '', type: 'target' });
@@ -942,7 +1066,6 @@
             // NEW: State to track which card is being edited in Strategy Settings
             const [editingStrategyCardId, setEditingStrategyCardId] = useState(null);
 
-            useEffect(() => { safeSetStorage(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(customRates)); }, [customRates]);
             useEffect(() => { safeSetStorage(STRATEGY_STORAGE_KEY, JSON.stringify(allStrategies)); }, [allStrategies]);
             
             // NEW: Get strategies for the card currently being edited, or active if none specified (though modal logic ensures ID is set)
@@ -973,64 +1096,18 @@
             }, []);
 
             useEffect(() => {
-                const init = () => {
-                    const s = safeGetStorage(STORAGE_KEY); if (s) try { setSettings(prev => ({ ...prev, ...JSON.parse(s) })); } catch{}
-                    const r = safeGetStorage(RATE_STORAGE_KEY); 
-                    if (r) { 
-                        try { 
-                            const p = JSON.parse(r); 
-                            // If stale (cache expired) or no data, fetch new rates
-                            if (Date.now() - p.timestamp < RATE_CACHE_TTL) { 
-                                setRates(p.rates); 
-                                setLastUpdated(p.timeStr); 
-                                return; 
-                            }
-                        } catch{} 
-                    }
-                    fetchRates();
-                };
-                
-                // Background refresh check
-                const handleVisibilityChange = () => {
-                    if (document.visibilityState === 'visible') {
-                        const r = safeGetStorage(RATE_STORAGE_KEY);
-                        if (r) {
-                            try {
-                                const p = JSON.parse(r);
-                                // If older than AUTO_REFRESH_INTERVAL, force update
-                                if (Date.now() - p.timestamp > AUTO_REFRESH_INTERVAL) {
-                                    fetchRates(); // Will clear custom rates too
-                                }
-                            } catch {}
-                        }
-                    }
-                };
-                
-                document.addEventListener('visibilitychange', handleVisibilityChange);
-                init();
-                return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-            }, []);
-
-            const fetchRates = useCallback(async () => {
-                setIsRefreshing(true); 
-                setLastUpdated(COPY.updatingStatus);
-                setCustomRates({}); // Force clear custom rates on refresh
-                try {
-                    const newRates = await fetchExchangeRates();
-                    const t = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
-                    setRates(newRates); setLastUpdated(t);
-                    safeSetStorage(RATE_STORAGE_KEY, JSON.stringify({ rates: newRates, timeStr: t, timestamp: Date.now() }));
-                } catch(e) { setLastUpdated(COPY.offlineStatus); } finally { setTimeout(()=>setIsRefreshing(false),800); }
+                const s = safeGetStorage(STORAGE_KEY);
+                if (s) {
+                    try {
+                        setSettings(prev => ({ ...prev, ...JSON.parse(s) }));
+                    } catch {}
+                }
             }, []);
 
             const debouncedSave = useCallback((ns) => { clearTimeout(saveTimeoutRef.current); saveTimeoutRef.current = setTimeout(() => safeSetStorage(STORAGE_KEY, JSON.stringify(ns)), 800); }, []);
             const updateSetting = useCallback((k, v) => setSettings(p => { const n = { ...p, [k]: v }; debouncedSave(n); return n; }), [debouncedSave]);
             const updatePreset = useCallback((id, f, v) => setSettings(p => { const np = p.cardPresets.map(c => c.id===id ? { ...c, [f]: v } : c); const n = { ...p, cardPresets: np }; debouncedSave(n); return n; }), [debouncedSave]);
             const applyPreset = useCallback((c) => setSettings(p => { const n = { ...p, activePresetId: c.id, cardType: c.type, reward: c.reward, rewardType: c.rewardType, isMobilePay: c.isMobilePay||false, isBankAccount: c.isBankAccount||false }; debouncedSave(n); return n; }), [debouncedSave]);
-            const handleCustomRate = (t, v) => setCustomRates(p => ({ ...p, [t]: v===undefined||v===null?'':v.toString() }));
-            
-            const effectiveRates = useMemo(() => normalizeRates(rates, customRates), [rates, customRates]);
-
             const calcResult = useMemo(() => buildCalcResult({ settings, genInput, dfInput, effectiveRates, allStrategies }), [genInput, dfInput, settings, effectiveRates, allStrategies]);
 
             const refundMethodComparison = useMemo(() => {

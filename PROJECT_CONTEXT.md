@@ -516,3 +516,17 @@ Entry format:
   Type: UI, Feature
   Summary: 將四則運算輸入升級成計算機式即時預覽：當使用者在金額欄位輸入如 `500000/2` 的算式時，欄位上方以淡字保留原式，主數字區即時顯示計算結果，確認後仍會自動收斂成最終結果值並同步帶入其他匯率欄位換算。一般購物與免稅購物金額欄位皆套用相同互動。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 14:22 CST
+  Updated by: Codex
+  Type: UI, Feature
+  Summary: 針對行動裝置修正算式輸入鍵盤體驗：一般購物三個金額欄位與免稅購物兩個金額欄位改為使用 app 內建數學鍵盤，避免跳出一般文字鍵盤，同時保留淡色原式、即時結果預覽與確認後收斂成最終數值的流程；編輯中也補上藍色游標提示。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 14:42 CST
+  Updated by: Codex
+  Type: UI, Infra
+  Summary: 將數學鍵盤 / 算式輸入輔助邏輯抽到 `math-ui.js`，把匯率載入、快取、背景刷新與自訂匯率覆寫抽到 `rate-manager.js`，讓 `index.html` 回到偏組裝層；同時更新 service worker cache shell 納入新檔，避免快取漏載。
+  Files: `index.html`, `math-ui.js`, `rate-manager.js`, `sw.js`, `PROJECT_CONTEXT.md`
