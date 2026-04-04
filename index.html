@@ -716,10 +716,16 @@
                 requestAnimationFrame(() => {
                     const mainEl = document.querySelector('main');
                     if (!mainEl) return;
-                    let top = 0;
-                    let el = node;
-                    while (el && el !== mainEl) { top += el.offsetTop; el = el.offsetParent; }
-                    mainEl.scrollTop = Math.max(0, top - 20);
+                    // Walk offsetParent chain to get field's top within main's scroll area
+                    let fieldTop = 0, el = node;
+                    while (el && el !== mainEl) { fieldTop += el.offsetTop; el = el.offsetParent; }
+                    // Keyboard is fixed at bottom, ~390px tall (keys + top bar + safe area)
+                    const KEYBOARD_H = 390;
+                    const fieldH = node.offsetHeight;
+                    // Target: field sits just above keyboard with 12px gap
+                    // fieldTop_in_viewport = mainEl.clientHeight - KEYBOARD_H - fieldH - 12
+                    const targetViewportTop = mainEl.clientHeight - KEYBOARD_H - fieldH - 12;
+                    mainEl.scrollTop = Math.max(0, fieldTop - targetViewportTop);
                 });
             }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
@@ -893,10 +899,16 @@
                 requestAnimationFrame(() => {
                     const mainEl = document.querySelector('main');
                     if (!mainEl) return;
-                    let top = 0;
-                    let el = node;
-                    while (el && el !== mainEl) { top += el.offsetTop; el = el.offsetParent; }
-                    mainEl.scrollTop = Math.max(0, top - 20);
+                    // Walk offsetParent chain to get field's top within main's scroll area
+                    let fieldTop = 0, el = node;
+                    while (el && el !== mainEl) { fieldTop += el.offsetTop; el = el.offsetParent; }
+                    // Keyboard is fixed at bottom, ~390px tall (keys + top bar + safe area)
+                    const KEYBOARD_H = 390;
+                    const fieldH = node.offsetHeight;
+                    // Target: field sits just above keyboard with 12px gap
+                    // fieldTop_in_viewport = mainEl.clientHeight - KEYBOARD_H - fieldH - 12
+                    const targetViewportTop = mainEl.clientHeight - KEYBOARD_H - fieldH - 12;
+                    mainEl.scrollTop = Math.max(0, fieldTop - targetViewportTop);
                 });
             }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
