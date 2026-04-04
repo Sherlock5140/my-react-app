@@ -657,11 +657,13 @@
         });
 
         const GeneralMode = memo(({ settings, genInput, setGenInput, calcResult, updateSetting, advice, rates, refundMethodComparison }) => {
+            const [activeField, setActiveField] = useState(null);
             const clearInput = () => setGenInput({ ...genInput, val: '' });
             const commitGeneralInput = (field, mode = 'integer') => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
                 const committed = commitExpressionInput(currentValue, mode);
                 setGenInput({ val: committed, type: field });
+                setActiveField(null);
             };
             const handleGeneralKeyDown = (e, field, mode = 'integer') => {
                 if (e.key === 'Enter') {
@@ -670,12 +672,73 @@
                     e.currentTarget.blur();
                 }
             };
+            const hasExpressionOperators = (value) => /[+\-*/()×÷]/.test(String(value || ''));
+            const getPreviewNumberText = (value, mode = 'integer') => {
+                const evaluated = evaluateMathExpression(value);
+                if (isNaN(evaluated)) return '';
+                if (mode === 'decimal2') {
+                    return evaluated.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+                }
+                return Math.round(evaluated).toLocaleString('en-US');
+            };
+            const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
+                const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
+                const isActive = activeField === field;
+                const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
+                const previewValue = showPreview ? getPreviewNumberText(currentValue, mode) : '';
+                return (
+                    <div className={`currency-card ${genInput.type===field?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}>
+                        <div className="flex items-center gap-4">
+                            <div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{emoji}</div>
+                            <div className="flex-1 relative">
+                                <label className="text-[10px] font-bold text-[#B6B8B3] uppercase tracking-[0.32em] block pl-1 mb-1.5">{label}</label>
+                                <div className="flex items-center relative min-h-[3.4rem]">
+                                    <span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2 self-center">{prefix}</span>
+                                    <div className="flex-1 relative">
+                                        {showPreview ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    inputMode="text"
+                                                    placeholder="0"
+                                                    value={currentValue}
+                                                    onFocus={() => setActiveField(field)}
+                                                    onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
+                                                    onBlur={() => commitGeneralInput(field, mode)}
+                                                    onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
+                                                    className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                                />
+                                                <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-1`}>
+                                                    {previewValue}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                inputMode="text"
+                                                placeholder="0"
+                                                value={currentValue}
+                                                onFocus={() => setActiveField(field)}
+                                                onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
+                                                onBlur={() => commitGeneralInput(field, mode)}
+                                                onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
+                                                className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em] bg-transparent`}
+                                            />
+                                        )}
+                                        {(genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
 
             return (
                 <div className="block space-y-4 pb-0">
-                    <div className={`currency-card ${genInput.type==='usd'?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}><div className="flex items-center gap-4"><div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{COPY.currencies.usd.emoji}</div><div className="flex-1 relative"><label className="text-[10px] font-bold text-[#B6B8B3] uppercase tracking-[0.32em] block pl-1 mb-1.5">{COPY.currencies.usd.label}</label><div className="flex items-center"><span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2">{COPY.currencies.usd.prefix}</span><input type="text" inputMode="text" placeholder="0" value={getDisplayVal('usd', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'usd' }); }} onBlur={() => commitGeneralInput('usd', 'decimal2')} onKeyDown={(e) => handleGeneralKeyDown(e, 'usd', 'decimal2')} className="text-[2.4rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em]"/>{(genInput.type === 'usd' || getDisplayVal('usd', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div></div>
-                    <div className={`currency-card ${genInput.type==='target'?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}><div className="flex items-center gap-4"><div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{COPY.currencies.target.emoji}</div><div className="flex-1 relative"><label className="text-[10px] font-bold text-[#B6B8B3] uppercase tracking-[0.32em] block pl-1 mb-1.5">{COPY.currencies.target.label}</label><div className="flex items-center"><span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2">{COPY.currencies.target.prefix}</span><input type="text" inputMode="text" placeholder="0" value={getDisplayVal('target', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'target' }); }} onBlur={() => commitGeneralInput('target', 'integer')} onKeyDown={(e) => handleGeneralKeyDown(e, 'target', 'integer')} className="text-[2.5rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em]"/>{(genInput.type === 'target' || getDisplayVal('target', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div></div>
-                    <div className={`currency-card ${genInput.type==='twd'?'currency-card--active':''} transition-all focus-within:ring-2 ring-[rgba(201,166,161,0.18)]`}><div className="flex items-center gap-4"><div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{COPY.currencies.twd.emoji}</div><div className="flex-1 relative"><label className="text-[10px] font-bold text-[#B6B8B3] uppercase tracking-[0.32em] block pl-1 mb-1.5">{COPY.currencies.twd.label}</label><div className="flex items-center"><span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2">{COPY.currencies.twd.prefix}</span><input type="text" inputMode="text" placeholder="0" value={getDisplayVal('twd', genInput, rates)} onChange={(e)=>{ setGenInput({ val: e.target.value, type: 'twd' }); }} onBlur={() => commitGeneralInput('twd', 'integer')} onKeyDown={(e) => handleGeneralKeyDown(e, 'twd', 'integer')} className="text-[2.5rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-[-0.04em]"/>{(genInput.type === 'twd' || getDisplayVal('twd', genInput, rates)) && <button onClick={clearInput} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3]"><Icon name="x" size={16}/></button>}</div></div></div></div>
+                    {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
+                    {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
+                    {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
                     
                     <div className="section-card rounded-[2rem] p-5 flex flex-col gap-4">
                         <div className="flex justify-between items-center gap-3"><span className="text-[1rem] font-black flex items-center gap-2 text-[#2E2E2E] tracking-[-0.02em]"><Icon name="receipt" size={18}/> {COPY.taxSettingsLabel}</span><div className="soft-pill flex rounded-full p-1 border border-white/50">{COPY.taxModeOptions.map(m => (<button key={m.key} onClick={()=>updateSetting('taxMode',m.key)} className={`px-3.5 py-1.5 text-[10px] font-bold rounded-full transition-all duration-300 ${settings.taxMode===m.key ? 'bg-[rgba(255,255,255,0.9)] text-[#2E2E2E] shadow-sm' : 'text-[#757573] hover:text-[#2E2E2E]'}`}>{m.label}</button>))}</div></div>
@@ -724,12 +787,14 @@
         });
 
         const DutyFreeMode = memo(({ settings, dfInput, setDfInput, updateSetting, calcResult, rates }) => {
+            const [activeField, setActiveField] = useState(null);
             const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInput.tagPrice, percent); if (nextPay) setDfInput({...dfInput, payVal: nextPay}); };
             const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
             const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
             const commitDutyFreeField = (field, mode = 'decimal2') => {
                 const committed = commitExpressionInput(dfInput[field], mode);
                 setDfInput({ ...dfInput, [field]: committed });
+                setActiveField(null);
             };
             const handleDutyFreeKeyDown = (e, field, mode = 'decimal2') => {
                 if (e.key === 'Enter') {
@@ -738,6 +803,59 @@
                     e.currentTarget.blur();
                 }
             };
+            const hasExpressionOperators = (value) => /[+\-*/()×÷]/.test(String(value || ''));
+            const getPreviewNumberText = (value) => {
+                const evaluated = evaluateMathExpression(value);
+                if (isNaN(evaluated)) return '';
+                return evaluated.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            };
+            const renderDutyFreeField = (field, label) => {
+                const currentValue = dfInput[field];
+                const isActive = activeField === field;
+                const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
+                const previewValue = showPreview ? getPreviewNumberText(currentValue) : '';
+                return (
+                    <div className="app-card p-5 relative">
+                        <label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">{label}</label>
+                        <div className="flex items-center min-h-[4.2rem]">
+                            <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
+                            <div className="flex-1 relative">
+                                {showPreview ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            inputMode="text"
+                                            placeholder="0"
+                                            value={currentValue}
+                                            onFocus={() => setActiveField(field)}
+                                            onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
+                                            onBlur={() => commitDutyFreeField(field, 'decimal2')}
+                                            onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
+                                            className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                        />
+                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
+                                            {previewValue}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        inputMode="text"
+                                        placeholder="0"
+                                        value={currentValue}
+                                        onFocus={() => setActiveField(field)}
+                                        onChange={(e)=>setDfInput({...dfInput, [field]: e.target.value})}
+                                        onBlur={() => commitDutyFreeField(field, 'decimal2')}
+                                        onKeyDown={(e) => handleDutyFreeKeyDown(e, field, 'decimal2')}
+                                        className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
+                                    />
+                                )}
+                                {currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
 
             const inputNum = evaluateMathExpression(dfInput.payVal);
             const instantTwd = inputNum > 0 ? Math.round(inputNum * rates.usd) : 0;
@@ -745,11 +863,46 @@
 
             return (
                 <div className="space-y-4 animate-fade-in pb-2">
-                    <div className="app-card p-5 relative"><label className="text-[9px] font-bold text-[#B6B8B3] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreeOriginalLabel}</label><div className="flex items-center"><span className="text-2xl font-bold text-[#B6B8B3] mr-2">$</span><input type="text" inputMode="text" placeholder="0" value={dfInput.tagPrice} onChange={(e)=>setDfInput({...dfInput, tagPrice: e.target.value})} onBlur={() => commitDutyFreeField('tagPrice', 'decimal2')} onKeyDown={(e) => handleDutyFreeKeyDown(e, 'tagPrice', 'decimal2')} className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight"/>{dfInput.tagPrice && <button onClick={()=>setDfInput({...dfInput, tagPrice: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}</div></div>
+                    {renderDutyFreeField('tagPrice', COPY.dutyFreeOriginalLabel)}
                     <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
                     <div className="app-card p-5 relative">
                         <label className="text-[9px] font-bold text-[#8FA39D] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreePaidLabel}</label>
-                        <div className="flex items-center"><span className="text-2xl font-bold text-[#B6B8B3] mr-2">$</span><input type="text" inputMode="text" placeholder="0" value={dfInput.payVal} onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})} onBlur={() => commitDutyFreeField('payVal', 'decimal2')} onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')} className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight"/>{dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}</div>
+                        <div className="flex items-center min-h-[4.2rem]">
+                            <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
+                            <div className="flex-1 relative">
+                                {activeField === 'payVal' && hasExpressionOperators(dfInput.payVal) && !isNaN(evaluateMathExpression(dfInput.payVal)) ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            inputMode="text"
+                                            placeholder="0"
+                                            value={dfInput.payVal}
+                                            onFocus={() => setActiveField('payVal')}
+                                            onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
+                                            onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
+                                            onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
+                                            className="absolute top-0 right-0 w-full bg-transparent text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
+                                        />
+                                        <div className="text-[3rem] font-black text-[#2E2E2E] tracking-tight leading-none pt-5 text-right pr-1">
+                                            {getPreviewNumberText(dfInput.payVal)}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        inputMode="text"
+                                        placeholder="0"
+                                        value={dfInput.payVal}
+                                        onFocus={() => setActiveField('payVal')}
+                                        onChange={(e)=>setDfInput({...dfInput, payVal: e.target.value})}
+                                        onBlur={() => commitDutyFreeField('payVal', 'decimal2')}
+                                        onKeyDown={(e) => handleDutyFreeKeyDown(e, 'payVal', 'decimal2')}
+                                        className="text-[3rem] font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full tracking-tight bg-transparent"
+                                    />
+                                )}
+                                {dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[#B6B8B3] bg-[rgba(255,255,255,0.65)] rounded-full border border-white/50"><Icon name="x" size={16}/></button>}
+                            </div>
+                        </div>
                         <div className="flex justify-between items-center mt-4 bg-[rgba(255,255,255,0.46)] p-2.5 rounded-[1.1rem] border border-white/50">
                             <span className="text-xs font-bold text-[#484846] flex items-center gap-1">{COPY.dutyFreeInstantRatePrefix} {instantTwd.toLocaleString()} <span className="text-[10px] bg-[rgba(214,192,179,0.18)] text-[#757573] px-1.5 rounded-full">{COPY.dutyFreeRateLabel} {instantRate.toFixed(2)}</span></span>
                             {status && <div className={`text-[9px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1 ${status.isSafe ? 'bg-[rgba(143,163,157,0.16)] text-[#6F827D]' : 'bg-[rgba(176,114,107,0.12)] text-[#B0726B]'}`}><Icon name={status.isSafe ? 'check' : 'alert'} size={10}/> {status.text}</div>}

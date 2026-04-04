@@ -509,3 +509,10 @@ Entry format:
   Type: Feature
   Summary: 金額輸入欄位新增四則運算表達式支援，使用者可直接輸入 `+ - * / ()` 算式，於 blur 或 Enter 確認後自動收斂成結果值，再沿用當下最新匯率與既有試算公式。一般購物三個幣別欄位與免稅購物的原價 / 實付款欄位皆同步支援；核心換算、免稅折扣判斷與一般轉免稅預填也改成讀取算式結果，不新增額外欄位。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 13:15 CST
+  Updated by: Codex
+  Type: UI, Feature
+  Summary: 將四則運算輸入升級成計算機式即時預覽：當使用者在金額欄位輸入如 `500000/2` 的算式時，欄位上方以淡字保留原式，主數字區即時顯示計算結果，確認後仍會自動收斂成最終結果值並同步帶入其他匯率欄位換算。一般購物與免稅購物金額欄位皆套用相同互動。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
