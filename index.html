@@ -685,9 +685,17 @@
             const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
             const fieldModeMap = { usd: 'decimal2', target: 'integer', twd: 'integer' };
             const fieldRefs = useRef({});
-            const clearInput = () => setGenInput({ ...genInput, val: '' });
+            // Refs to avoid stale closures in portal callbacks
+            const genInputRef = useRef(genInput);
+            const ratesRef = useRef(rates);
+            const activeFieldRef = useRef(activeField);
+            useEffect(() => { genInputRef.current = genInput; }, [genInput]);
+            useEffect(() => { ratesRef.current = rates; }, [rates]);
+            useEffect(() => { activeFieldRef.current = activeField; }, [activeField]);
+            const clearInput = () => setGenInput({ ...genInputRef.current, val: '' });
             const commitGeneralInput = (field, mode = 'integer') => {
-                const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
+                const gi = genInputRef.current;
+                const currentValue = gi.type === field ? gi.val : getDisplayVal(field, gi, ratesRef.current);
                 const committed = commitExpressionInput(currentValue, mode);
                 setGenInput({ val: committed, type: field });
                 setActiveField(null);
@@ -855,10 +863,10 @@
                     {useMathKeypad && !!activeField && ReactDOM.createPortal(
                         <MathKeypad
                             visible={true}
-                            onInsert={(token) => appendGeneralToken(activeField, token)}
-                            onBackspace={() => backspaceGeneralToken(activeField)}
-                            onClear={() => setGenInput({ val: '', type: activeField })}
-                            onDone={() => commitGeneralInput(activeField, fieldModeMap[activeField] || 'integer')}
+                            onInsert={(token) => appendGeneralToken(activeFieldRef.current, token)}
+                            onBackspace={() => backspaceGeneralToken(activeFieldRef.current)}
+                            onClear={() => setGenInput({ val: '', type: activeFieldRef.current })}
+                            onDone={() => commitGeneralInput(activeFieldRef.current, fieldModeMap[activeFieldRef.current] || 'integer')}
                         />,
                         document.body
                     )}
@@ -870,12 +878,18 @@
             const [activeField, setActiveField] = useState(null);
             const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
             const fieldRefs = useRef({});
-            const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInput.tagPrice, percent); if (nextPay) setDfInput({...dfInput, payVal: nextPay}); };
+            // Refs to avoid stale closures in portal callbacks
+            const dfInputRef = useRef(dfInput);
+            const dfActiveFieldRef = useRef(activeField);
+            useEffect(() => { dfInputRef.current = dfInput; }, [dfInput]);
+            useEffect(() => { dfActiveFieldRef.current = activeField; }, [activeField]);
+            const applyDiscount = (percent) => { const nextPay = applyDutyFreeDiscount(dfInputRef.current.tagPrice, percent); if (nextPay) setDfInput({...dfInputRef.current, payVal: nextPay}); };
             const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
             const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
             const commitDutyFreeField = (field, mode = 'decimal2') => {
-                const committed = commitExpressionInput(dfInput[field], mode);
-                setDfInput({ ...dfInput, [field]: committed });
+                const di = dfInputRef.current;
+                const committed = commitExpressionInput(di[field], mode);
+                setDfInput({ ...di, [field]: committed });
                 setActiveField(null);
             };
             const handleDutyFreeKeyDown = (e, field, mode = 'decimal2') => {
@@ -1066,10 +1080,10 @@
                     {useMathKeypad && !!activeField && ReactDOM.createPortal(
                         <MathKeypad
                             visible={true}
-                            onInsert={(token) => appendDutyFreeToken(activeField, token)}
-                            onBackspace={() => backspaceDutyFreeToken(activeField)}
-                            onClear={() => setDfInput({ ...dfInput, [activeField]: '' })}
-                            onDone={() => commitDutyFreeField(activeField, 'decimal2')}
+                            onInsert={(token) => appendDutyFreeToken(dfActiveFieldRef.current, token)}
+                            onBackspace={() => backspaceDutyFreeToken(dfActiveFieldRef.current)}
+                            onClear={() => setDfInput({ ...dfInputRef.current, [dfActiveFieldRef.current]: '' })}
+                            onDone={() => commitDutyFreeField(dfActiveFieldRef.current, 'decimal2')}
                         />,
                         document.body
                     )}

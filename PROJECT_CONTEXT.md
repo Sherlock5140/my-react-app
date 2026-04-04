@@ -546,6 +546,13 @@ Entry format:
   Files: `index.html`, `math-ui.js`, `sw.js`, `PROJECT_CONTEXT.md`
 
 - 2026-04-04
+  Updated at: 2026-04-04 20:07 CST
+  Updated by: Claude Code
+  Type: Bug Fix
+  Summary: 修正 DONE 按鈕清空算式結果的問題。ReactDOM.createPortal 把鍵盤掛在 document.body，iOS Safari 中 portal callback 可能捕捉到 stale closure（舊的 genInput/dfInput/activeField props）導致 commitGeneralInput 拿到空值然後 setGenInput({ val: '' })。修法：GeneralMode 和 DutyFreeMode 各增加 useRef 追蹤最新的 genInput/dfInput/activeField，portal 的所有 callback（onInsert/onBackspace/onClear/onDone）全部改為讀 ref.current 而非 closure 捕捉的 props，確保任何時間點按下 DONE 都能拿到最新輸入值。SW v14。
+  Files: `index.html`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
   Updated at: 2026-04-04 19:52 CST
   Updated by: Claude Code
   Type: Bug Fix, UI
