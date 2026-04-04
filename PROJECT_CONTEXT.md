@@ -418,3 +418,10 @@ Entry format:
   Type: UI
   Summary: 進一步收斂回饋主列下方的實刷公式提示，移除與右側綠字重複的 `回饋金額` 尾句，只保留 `實刷金額 × 回饋率`；同時壓縮與主列之間的垂直間距，讓兩行資訊更緊密、更像同一組說明。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:55 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 再次收緊回饋主列與實刷公式提示之間的上下間距，直接縮短回饋主列高度並將下方公式再上提，避免兩行之間保留過多留白。
+  Files: `index.html`, `PROJECT_CONTEXT.md`

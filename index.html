@@ -576,7 +576,7 @@
                         </div>
                         <div className="flex justify-between items-center text-[#B0726B] leading-none min-h-[2rem]"><span className="font-medium">{COPY.feeLabelPrefix} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span><span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span></div>
                         
-                        <div className="flex justify-between items-center text-[#10B981] leading-none min-h-[2rem]">
+                        <div className="flex justify-between items-center text-[#10B981] leading-none min-h-[1.45rem]">
                             <div className="flex items-center gap-2">
                                 <span className="font-medium">- {rewardLabel} ({activeCardRate}%)</span>
                                 <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
@@ -584,7 +584,7 @@
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
                         {rewardFormulaText && (
-                            <div className="mt-[-0.7rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium">
+                            <div className="mt-[-0.92rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
                                 {rewardFormulaText}
                             </div>
                         )}
