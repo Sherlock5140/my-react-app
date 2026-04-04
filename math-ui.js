@@ -35,6 +35,7 @@
         ];
         return (
             React.createElement('div', {
+                id: 'math-keypad',
                 className: 'fixed inset-x-0 bottom-0 z-[90] px-3 pb-[max(env(safe-area-inset-bottom),0.9rem)] animate-fade-in'
             },
                 React.createElement('div', {
