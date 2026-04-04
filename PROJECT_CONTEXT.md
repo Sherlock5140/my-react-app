@@ -460,3 +460,10 @@ Entry format:
   Type: UI
   Summary: 調整回饋總價值卡的閱讀順序，將原本掛在卡片右上角的 `+$3,637` 移到區塊底部，改成在回饋點數與退稅／現場折抵都列完後再顯示 `優惠合計`；讓畫面邏輯回到「先列項目，再做加總，再往下扣手續費」。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:22 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 重新收斂綠色 `回饋總價值` 區塊的字體層級與排版，往前一版的視覺語言靠攏：標題改回較輕的次標層級、回饋主列改成兩行結構、右側金額與區塊底部的 `優惠合計` 也改回較自然的非 monospace 大小，避免看起來像另一套設計語言。
+  Files: `index.html`, `PROJECT_CONTEXT.md`

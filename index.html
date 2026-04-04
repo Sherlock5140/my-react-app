@@ -578,17 +578,20 @@
                         </div>
                         <div className="rounded-[1.35rem] bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.12)] px-4 py-3">
                             <div className="flex justify-between items-center">
-                                <span className="text-[12px] font-black text-[#5F8579] tracking-[0.08em]">{COPY.benefitSectionLabel}</span>
+                                <span className="text-[11px] font-bold text-[#6F827D] tracking-[0.04em]">{COPY.benefitSectionLabel}</span>
                             </div>
-                            <div className="mt-3 flex justify-between items-center text-[#10B981] leading-none min-h-[1.45rem]">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-medium">{COPY.rewardValueLabel} {rewardLabel} ({activeCardRate}%)</span>
-                                    <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
+                            <div className="mt-3 flex justify-between items-start text-[#10B981] min-h-[2.2rem]">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[11px] font-bold leading-none">{COPY.rewardValueLabel} {rewardLabel}</span>
+                                        <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
+                                    </div>
+                                    <span className="text-[11px] font-bold leading-none mt-1">({activeCardRate}%)</span>
                                 </div>
-                                <span className="font-bold font-mono">+${rewardAmount.toLocaleString()}</span>
+                                <span className="text-[1.2rem] font-bold text-[#10B981] tracking-[-0.02em]">+${rewardAmount.toLocaleString()}</span>
                             </div>
                             {rewardFormulaText && (
-                                <div className="mt-[-0.92rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
+                                <div className="mt-[-0.25rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
                                     {rewardFormulaText}
                                 </div>
                             )}
@@ -625,7 +628,7 @@
                             )}
                             <div className="mt-3 pt-3 border-t border-[rgba(16,185,129,0.12)] flex justify-between items-center">
                                 <span className="text-[11px] font-bold text-[#6F827D]">{COPY.benefitTotalLabel}</span>
-                                <span className="font-mono font-bold text-[#10B981] text-lg">+${totalBenefitValue.toLocaleString()}</span>
+                                <span className="text-[1.2rem] font-bold text-[#10B981] tracking-[-0.02em]">+${totalBenefitValue.toLocaleString()}</span>
                             </div>
                         </div>
 
