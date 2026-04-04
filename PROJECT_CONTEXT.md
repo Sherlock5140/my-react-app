@@ -544,3 +544,10 @@ Entry format:
   Type: UI, Bug Fix
   Summary: 修正鍵盤相關四項問題。(1) 台幣欄被鍵盤遮住 + 中間空白：scrollIntoView 從 block:'center' 改為 block:'start'，讓點選欄位後捲動到畫面頂部，確保 TWD 在鍵盤上方清楚可見，GeneralMode 和 DutyFreeMode 皆修正。(2) 算式截圖效果：移除 absolute 絕對定位的算式覆蓋層，改為正常流布局——算式文字小號顯示於上，計算結果大號顯示於下，視覺乾淨不疊加。(3) 鍵盤顏色：暖化背景漸層（移除偏綠色調，對齊 section-card 暖灰奶油系），DONE 按鈕加入玫瑰系漸層與深玫瑰文字色，提升識別度與主題一致性。(4) SW 版本 bump 至 v5-20260404-1501。
   Files: `index.html`, `math-ui.js`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 19:52 CST
+  Updated by: Claude Code
+  Type: Bug Fix, UI
+  Summary: 修正 iOS Safari 鍵盤被 header 截斷 + 捲動定位不準兩個根本問題。(1) z-index 截斷：<main> 帶有 backdrop-blur-sm，在 iOS Safari 成為 fixed 子元素的 containing block，導致 MathKeypad 頂部被 header 覆蓋。改用 ReactDOM.createPortal(_, document.body) 把鍵盤掛在 body 根層，完全跳出 main 的 stacking context。(2) 捲動定位：改用 getBoundingClientRect + 動態量測 #math-keypad.offsetHeight，只在欄位底部實際被鍵盤遮住時才觸發捲動（field.bottom > keypadTop - 8），精確讓被點擊欄位顯示在鍵盤正上方，模擬 iOS 原生鍵盤定位效果。SW bump v13。
+  Files: `index.html`, `math-ui.js`, `sw.js`, `PROJECT_CONTEXT.md`
