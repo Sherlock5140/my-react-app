@@ -554,7 +554,7 @@
             const rewardLabel = getRewardLabel(settings.rewardType);
             const activeCardRate = campaignData?.v95?.totalRate || campaignData?.effectiveRate || 0;
             const rewardFormulaText = isImmediateTaxRefund
-                ? `實刷金額 $${twdBase.toLocaleString()} × ${activeCardRate}% ≈ 回饋 $${rewardAmount.toLocaleString()}`
+                ? `實刷金額 $${twdBase.toLocaleString()} × ${activeCardRate}%`
                 : null;
 
             const errorMargin = getErrorMargin(displayRefund);
@@ -584,7 +584,7 @@
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
                         </div>
                         {rewardFormulaText && (
-                            <div className="mt-[-0.45rem] text-[10px] text-[#8E918C] font-medium">
+                            <div className="mt-[-0.7rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium">
                                 {rewardFormulaText}
                             </div>
                         )}

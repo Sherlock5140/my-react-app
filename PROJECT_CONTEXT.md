@@ -411,3 +411,10 @@ Entry format:
   Type: UI
   Summary: 依需求移除回饋主標中的 `實刷` 字樣，將現場折抵的回饋基準改為在主列下方補一行公式提示：`實刷金額 × 回饋率 ≈ 回饋金額`。提示字色與活動加碼下方的 cap 進度說明一致，讓主列維持乾淨、下方再補足理解所需資訊。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:50 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 進一步收斂回饋主列下方的實刷公式提示，移除與右側綠字重複的 `回饋金額` 尾句，只保留 `實刷金額 × 回饋率`；同時壓縮與主列之間的垂直間距，讓兩行資訊更緊密、更像同一組說明。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
