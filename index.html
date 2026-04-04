@@ -716,9 +716,10 @@
                 requestAnimationFrame(() => {
                     const mainEl = document.querySelector('main');
                     if (!mainEl) return;
-                    const nodeTop = node.getBoundingClientRect().top;
-                    const mainTop = mainEl.getBoundingClientRect().top;
-                    mainEl.scrollTop = mainEl.scrollTop + nodeTop - mainTop - 16;
+                    let top = 0;
+                    let el = node;
+                    while (el && el !== mainEl) { top += el.offsetTop; el = el.offsetParent; }
+                    mainEl.scrollTop = Math.max(0, top - 20);
                 });
             }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
@@ -892,9 +893,10 @@
                 requestAnimationFrame(() => {
                     const mainEl = document.querySelector('main');
                     if (!mainEl) return;
-                    const nodeTop = node.getBoundingClientRect().top;
-                    const mainTop = mainEl.getBoundingClientRect().top;
-                    mainEl.scrollTop = mainEl.scrollTop + nodeTop - mainTop - 16;
+                    let top = 0;
+                    let el = node;
+                    while (el && el !== mainEl) { top += el.offsetTop; el = el.offsetParent; }
+                    mainEl.scrollTop = Math.max(0, top - 20);
                 });
             }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
