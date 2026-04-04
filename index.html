@@ -714,7 +714,16 @@
                 const node = fieldRefs.current[activeField];
                 if (!node) return;
                 requestAnimationFrame(() => {
-                    node.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                    let scrollEl = node.parentElement;
+                    while (scrollEl && scrollEl !== document.body) {
+                        const oy = getComputedStyle(scrollEl).overflowY;
+                        if (oy === 'auto' || oy === 'scroll') break;
+                        scrollEl = scrollEl.parentElement;
+                    }
+                    if (!scrollEl || scrollEl === document.body) return;
+                    const nodeRect = node.getBoundingClientRect();
+                    const containerRect = scrollEl.getBoundingClientRect();
+                    scrollEl.scrollBy({ top: nodeRect.top - containerRect.top - 80, behavior: 'smooth' });
                 });
             }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
@@ -796,7 +805,7 @@
             };
 
             return (
-                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[18.5rem]' : 'pb-0'}`}>
+                <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[28rem]' : 'pb-0'}`}>
                     {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
                     {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
                     {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
@@ -886,7 +895,16 @@
                 const node = fieldRefs.current[activeField];
                 if (!node) return;
                 requestAnimationFrame(() => {
-                    node.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                    let scrollEl = node.parentElement;
+                    while (scrollEl && scrollEl !== document.body) {
+                        const oy = getComputedStyle(scrollEl).overflowY;
+                        if (oy === 'auto' || oy === 'scroll') break;
+                        scrollEl = scrollEl.parentElement;
+                    }
+                    if (!scrollEl || scrollEl === document.body) return;
+                    const nodeRect = node.getBoundingClientRect();
+                    const containerRect = scrollEl.getBoundingClientRect();
+                    scrollEl.scrollBy({ top: nodeRect.top - containerRect.top - 80, behavior: 'smooth' });
                 });
             }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
@@ -967,7 +985,7 @@
             const instantRate = rates.usd;
 
             return (
-                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[18.5rem]' : 'pb-2'}`}>
+                <div className={`space-y-4 animate-fade-in ${useMathKeypad && activeField ? 'pb-[28rem]' : 'pb-2'}`}>
                     {renderDutyFreeField('tagPrice', COPY.dutyFreeOriginalLabel)}
                     <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar px-1">{COPY.dutyFreeDiscounts.map(d => (<button key={d} onClick={() => applyDiscount(d)} className="flex-1 py-2.5 rounded-full bg-[rgba(201,166,161,0.12)] text-[#7B6661] text-xs font-bold border border-[rgba(201,166,161,0.18)] hover:bg-[rgba(201,166,161,0.18)] active:scale-95">{COPY.discountFold(d)}</button>))}</div>
                     <div
