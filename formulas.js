@@ -34,7 +34,7 @@
         paymentAmountLabel: '付款金額',
         feeLabelPrefix: '+ 刷卡手續費',
         benefitSectionLabel: '回饋總價值',
-        benefitTotalLabel: '優惠小計',
+        benefitTotalLabel: '優惠合計',
         rewardValueLabel: '回饋點數',
         costSectionLabel: '手續費成本',
         feeCostLabel: '刷卡手續費',

@@ -453,3 +453,10 @@ Entry format:
   Type: UI
   Summary: 修正新版明細表的兩個可讀性問題。將 `回饋總價值` / `手續費成本` / 最下方 `總回饋價值` 的標題字級與色彩拉回明顯層級，避免看起來像消失；同時移除手續費成本卡內重複顯示的金額，只保留單一一筆 `刷卡手續費`，避免被誤認為重複扣款。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:19 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 調整回饋總價值卡的閱讀順序，將原本掛在卡片右上角的 `+$3,637` 移到區塊底部，改成在回饋點數與退稅／現場折抵都列完後再顯示 `優惠合計`；讓畫面邏輯回到「先列項目，再做加總，再往下扣手續費」。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
