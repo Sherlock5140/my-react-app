@@ -556,6 +556,8 @@
             const rewardFormulaText = isImmediateTaxRefund
                 ? `實刷金額 $${twdBase.toLocaleString()} × ${activeCardRate}%`
                 : null;
+            const totalBenefitValue = rewardAmount + displayRefund;
+            const totalCostValue = feeAmount + spreadCost;
 
             const errorMargin = getErrorMargin(displayRefund);
 
@@ -574,56 +576,71 @@
                             </div>
                             <span className="font-bold font-mono text-[1.2rem] text-[#2E2E2E] mt-1 tracking-[-0.03em]">${grossTwdBase.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between items-center text-[#B0726B] leading-none min-h-[2rem]"><span className="font-medium">{COPY.feeLabelPrefix} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span><span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>+${(feeAmount + spreadCost).toLocaleString()}</span></div>
-                        
-                        <div className="flex justify-between items-center text-[#10B981] leading-none min-h-[1.45rem]">
-                            <div className="flex items-center gap-2">
-                                <span className="font-medium">- {rewardLabel} ({activeCardRate}%)</span>
-                                <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
+                        <div className="rounded-[1.35rem] bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.12)] px-4 py-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[11px] font-bold text-[#6F827D] tracking-[0.08em]">{COPY.benefitSectionLabel}</span>
+                                <span className="font-mono font-bold text-[#10B981] text-lg">+${totalBenefitValue.toLocaleString()}</span>
                             </div>
-                            <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
-                        </div>
-                        {rewardFormulaText && (
-                            <div className="mt-[-0.92rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
-                                {rewardFormulaText}
-                            </div>
-                        )}
-                        {rewardBreakdown && (
-                            <div className="mt-[-0.35rem] mb-1 rounded-[1rem] bg-[rgba(255,255,255,0.36)] border border-white/55 px-3 py-2">
-                                <div className="flex items-center justify-between text-[10px] text-[#757573] font-bold">
-                                    <span>{COPY.baseRewardSummaryLabel}</span>
-                                    <span className="font-mono text-[#484846]">{baseRewardAmount.toLocaleString()}</span>
+                            <div className="mt-3 flex justify-between items-center text-[#10B981] leading-none min-h-[1.45rem]">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-medium">{COPY.rewardValueLabel} {rewardLabel} ({activeCardRate}%)</span>
+                                    <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
                                 </div>
-                                {bonusRewardAmount > 0 && (
-                                    <div className="flex items-center justify-between text-[10px] text-[#8B7A3F] font-bold mt-1">
-                                        <span>{COPY.bonusRewardSummaryLabel}</span>
-                                        <span className="font-mono text-[#8B7A3F]">{bonusRewardAmount.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                {rewardBreakdown.nextCapLayer && rewardBreakdown.nextCapLayer.remainingSpendToCap > 0 && (
-                                    <div className="text-[10px] text-[#8E918C] font-medium mt-1.5">
-                                        {COPY.capProgressHint({ name: rewardBreakdown.nextCapLayer.name, amount: rewardBreakdown.nextCapLayer.remainingSpendToCap })}
-                                    </div>
-                                )}
+                                <span className="font-bold font-mono">+${rewardAmount.toLocaleString()}</span>
                             </div>
-                        )}
-
-                        {(settings.mode === 'dutyfree' || displayRefund > 0) && (
-                             <div className="flex justify-between items-center text-[#3B82F6] bg-[rgba(226,236,246,0.82)] px-4 py-3.5 rounded-[1.4rem] mt-2 mb-4 border border-[rgba(201,216,232,0.62)]">
-                                <div className="flex flex-col gap-1"><span className="text-sm font-bold flex items-center gap-1">- {isImmediateTaxRefund ? COPY.immediateAppliedLabel : refundLabel}</span>{settings.mode === 'general' && (<div className="flex gap-1 mt-1">{isPostTax && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.postTaxBadge}</span>}{isImmediate && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.immediateBadge}</span>}</div>)}</div>
-                                <div className="flex flex-col items-end">
-                                    <span className="font-bold font-mono text-lg">-${displayRefund.toLocaleString()}</span>
-                                    {settings.mode === 'general' && settings.taxMode === 'auto' && (
-                                        <span className="text-[9px] text-slate-400 font-bold mt-0.5 scale-95 origin-right">({COPY.refundErrorPrefix}{errorMargin.toLocaleString()})</span>
+                            {rewardFormulaText && (
+                                <div className="mt-[-0.92rem] pl-[0.1rem] text-[10px] text-[#8E918C] font-medium leading-none">
+                                    {rewardFormulaText}
+                                </div>
+                            )}
+                            {rewardBreakdown && (
+                                <div className="mt-2 rounded-[1rem] bg-[rgba(255,255,255,0.46)] border border-white/55 px-3 py-2">
+                                    <div className="flex items-center justify-between text-[10px] text-[#757573] font-bold">
+                                        <span>{COPY.baseRewardSummaryLabel}</span>
+                                        <span className="font-mono text-[#484846]">{baseRewardAmount.toLocaleString()}</span>
+                                    </div>
+                                    {bonusRewardAmount > 0 && (
+                                        <div className="flex items-center justify-between text-[10px] text-[#8B7A3F] font-bold mt-1">
+                                            <span>{COPY.bonusRewardSummaryLabel}</span>
+                                            <span className="font-mono text-[#8B7A3F]">{bonusRewardAmount.toLocaleString()}</span>
+                                        </div>
+                                    )}
+                                    {rewardBreakdown.nextCapLayer && rewardBreakdown.nextCapLayer.remainingSpendToCap > 0 && (
+                                        <div className="text-[10px] text-[#8E918C] font-medium mt-1.5">
+                                            {COPY.capProgressHint({ name: rewardBreakdown.nextCapLayer.name, amount: rewardBreakdown.nextCapLayer.remainingSpendToCap })}
+                                        </div>
                                     )}
                                 </div>
-                             </div>
-                        )}
+                            )}
+
+                            {(settings.mode === 'dutyfree' || displayRefund > 0) && (
+                                 <div className="flex justify-between items-center text-[#3B82F6] bg-[rgba(226,236,246,0.82)] px-4 py-3.5 rounded-[1.2rem] mt-2 border border-[rgba(201,216,232,0.62)]">
+                                    <div className="flex flex-col gap-1"><span className="text-sm font-bold flex items-center gap-1">{isImmediateTaxRefund ? COPY.immediateAppliedLabel : refundLabel}</span>{settings.mode === 'general' && (<div className="flex gap-1 mt-1">{isPostTax && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.postTaxBadge}</span>}{isImmediate && <span className="text-[9px] border border-blue-200 text-blue-600 px-1 rounded bg-white/50">{COPY.immediateBadge}</span>}</div>)}</div>
+                                    <div className="flex flex-col items-end">
+                                        <span className="font-bold font-mono text-lg text-[#3B82F6]">+${displayRefund.toLocaleString()}</span>
+                                        {settings.mode === 'general' && settings.taxMode === 'auto' && (
+                                            <span className="text-[9px] text-slate-400 font-bold mt-0.5 scale-95 origin-right">({COPY.refundErrorPrefix}{errorMargin.toLocaleString()})</span>
+                                        )}
+                                    </div>
+                                 </div>
+                            )}
+                        </div>
+
+                        <div className="rounded-[1.35rem] bg-[rgba(176,114,107,0.06)] border border-[rgba(176,114,107,0.14)] px-4 py-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[11px] font-bold text-[#8B756A] tracking-[0.08em]">{COPY.costSectionLabel}</span>
+                                <span className={`font-mono font-bold text-lg ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : 'text-[#B0726B]'}`}>-${totalCostValue.toLocaleString()}</span>
+                            </div>
+                            <div className="mt-3 flex justify-between items-center text-[#B0726B] leading-none min-h-[1.4rem]">
+                                <span className="font-medium">{COPY.feeLabelPrefix} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span>
+                                <span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>-${totalCostValue.toLocaleString()}</span>
+                            </div>
+                        </div>
                         
                         {v95Data && v95Data.suggestionMsg && <div className="bg-[rgba(201,181,106,0.12)] border border-[rgba(201,181,106,0.2)] rounded-[1.25rem] p-3.5 animate-fade-in mb-2"><div className="flex items-start gap-3"><div className="p-1.5 bg-[rgba(201,181,106,0.18)] rounded-full text-[#8B7A3F] mt-0.5"><Icon name="lightning" size={14}/></div><div className="flex-1"><div className="text-xs font-bold text-[#8B7A3F] mb-1">{COPY.thresholdHintTitle}</div><div className="text-[10px] text-[#8B7A3F] leading-relaxed">{COPY.thresholdHintBody(v95Data.suggestionMsg)}</div></div></div></div>}
                         <div className="my-3 border-t border-dashed border-[rgba(200,204,199,0.35)]"></div>
                         <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs font-bold text-slate-400">{COPY.totalSavedLabel}</span>
+                            <span className="text-xs font-bold text-slate-400">{COPY.netSavedLabel}</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-[#10B981] font-bold text-xl tracking-tight">+${totalSaved.toLocaleString()}</span>
                                 <span className="text-[#10B981] font-bold text-lg">({savedPct}%)</span>
