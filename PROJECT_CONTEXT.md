@@ -446,3 +446,10 @@ Entry format:
   Type: UI, Formula
   Summary: 依新邏輯重整一般購物與免稅購物共用的明細表結構。中段改為先呈現 `總優惠`（回饋點數 + 退稅／現場折抵），再顯示 `成本扣除`（刷卡手續費），最後以 `淨回饋價值` 統整結果；回饋拆分與 cap 提示保留在總優惠區內，讓整體閱讀順序從「先加總拿到多少、再扣除成本」更直觀。
   Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:15 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 修正新版明細表的兩個可讀性問題。將 `回饋總價值` / `手續費成本` / 最下方 `總回饋價值` 的標題字級與色彩拉回明顯層級，避免看起來像消失；同時移除手續費成本卡內重複顯示的金額，只保留單一一筆 `刷卡手續費`，避免被誤認為重複扣款。
+  Files: `formulas.js`, `index.html`, `PROJECT_CONTEXT.md`

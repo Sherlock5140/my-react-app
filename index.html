@@ -578,7 +578,7 @@
                         </div>
                         <div className="rounded-[1.35rem] bg-[rgba(16,185,129,0.06)] border border-[rgba(16,185,129,0.12)] px-4 py-3">
                             <div className="flex justify-between items-center">
-                                <span className="text-[11px] font-bold text-[#6F827D] tracking-[0.08em]">{COPY.benefitSectionLabel}</span>
+                                <span className="text-[12px] font-black text-[#5F8579] tracking-[0.08em]">{COPY.benefitSectionLabel}</span>
                                 <span className="font-mono font-bold text-[#10B981] text-lg">+${totalBenefitValue.toLocaleString()}</span>
                             </div>
                             <div className="mt-3 flex justify-between items-center text-[#10B981] leading-none min-h-[1.45rem]">
@@ -628,11 +628,10 @@
 
                         <div className="rounded-[1.35rem] bg-[rgba(176,114,107,0.06)] border border-[rgba(176,114,107,0.14)] px-4 py-3">
                             <div className="flex justify-between items-center">
-                                <span className="text-[11px] font-bold text-[#8B756A] tracking-[0.08em]">{COPY.costSectionLabel}</span>
-                                <span className={`font-mono font-bold text-lg ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : 'text-[#B0726B]'}`}>-${totalCostValue.toLocaleString()}</span>
+                                <span className="text-[12px] font-black text-[#9A6F68] tracking-[0.08em]">{COPY.costSectionLabel}</span>
                             </div>
-                            <div className="mt-3 flex justify-between items-center text-[#B0726B] leading-none min-h-[1.4rem]">
-                                <span className="font-medium">{COPY.feeLabelPrefix} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span>
+                            <div className="mt-2 flex justify-between items-center text-[#B0726B] leading-none min-h-[1.4rem]">
+                                <span className="font-medium">{COPY.feeCostLabel} {isWaived ? '(0%)' : `(${settings.fee}%)`}</span>
                                 <span className={`font-mono font-bold ${isWaived ? 'text-[#8FA39D] line-through opacity-60' : ''}`}>-${totalCostValue.toLocaleString()}</span>
                             </div>
                         </div>
@@ -640,7 +639,7 @@
                         {v95Data && v95Data.suggestionMsg && <div className="bg-[rgba(201,181,106,0.12)] border border-[rgba(201,181,106,0.2)] rounded-[1.25rem] p-3.5 animate-fade-in mb-2"><div className="flex items-start gap-3"><div className="p-1.5 bg-[rgba(201,181,106,0.18)] rounded-full text-[#8B7A3F] mt-0.5"><Icon name="lightning" size={14}/></div><div className="flex-1"><div className="text-xs font-bold text-[#8B7A3F] mb-1">{COPY.thresholdHintTitle}</div><div className="text-[10px] text-[#8B7A3F] leading-relaxed">{COPY.thresholdHintBody(v95Data.suggestionMsg)}</div></div></div></div>}
                         <div className="my-3 border-t border-dashed border-[rgba(200,204,199,0.35)]"></div>
                         <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs font-bold text-slate-400">{COPY.netSavedLabel}</span>
+                            <span className="text-sm font-black text-[#5F8579]">{COPY.netSavedLabel}</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-[#10B981] font-bold text-xl tracking-tight">+${totalSaved.toLocaleString()}</span>
                                 <span className="text-[#10B981] font-bold text-lg">({savedPct}%)</span>
