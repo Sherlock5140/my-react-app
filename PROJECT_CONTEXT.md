@@ -474,3 +474,10 @@ Entry format:
   Type: UI
   Summary: 微調綠色回饋主列資訊順序，將 `(30.0%)` 與 `不含手續費` 的位置交換，改成先看到回饋率、再看到補充說明，讓主資訊更集中在同一視線上。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 12:26 CST
+  Updated by: Codex
+  Type: UI
+  Summary: 依需求移除回饋主列中的 `不含手續費` 膠囊，避免與下方已獨立列出的手續費成本重複說明，讓回饋主列只保留必要資訊。
+  Files: `index.html`, `PROJECT_CONTEXT.md`
