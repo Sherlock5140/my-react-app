@@ -397,3 +397,10 @@ Entry format:
   Type: UI
   Summary: 微調成本試算明細內活動加碼下方的 cap 進度提示字色，將「再刷 NT$... 可吃滿...」由過淡的淺灰改為較深的暖灰，保留低干擾感但提高手機閱讀清晰度。
   Files: `index.html`, `PROJECT_CONTEXT.md`
+
+- 2026-04-04
+  Updated at: 2026-04-04 11:44 CST
+  Updated by: Codex
+  Type: UI, Formula
+  Summary: 修正現場折抵時的回饋率顯示語意。原本 `LINE POINTS (30.0%)` 容易讓人誤會是以原價計算，現在改成 `LINE POINTS (實刷 30.0%)`，明示回饋率是套用在現場折抵後的實際刷卡金額上，與公式一致。
+  Files: `index.html`, `PROJECT_CONTEXT.md`

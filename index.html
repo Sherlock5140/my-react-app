@@ -553,6 +553,7 @@
 
             const rewardLabel = getRewardLabel(settings.rewardType);
             const activeCardRate = campaignData?.v95?.totalRate || campaignData?.effectiveRate || 0;
+            const rewardRateText = isImmediateTaxRefund ? `實刷 ${activeCardRate}%` : `${activeCardRate}%`;
 
             const errorMargin = getErrorMargin(displayRefund);
 
@@ -575,7 +576,7 @@
                         
                         <div className="flex justify-between items-center text-[#10B981] leading-none min-h-[2rem]">
                             <div className="flex items-center gap-2">
-                                <span className="font-medium">- {rewardLabel} ({activeCardRate}%)</span>
+                                <span className="font-medium">- {rewardLabel} ({rewardRateText})</span>
                                 <span className="text-[10px] bg-[rgba(255,255,255,0.7)] text-gray-400 px-1.5 py-0.5 rounded-full font-medium border border-white/50">{COPY.rewardExcludingFee}</span>
                             </div>
                             <span className="font-bold font-mono">-${rewardAmount.toLocaleString()}</span>
