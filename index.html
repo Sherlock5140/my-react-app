@@ -713,7 +713,7 @@
                 if (!useMathKeypad || !activeField) return;
                 const node = fieldRefs.current[activeField];
                 if (!node) return;
-                requestAnimationFrame(() => {
+                requestAnimationFrame(() => requestAnimationFrame(() => {
                     let scrollEl = node.parentElement;
                     while (scrollEl && scrollEl !== document.body) {
                         const oy = getComputedStyle(scrollEl).overflowY;
@@ -722,9 +722,9 @@
                     }
                     if (!scrollEl || scrollEl === document.body) return;
                     const nodeRect = node.getBoundingClientRect();
-                    const containerRect = scrollEl.getBoundingClientRect();
-                    scrollEl.scrollBy({ top: nodeRect.top - containerRect.top - 80, behavior: 'smooth' });
-                });
+                    const cRect = scrollEl.getBoundingClientRect();
+                    scrollEl.scrollTop = scrollEl.scrollTop + (nodeRect.top - cRect.top - 80);
+                }));
             }, [activeField, useMathKeypad]);
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
@@ -894,7 +894,7 @@
                 if (!useMathKeypad || !activeField) return;
                 const node = fieldRefs.current[activeField];
                 if (!node) return;
-                requestAnimationFrame(() => {
+                requestAnimationFrame(() => requestAnimationFrame(() => {
                     let scrollEl = node.parentElement;
                     while (scrollEl && scrollEl !== document.body) {
                         const oy = getComputedStyle(scrollEl).overflowY;
@@ -903,9 +903,9 @@
                     }
                     if (!scrollEl || scrollEl === document.body) return;
                     const nodeRect = node.getBoundingClientRect();
-                    const containerRect = scrollEl.getBoundingClientRect();
-                    scrollEl.scrollBy({ top: nodeRect.top - containerRect.top - 80, behavior: 'smooth' });
-                });
+                    const cRect = scrollEl.getBoundingClientRect();
+                    scrollEl.scrollTop = scrollEl.scrollTop + (nodeRect.top - cRect.top - 80);
+                }));
             }, [activeField, useMathKeypad]);
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
