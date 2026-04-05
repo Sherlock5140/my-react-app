@@ -40,7 +40,7 @@
         feeCostLabel: '刷卡手續費',
         netSavedLabel: '總回饋價值',
         totalSavedLabel: '總回饋價值',
-        finalCostLabel: '最終入手價 (TWD)',
+        finalCostLabel: 'Real Cost After Tax & Cashback',
         baseRewardSummaryLabel: '基本回饋',
         bonusRewardSummaryLabel: '活動加碼',
         capProgressHint: ({ name, amount }) => `再刷 NT$${amount.toLocaleString()} 可吃滿「${name}」`,
@@ -81,7 +81,7 @@
         dutyFreeSafe: '安全',
         dutyFreeWarning: '注意',
         dutyFreeRebateLabel: '返點設定 (Rebate %)',
-        appSubtitle: 'Seoul Shopping Calculator',
+        appSubtitle: 'Korea Shopping Rate Calculator',
         deleteConfirm: '確定刪除？',
         loadingStatus: '載入中...',
         updatingStatus: '更新中...',
@@ -102,7 +102,7 @@
             cnyToTwd: 'CNY ➔ TWD',
             usdToTwd: 'USD ➔ TWD'
         },
-        rateFooterPrefix: '1 KRW ≈',
+        rateFooterPrefix: 'Korea Shopping Rate  ·  1 KRW ≈',
         rateFooterSuffix: 'TWD',
         cardTypes: [
             { key: 'jcb', label: 'JCB', note: '(原始)' },
