@@ -740,6 +740,8 @@
                 const isActive = activeField === field;
                 const showPreview = hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
                 const previewValue = showPreview ? getPreviewNumberText(currentValue, mode, evaluateMathExpression) : '';
+                const displayLen = (currentValue || '0').replace(/[^\d]/g, '').length;
+                const dynSizeClass = displayLen <= 7 ? sizeClass : displayLen <= 9 ? 'text-[2rem]' : displayLen <= 11 ? 'text-[1.6rem]' : 'text-[1.3rem]';
                 return (
                     <div
                         ref={(node) => { fieldRefs.current[field] = node; }}
@@ -751,7 +753,7 @@
                                 <label className="text-[10px] font-bold text-[#B6B8B3] uppercase tracking-[0.32em] block pl-1 mb-1.5">{label}</label>
                                 <div className="flex items-center relative min-h-[3.4rem]">
                                     <span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2 self-center">{prefix}</span>
-                                    <div className="flex-1 relative">
+                                    <div className="flex-1 relative overflow-hidden">
                                         {showPreview ? (
                                             useMathKeypad ? (
                                                 <button
@@ -760,7 +762,7 @@
                                                     className="flex flex-col items-end w-full bg-transparent pr-12 text-right"
                                                 >
                                                     <span className="text-[0.9rem] font-medium text-[#A7A8A2] tracking-[-0.01em] leading-snug">{currentValue}{isActive && <span className="math-inline-caret" />}</span>
-                                                    <span className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-tight`}>{previewValue}</span>
+                                                    <span className={`${dynSizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-tight`}>{previewValue}</span>
                                                 </button>
                                             ) : (
                                                 <>
@@ -775,7 +777,7 @@
                                                         onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
                                                         className="absolute top-0 right-0 w-full bg-transparent pr-12 text-right text-[1rem] font-medium text-[#A7A8A2] placeholder-[#D6D7D2] tracking-[-0.02em]"
                                                     />
-                                                    <div className={`${sizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-12`}>
+                                                    <div className={`${dynSizeClass} font-black text-[#2E2E2E] tracking-[-0.04em] leading-none pt-5 text-right pr-12`}>
                                                         {previewValue}
                                                     </div>
                                                 </>
@@ -785,7 +787,7 @@
                                                 <button
                                                     type="button"
                                                     onClick={() => setActiveField(field)}
-                                                    className={`${sizeClass} flex w-full justify-end bg-transparent pr-12 font-black text-[#2E2E2E] tracking-[-0.04em] text-right`}
+                                                    className={`${dynSizeClass} flex w-full justify-end bg-transparent pr-12 font-black text-[#2E2E2E] tracking-[-0.04em] text-right`}
                                                 >
                                                     <span className={currentValue ? '' : 'text-[#D6D7D2]'}>{currentValue || '0'}</span>
                                                     {isActive && <span className="math-inline-caret" />}
@@ -800,7 +802,7 @@
                                                     onChange={(e)=>{ setGenInput({ val: e.target.value, type: field }); }}
                                                     onBlur={() => commitGeneralInput(field, mode)}
                                                     onKeyDown={(e) => handleGeneralKeyDown(e, field, mode)}
-                                                    className={`${sizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full pr-12 tracking-[-0.04em] bg-transparent`}
+                                                    className={`${dynSizeClass} font-black text-[#2E2E2E] placeholder-[#D6D7D2] w-full pr-12 tracking-[-0.04em] bg-transparent`}
                                                 />
                                             )
                                         )}

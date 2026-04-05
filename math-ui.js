@@ -77,11 +77,23 @@
                 },
                     React.createElement('div', { className: 'flex items-center px-3 pt-3 pb-2 gap-2' },
                         React.createElement('div', {
-                            className: `flex-1 flex items-center justify-end transition-all duration-500 ${showLongPressHint ? 'opacity-100' : 'opacity-0'}`
+                            className: `flex-1 flex items-center justify-end transition-all duration-300 ${showLongPressHint ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
                         },
-                            React.createElement('span', {
-                                className: 'text-[0.88rem] font-black text-[#5A5250] tracking-[0.06em]'
-                            }, '長按退格鍵 清除全部')
+                            React.createElement('div', {
+                                className: 'flex items-center gap-1.5 bg-[#1C1A18] rounded-full px-4 py-2'
+                            },
+                                React.createElement('span', { className: 'text-white text-[0.82rem] font-bold' }, '長按'),
+                                React.createElement('svg', {
+                                    width: 17, height: 17, viewBox: '0 0 24 24',
+                                    fill: 'none', stroke: 'white',
+                                    strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round'
+                                },
+                                    React.createElement('path', { d: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z' }),
+                                    React.createElement('line', { x1: 18, y1: 9, x2: 12, y2: 15 }),
+                                    React.createElement('line', { x1: 12, y1: 9, x2: 18, y2: 15 })
+                                ),
+                                React.createElement('span', { className: 'text-white text-[0.82rem] font-bold' }, '清除內容')
+                            )
                         ),
                         React.createElement('button', {
                             type: 'button',
