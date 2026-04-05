@@ -99,8 +99,18 @@
                                     onPointerDown: handleBackspaceDown,
                                     onPointerUp: handleBackspaceUp,
                                     onPointerLeave: handleBackspaceLeave,
-                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] text-[2.8rem] font-black text-[#7A4A46] select-none'
-                                }, key);
+                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] flex items-center justify-center select-none'
+                                },
+                                    React.createElement('svg', {
+                                        width: 36, height: 36, viewBox: '0 0 24 24',
+                                        fill: 'none', stroke: '#7A4A46',
+                                        strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round'
+                                    },
+                                        React.createElement('path', { d: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z' }),
+                                        React.createElement('line', { x1: 18, y1: 9, x2: 12, y2: 15 }),
+                                        React.createElement('line', { x1: 12, y1: 9, x2: 18, y2: 15 })
+                                    )
+                                );
                             }
                             return React.createElement('button', {
                                 key,
