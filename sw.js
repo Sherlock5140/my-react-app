@@ -1,4 +1,4 @@
-const CACHE_NAME = '購黑皮-v37-20260405-2200';
+const CACHE_NAME = '購黑皮-v38-20260405-2230';
 const APP_SHELL = [
   './',
   './index.html',
