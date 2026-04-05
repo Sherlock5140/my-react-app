@@ -81,7 +81,7 @@
                         },
                             React.createElement('span', {
                                 className: 'text-[12px] font-bold text-[#7A7470] tracking-[0.06em]'
-                            }, '長按 ⌫ 清除全部')
+                            }, '長按退格鍵 清除全部')
                         ),
                         React.createElement('button', {
                             type: 'button',
@@ -102,9 +102,9 @@
                                     className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] flex items-center justify-center select-none'
                                 },
                                     React.createElement('svg', {
-                                        width: 36, height: 36, viewBox: '0 0 24 24',
+                                        width: 44, height: 44, viewBox: '0 0 24 24',
                                         fill: 'none', stroke: '#7A4A46',
-                                        strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round'
+                                        strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round'
                                     },
                                         React.createElement('path', { d: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z' }),
                                         React.createElement('line', { x1: 18, y1: 9, x2: 12, y2: 15 }),
