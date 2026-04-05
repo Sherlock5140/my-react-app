@@ -35,7 +35,7 @@
         const showHint = () => {
             setShowLongPressHint(true);
             if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-            hintTimerRef.current = setTimeout(() => setShowLongPressHint(false), 3000);
+            hintTimerRef.current = setTimeout(() => setShowLongPressHint(false), 2000);
         };
 
         const handleBackspaceDown = (e) => {
