@@ -554,7 +554,7 @@
             );
         });
 
-        const BreakdownPanel = memo(({ calcResult, settings, inputVal, campaignData }) => {
+        const BreakdownPanel = memo(({ calcResult, settings, inputVal, campaignData, rates }) => {
             const [copied, setCopied] = useState(false);
             if (!calcResult || !calcResult.twdBase || calcResult.twdBase <= 0) return null;
             const { twdBase, grossTwdBase = twdBase, finalCost, totalSaved, refundTwd, feeAmount, rewardAmount, baseRewardAmount = 0, bonusRewardAmount = 0, isWaived, spreadCost, displayRefund, displayOriginal, displayCode, refundLabel, isImmediateTaxRefund } = calcResult;
@@ -687,7 +687,7 @@
                                     <span className="text-[3.5rem] font-black text-[#2E2E2E] tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span>
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-[10px] font-bold text-[#B6B8B3] tracking-[0.1em]">USD</span>
-                                        <span className="text-[1.05rem] font-bold text-[#9A9A94] tracking-[-0.02em] font-mono">$ {parseFloat(inputVal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                                        <span className="text-[1.05rem] font-bold text-[#9A9A94] tracking-[-0.02em] font-mono">$ {(finalCost / (rates?.usd || 1)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                     </div>
                                 </div>
                             </div>
