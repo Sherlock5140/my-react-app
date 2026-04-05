@@ -80,19 +80,19 @@
                             className: `flex-1 flex items-center justify-end transition-all duration-300 ${showLongPressHint ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`
                         },
                             React.createElement('div', {
-                                className: 'flex items-center gap-1.5 bg-[#1C1A18] rounded-full px-4 py-2'
+                                className: 'flex items-center gap-1.5 bg-[rgba(238,235,231,0.96)] border border-[rgba(210,204,200,0.88)] rounded-full px-4 py-2 shadow-[0_4px_16px_rgba(94,90,84,0.12)]'
                             },
-                                React.createElement('span', { className: 'text-white text-[0.82rem] font-bold' }, '長按'),
+                                React.createElement('span', { className: 'text-[#484846] text-[0.82rem] font-bold' }, '長按'),
                                 React.createElement('svg', {
                                     width: 17, height: 17, viewBox: '0 0 24 24',
-                                    fill: 'none', stroke: 'white',
+                                    fill: 'none', stroke: '#7A4A46',
                                     strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round'
                                 },
                                     React.createElement('path', { d: 'M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z' }),
                                     React.createElement('line', { x1: 18, y1: 9, x2: 12, y2: 15 }),
                                     React.createElement('line', { x1: 12, y1: 9, x2: 18, y2: 15 })
                                 ),
-                                React.createElement('span', { className: 'text-white text-[0.82rem] font-bold' }, '清除內容')
+                                React.createElement('span', { className: 'text-[#484846] text-[0.82rem] font-bold' }, '清除內容')
                             )
                         ),
                         React.createElement('button', {
