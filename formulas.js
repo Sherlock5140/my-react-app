@@ -490,7 +490,7 @@
         const num = evaluateMathExpression(rawInput);
         if (isNaN(num)) return { twdBase: 0 };
 
-        const spread = settings.cardType === 'jcb' ? 0 : (settings.cardType === 'master' ? 0.8 : 1.0);
+        const spread = (settings.isMobilePay || settings.cardType === 'jcb') ? 0 : (settings.cardType === 'master' ? 0.8 : 1.0);
         const bankSpread = 1 + (spread / 100);
         const rUsd = effectiveRates.usd * bankSpread;
 
@@ -500,7 +500,7 @@
         let displayCode = '';
         let targetRate = 0;
         if (settings.mode === 'general') {
-            targetRate = effectiveRates.krw * bankSpread;
+            targetRate = effectiveRates.krw;
             if (genInput.type === 'twd') {
                 twdBase = num;
                 targetAmount = twdBase / targetRate;
@@ -544,7 +544,7 @@
 
         const displayRefund = refundTwd;
         const effectiveFee = settings.isBankAccount ? 0 : settings.fee;
-        const spreadCost = 0;
+        const spreadCost = Math.round(paymentTwdBase * (spread / 100));
         const feeAmount = Math.round(paymentTwdBase * (effectiveFee / 100));
 
         let rewardAmount = 0;

@@ -354,7 +354,8 @@
                 diamond: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"></path></svg>,
                 lightning: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>,
                 edit: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>,
-                trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
+                info: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             };
             const el = icons[name];
             if (!el) return null;
@@ -682,6 +683,7 @@
 
         const GeneralMode = memo(({ settings, genInput, setGenInput, calcResult, updateSetting, advice, rates, refundMethodComparison }) => {
             const [activeField, setActiveField] = useState(null);
+            const [showAutoHint, setShowAutoHint] = useState(false);
             const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
             const fieldModeMap = { usd: 'decimal2', target: 'integer', twd: 'integer' };
             const fieldRefs = useRef({});
@@ -820,7 +822,12 @@
                         {settings.taxMode !== 'off' && (
                             <div className="flex flex-col gap-3">
                                 <div className="flex gap-2">{COPY.refundMethodOptions.map(option => (<button key={option.key} onClick={()=>updateSetting('refundMethod',option.key)} className={`flex-1 py-3.5 rounded-[1.25rem] border transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] ${settings.refundMethod===option.key ? option.key==='airport' ? 'border-[rgba(143,163,157,0.32)] bg-[rgba(143,163,157,0.16)] text-[#484846]' : 'border-[rgba(201,166,161,0.32)] bg-[rgba(201,166,161,0.16)] text-[#484846]' : 'border-[rgba(200,204,199,0.35)] text-[#757573] bg-[rgba(255,255,255,0.45)]'}`}><span className="text-xs font-bold">{option.label}</span></button>))}</div>
-                                {settings.taxMode === 'auto' && <div className="text-[10px] p-3 rounded-[1.1rem] bg-[rgba(255,255,255,0.5)] text-[#757573] border border-white/60">{COPY.taxAutoHint}</div>}
+                                {settings.taxMode === 'auto' && (
+                                    <div className="flex items-start gap-2">
+                                        <button type="button" onClick={() => setShowAutoHint(v => !v)} className={`mt-0.5 flex-shrink-0 p-1 rounded-full transition-colors ${showAutoHint ? 'text-[#8FA39D] bg-[rgba(143,163,157,0.14)]' : 'text-[#B6B8B3] hover:text-[#8FA39D]'}`}><Icon name="info" size={14}/></button>
+                                        {showAutoHint && <div className="text-[10px] p-2.5 rounded-[1rem] bg-[rgba(255,255,255,0.5)] text-[#757573] border border-white/60 leading-relaxed animate-fade-in">{COPY.taxAutoHint}</div>}
+                                    </div>
+                                )}
                                 {settings.taxMode === 'manual' && (
                                     <div className="bg-[rgba(255,255,255,0.48)] border border-white/60 rounded-[1.25rem] p-3.5">
                                         <div className="flex items-center justify-between gap-3">
