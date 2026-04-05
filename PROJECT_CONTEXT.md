@@ -33,6 +33,27 @@ Read this file before editing code, formulas, storage logic, or UI behavior.
 5. If changing UI behavior, document the user-facing effect in the update log.
 6. If adding new AI guidance files, keep them consistent with this file.
 
+## Code Navigation（Grep 前先查這裡）
+
+| 位置 | 行號 | 說明 |
+|------|------|------|
+| `index.html:368` | 368 | RateInput 元件 |
+| `index.html:450` | 450 | StrategySettings 元件 |
+| `index.html:513` | 513 | CardSettings 元件 |
+| `index.html:644` | 644 | BreakdownPanel 元件 |
+| `index.html:781` | 781 | GeneralMode 元件 |
+| `index.html:1004` | 1004 | DutyFreeMode 元件 |
+| `index.html:1248` | 1248 | App 元件 |
+| `index.html:1363` | 1363 | header JSX |
+| `formulas.js:2` | 2 | COPY 常數 |
+| `formulas.js:317` | 317 | estimateKoreaRefundKRW()（高風險）|
+| `formulas.js:487` | 487 | buildCalcResult()（高風險）|
+| `formulas.js:716` | 716 | fetchExchangeRates() |
+| `math-ui.js:4` | 4 | detectCoarsePointer() |
+| `math-ui.js:28` | 28 | MathKeypad 元件 |
+
+> 每次修改後若行號位移，更新此表格。
+
 ## Review Focus
 
 When auditing this repo, prioritize:

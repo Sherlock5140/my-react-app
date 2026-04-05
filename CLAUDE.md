@@ -45,6 +45,17 @@
 
 ---
 
+## 高風險區域（修改前需使用者確認）
+- `formulas.js:487` `buildCalcResult()` — 核心計算邏輯
+- `formulas.js:317` `estimateKoreaRefundKRW()` — 退稅估算公式
+- SW cache 清除策略 — 影響所有使用者快取
+
+## 改後驗證清單
+- [ ] 開啟裝置確認無白畫面
+- [ ] 一般 / 免稅模式各輸入一筆確認數字正確
+- [ ] SW `CACHE_NAME` 已 bump
+- [ ] breakdown panel 金額正確
+
 ## After Changes
 - 在 `PROJECT_CONTEXT.md` 追加 Update Log 條目（不覆蓋既有條目）
 - 時間戳：`TZ='Asia/Taipei' date '+%Y-%m-%d %H:%M CST'`
@@ -63,3 +74,6 @@ Gemini 用途：外部查詢與程式碼審查。本專案邏輯、修改程式�
 呼叫前說明原因，呼叫後說明結果與是否採用。
 
 → 詳細設定見 `GEMINI.md`
+
+## 回答原則
+分析類問題：結論 + 排序，不展開說明除非被要求。

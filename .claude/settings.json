@@ -6,6 +6,16 @@
         "type": "command",
         "command": "cat CLAUDE.md"
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f='/tmp/claude_turn_count.json';let d={n:0};try{d=JSON.parse(require('fs').readFileSync(f))}catch(e){}d.n++;require('fs').writeFileSync(f,JSON.stringify(d));if(d.n>=4){console.log('\\n⚠️  已對話 '+d.n+' 輪 — 考慮 /compact（≥60%）或 /clear（≥85%）')}\" 2>/dev/null || true"
+          }
+        ]
+      }
     ]
   }
 }
