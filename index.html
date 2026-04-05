@@ -694,10 +694,7 @@
             useEffect(() => { activeFieldRef.current = activeField; }, [activeField]);
             const clearInput = () => setGenInput({ ...genInputRef.current, val: '' });
             const commitGeneralInput = (field, mode = 'integer') => {
-                const gi = genInputRef.current;
-                const currentValue = gi.type === field ? gi.val : getDisplayVal(field, gi, ratesRef.current);
-                const committed = commitExpressionInput(currentValue, mode);
-                setGenInput({ val: committed, type: field });
+                // Just close the keyboard — keep the raw expression so it stays visible
                 setActiveField(null);
             };
             const handleGeneralKeyDown = (e, field, mode = 'integer') => {
@@ -737,7 +734,7 @@
             const renderGeneralField = (field, mode, label, prefix, emoji, sizeClass) => {
                 const currentValue = genInput.type === field ? genInput.val : getDisplayVal(field, genInput, rates);
                 const isActive = activeField === field;
-                const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
+                const showPreview = hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
                 const previewValue = showPreview ? getPreviewNumberText(currentValue, mode, evaluateMathExpression) : '';
                 return (
                     <div
@@ -887,9 +884,7 @@
             const status = getDutyFreeDiscountStatus(dfInput.tagPrice, dfInput.payVal);
             const adjustRebate = (d) => updateSetting('dutyFreeRebate', adjustDutyFreeRebate(settings.dutyFreeRebate, d));
             const commitDutyFreeField = (field, mode = 'decimal2') => {
-                const di = dfInputRef.current;
-                const committed = commitExpressionInput(di[field], mode);
-                setDfInput({ ...di, [field]: committed });
+                // Just close the keyboard — keep the raw expression so it stays visible
                 setActiveField(null);
             };
             const handleDutyFreeKeyDown = (e, field, mode = 'decimal2') => {
@@ -927,7 +922,7 @@
             const renderDutyFreeField = (field, label) => {
                 const currentValue = dfInput[field];
                 const isActive = activeField === field;
-                const showPreview = isActive && hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
+                const showPreview = hasExpressionOperators(currentValue) && !isNaN(evaluateMathExpression(currentValue));
                 const previewValue = showPreview ? getPreviewNumberText(currentValue, 'decimal2', evaluateMathExpression) : '';
                 return (
                     <div
@@ -1013,7 +1008,7 @@
                         <div className="flex items-center min-h-[4.2rem]">
                             <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
                             <div className="flex-1 relative">
-                                {activeField === 'payVal' && hasExpressionOperators(dfInput.payVal) && !isNaN(evaluateMathExpression(dfInput.payVal)) ? (
+                                {hasExpressionOperators(dfInput.payVal) && !isNaN(evaluateMathExpression(dfInput.payVal)) ? (
                                     useMathKeypad ? (
                                         <button
                                             type="button"
