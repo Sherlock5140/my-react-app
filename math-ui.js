@@ -26,19 +26,21 @@
     }
 
     const MathKeypad = memo(({ visible, onInsert, onBackspace, onClear, onDone }) => {
-        const [showLongPressHint, setShowLongPressHint] = useState(true);
+        const [showLongPressHint, setShowLongPressHint] = useState(false);
         const longPressRef = useRef(null);
-
-        useEffect(() => {
-            setShowLongPressHint(true);
-            const t = setTimeout(() => setShowLongPressHint(false), 2000);
-            return () => clearTimeout(t);
-        }, []);
+        const hintTimerRef = useRef(null);
 
         if (!visible) return null;
 
+        const showHint = () => {
+            setShowLongPressHint(true);
+            if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+            hintTimerRef.current = setTimeout(() => setShowLongPressHint(false), 3000);
+        };
+
         const handleBackspaceDown = (e) => {
             e.preventDefault();
+            showHint();
             longPressRef.current = setTimeout(() => {
                 longPressRef.current = null;
                 onClear();
@@ -78,7 +80,7 @@
                             className: `flex-1 flex items-center justify-end transition-all duration-500 ${showLongPressHint ? 'opacity-100' : 'opacity-0'}`
                         },
                             React.createElement('span', {
-                                className: 'text-[9px] font-bold text-[#B8B4AE] tracking-[0.1em]'
+                                className: 'text-[12px] font-bold text-[#7A7470] tracking-[0.06em]'
                             }, '長按 ⌫ 清除全部')
                         ),
                         React.createElement('button', {
