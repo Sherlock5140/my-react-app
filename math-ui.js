@@ -64,6 +64,7 @@
             ['1', '2', '3', '×'],
             ['.', '0', '⌫', '÷']
         ];
+
         return (
             React.createElement('div', {
                 id: 'math-keypad',
@@ -72,30 +73,19 @@
                 React.createElement('div', {
                     className: 'overflow-hidden rounded-[2.15rem] border border-[rgba(255,255,255,0.86)] bg-[linear-gradient(180deg,rgba(249,248,245,0.97)_0%,rgba(241,239,235,0.96)_100%)] shadow-[0_-24px_56px_rgba(94,90,84,0.16)] backdrop-blur-2xl'
                 },
-                    React.createElement('div', { className: 'flex items-center gap-2 px-3 pt-3 pb-2' },
-                        ['(', ')'].map((key) => React.createElement('button', {
-                            key,
-                            type: 'button',
-                            onClick: () => onInsert(key),
-                            className: 'flex-1 rounded-[1rem] border border-[rgba(255,255,255,0.82)] bg-[rgba(255,255,255,0.62)] px-3 py-2 text-[1.05rem] font-semibold text-[#5A5654] shadow-[inset_0_1px_0_rgba(255,255,255,0.88)] active:scale-[0.98]'
-                        }, key)),
-                        React.createElement('button', {
-                            type: 'button',
-                            onClick: onClear,
-                            className: 'rounded-[1rem] border border-[rgba(210,204,200,0.88)] bg-[rgba(238,235,231,0.88)] px-4 py-2 text-[0.82rem] font-bold tracking-[0.18em] text-[#7A7470] shadow-[inset_0_1px_0_rgba(255,255,255,0.82)] active:scale-[0.98]'
-                        }, 'CLEAR'),
+                    React.createElement('div', { className: 'flex items-center px-3 pt-3 pb-2 gap-2' },
+                        React.createElement('div', {
+                            className: `flex-1 flex items-center justify-end transition-all duration-500 ${showLongPressHint ? 'opacity-100' : 'opacity-0'}`
+                        },
+                            React.createElement('span', {
+                                className: 'text-[9px] font-bold text-[#B8B4AE] tracking-[0.1em]'
+                            }, '長按 ⌫ 清除全部')
+                        ),
                         React.createElement('button', {
                             type: 'button',
                             onClick: onDone,
-                            className: 'rounded-[1rem] border border-[rgba(201,166,161,0.38)] bg-[linear-gradient(180deg,rgba(219,196,190,0.32)_0%,rgba(201,166,161,0.26)_100%)] px-4 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#7A4A46] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_20px_rgba(185,148,142,0.14)] active:scale-[0.98]'
+                            className: 'rounded-[1rem] border border-[rgba(201,166,161,0.38)] bg-[linear-gradient(180deg,rgba(219,196,190,0.32)_0%,rgba(201,166,161,0.26)_100%)] px-6 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#7A4A46] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_20px_rgba(185,148,142,0.14)] active:scale-[0.98]'
                         }, 'DONE')
-                    ),
-                    React.createElement('div', {
-                        className: `flex justify-end px-4 transition-all duration-500 ${showLongPressHint ? 'h-5 opacity-100' : 'h-0 opacity-0'}`
-                    },
-                        React.createElement('span', {
-                            className: 'text-[9px] font-bold text-[#B8B4AE] tracking-[0.1em]'
-                        }, '長按 ⌫ 清除全部')
                     ),
                     React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-[rgba(210,204,200,0.48)] p-px' },
                         rows.flat().map((key) => {
@@ -107,14 +97,14 @@
                                     onPointerDown: handleBackspaceDown,
                                     onPointerUp: handleBackspaceUp,
                                     onPointerLeave: handleBackspaceLeave,
-                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] text-[1.3rem] font-semibold tracking-[0.08em] text-[#5A5450] select-none'
+                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] text-[1.9rem] font-medium text-[#5A5450] select-none'
                                 }, key);
                             }
                             return React.createElement('button', {
                                 key,
                                 type: 'button',
                                 onClick: () => onInsert(key),
-                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-light text-[#B58E88]' : 'text-[2rem] font-medium text-[#1C1A18]'}`
+                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-normal text-[#8A6A64]' : 'text-[2rem] font-medium text-[#1C1A18]'}`
                             }, key);
                         })
                     )
