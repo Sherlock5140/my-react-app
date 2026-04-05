@@ -1,5 +1,5 @@
 (function () {
-    const { memo } = React;
+    const { memo, useState, useEffect, useRef } = React;
 
     function detectCoarsePointer() {
         try {
@@ -26,7 +26,38 @@
     }
 
     const MathKeypad = memo(({ visible, onInsert, onBackspace, onClear, onDone }) => {
+        const [showLongPressHint, setShowLongPressHint] = useState(true);
+        const longPressRef = useRef(null);
+
+        useEffect(() => {
+            setShowLongPressHint(true);
+            const t = setTimeout(() => setShowLongPressHint(false), 2000);
+            return () => clearTimeout(t);
+        }, []);
+
         if (!visible) return null;
+
+        const handleBackspaceDown = (e) => {
+            e.preventDefault();
+            longPressRef.current = setTimeout(() => {
+                longPressRef.current = null;
+                onClear();
+            }, 500);
+        };
+        const handleBackspaceUp = () => {
+            if (longPressRef.current) {
+                clearTimeout(longPressRef.current);
+                longPressRef.current = null;
+                onBackspace();
+            }
+        };
+        const handleBackspaceLeave = () => {
+            if (longPressRef.current) {
+                clearTimeout(longPressRef.current);
+                longPressRef.current = null;
+            }
+        };
+
         const rows = [
             ['7', '8', '9', '+'],
             ['4', '5', '6', '-'],
@@ -59,20 +90,31 @@
                             className: 'rounded-[1rem] border border-[rgba(201,166,161,0.38)] bg-[linear-gradient(180deg,rgba(219,196,190,0.32)_0%,rgba(201,166,161,0.26)_100%)] px-4 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#7A4A46] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_20px_rgba(185,148,142,0.14)] active:scale-[0.98]'
                         }, 'DONE')
                     ),
+                    React.createElement('div', {
+                        className: `flex justify-end px-4 transition-all duration-500 ${showLongPressHint ? 'h-5 opacity-100' : 'h-0 opacity-0'}`
+                    },
+                        React.createElement('span', {
+                            className: 'text-[9px] font-bold text-[#B8B4AE] tracking-[0.1em]'
+                        }, '長按 ⌫ 清除全部')
+                    ),
                     React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-[rgba(210,204,200,0.48)] p-px' },
                         rows.flat().map((key) => {
                             const isOperator = /[+\-×÷]/.test(key);
+                            if (key === '⌫') {
+                                return React.createElement('button', {
+                                    key,
+                                    type: 'button',
+                                    onPointerDown: handleBackspaceDown,
+                                    onPointerUp: handleBackspaceUp,
+                                    onPointerLeave: handleBackspaceLeave,
+                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] text-[1.3rem] font-semibold tracking-[0.08em] text-[#5A5450] select-none'
+                                }, key);
+                            }
                             return React.createElement('button', {
                                 key,
                                 type: 'button',
-                                onClick: () => {
-                                    if (key === '⌫') {
-                                        onBackspace();
-                                        return;
-                                    }
-                                    onInsert(key);
-                                },
-                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-light text-[#B58E88]' : 'text-[2rem] font-light text-[#3C3A38]'} ${key === '⌫' ? 'text-[1.3rem] font-semibold tracking-[0.08em] text-[#7A7470]' : ''}`
+                                onClick: () => onInsert(key),
+                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-light text-[#B58E88]' : 'text-[2rem] font-medium text-[#1C1A18]'}`
                             }, key);
                         })
                     )
