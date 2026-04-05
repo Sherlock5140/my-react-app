@@ -1247,6 +1247,14 @@
     </script>
     <script>
         if ('serviceWorker' in navigator) {
+            // Set controllerchange BEFORE register() so we never miss the event
+            let _swReloading = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (_swReloading) return;
+                _swReloading = true;
+                window.location.reload();
+            });
+
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
                     .then((reg) => {
@@ -1255,11 +1263,6 @@
                         document.addEventListener('visibilitychange', () => {
                             if (document.visibilityState === 'visible') requestUpdate();
                         });
-                        if (navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                                window.location.reload();
-                            }, { once: true });
-                        }
                     })
                     .catch((e) => console.warn('[SW] registration failed', e));
             });
