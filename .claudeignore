@@ -1,0 +1,8 @@
+# Claude Code — 排除不需要讀的檔案，節省 file token 預算
+.git/
+backups/
+ORIGINAL_FORMULAS_BACKUP.txt
+*.log
+*.tmp
+apple-touch-icon.png
+icon.svg
