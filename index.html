@@ -804,7 +804,7 @@
                                                 />
                                             )
                                         )}
-                                        {(genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
+                                        {!useMathKeypad && (genInput.type === field || currentValue) && <button onClick={clearInput} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
                                     </div>
                                 </div>
                             </div>

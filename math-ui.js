@@ -99,7 +99,7 @@
                                     onPointerDown: handleBackspaceDown,
                                     onPointerUp: handleBackspaceUp,
                                     onPointerLeave: handleBackspaceLeave,
-                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] text-[2rem] font-black text-[#7A4A46] select-none'
+                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] text-[2.8rem] font-black text-[#7A4A46] select-none'
                                 }, key);
                             }
                             return React.createElement('button', {
