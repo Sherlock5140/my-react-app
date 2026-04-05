@@ -366,12 +366,44 @@
 
         const RateInput = ({ label, val, onChange, isEditing, setIsEditing }) => {
             const [buffer, setBuffer] = useState(val);
-            useEffect(() => { if (!isEditing) setBuffer(val); }, [val, isEditing]);
+            const [keypadActive, setKeypadActive] = useState(false);
+            const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
+            const bufferRef = useRef(buffer);
+            useEffect(() => { bufferRef.current = buffer; }, [buffer]);
+            useEffect(() => { if (!isEditing && !keypadActive) setBuffer(val); }, [val, isEditing, keypadActive]);
             const handleFocus = (e) => { setIsEditing(true); setBuffer(val ? parseFloat(val).toString() : ''); setTimeout(() => e.target.select(), 0); };
+            const commitBuffer = () => {
+                setKeypadActive(false);
+                setIsEditing(false);
+                onChange(bufferRef.current === '' ? '' : bufferRef.current);
+            };
+            const displayVal = val && !isNaN(parseFloat(val)) ? parseFloat(val).toFixed(5).replace(/\.?0+$/, '') : '';
             return (
                 <div className="flex flex-col items-center justify-center w-full">
                     {label && <span className="text-[9px] font-bold text-[#757573] tracking-[0.24em] mb-0.5 whitespace-nowrap">{label}</span>}
-                    <div className="rate-input-container w-full"><input type="number" inputMode="decimal" value={isEditing ? buffer : (val && !isNaN(parseFloat(val)) ? parseFloat(val).toFixed(5).replace(/\.?0+$/, '') : '')} onFocus={handleFocus} onBlur={()=>{setIsEditing(false);onChange(buffer===''? '':buffer)}} onChange={(e)=>setBuffer(e.target.value)} placeholder="--" className="rate-input"/></div>
+                    {useMathKeypad ? (
+                        <div className="rate-input-container w-full">
+                            <button
+                                type="button"
+                                onClick={() => { setBuffer(val ? parseFloat(val).toString() : ''); setIsEditing(true); setKeypadActive(true); }}
+                                className={`rate-input text-center w-full bg-transparent ${keypadActive ? 'text-[#B0726B]' : ''}`}
+                            >
+                                {keypadActive ? (buffer || <span className="opacity-40">--</span>) : (displayVal || <span className="opacity-40">--</span>)}
+                            </button>
+                            {keypadActive && ReactDOM.createPortal(
+                                <MathKeypad
+                                    visible={true}
+                                    onInsert={(token) => setBuffer(s => s + token)}
+                                    onBackspace={() => setBuffer(s => s.slice(0, -1))}
+                                    onClear={() => setBuffer('')}
+                                    onDone={commitBuffer}
+                                />,
+                                document.body
+                            )}
+                        </div>
+                    ) : (
+                        <div className="rate-input-container w-full"><input type="number" inputMode="decimal" value={isEditing ? buffer : displayVal} onFocus={handleFocus} onBlur={()=>{setIsEditing(false);onChange(buffer===''? '':buffer)}} onChange={(e)=>setBuffer(e.target.value)} placeholder="--" className="rate-input"/></div>
+                    )}
                 </div>
             );
         };
@@ -418,6 +450,20 @@
             const updateStrategy = (id, field, val) => setStrategies(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
             const addStrategy = () => setStrategies(prev => [...prev, { id: `c${Date.now()}`, name: COPY.strategyNamePlaceholder, rate: 0, cap: 0, capUnit: 'points', active: true, type: 'general', minSpend: 0, thresholdUnit: 'twd' }]);
             const deleteStrategy = (id) => { if(window.confirm(COPY.deleteConfirm)) setStrategies(prev => prev.filter(s => s.id !== id)); };
+            const [stratKeypadField, setStratKeypadField] = useState(null); // { id, field }
+            const [stratBuf, setStratBuf] = useState('');
+            const stratBufRef = useRef(stratBuf);
+            const useMathKeypad = useMemo(() => detectCoarsePointer(), []);
+            useEffect(() => { stratBufRef.current = stratBuf; }, [stratBuf]);
+            const commitStrat = () => {
+                if (stratKeypadField) {
+                    const v = parseFloat(stratBufRef.current);
+                    updateStrategy(stratKeypadField.id, stratKeypadField.field, isNaN(v) ? 0 : v);
+                }
+                setStratKeypadField(null);
+            };
+            const openStratKeypad = (id, field, curVal) => { setStratBuf(String(curVal ?? '')); setStratKeypadField({ id, field }); };
+            const isStratActive = (id, field) => stratKeypadField?.id === id && stratKeypadField?.field === field;
             return (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-800/40 backdrop-blur-md animate-fade-in" onClick={onClose}>
                     <div className="bg-[rgba(244,245,242,0.96)] w-full max-w-sm rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(94,96,90,0.16)] h-[75vh] overflow-y-auto flex flex-col border border-white/60 backdrop-blur-xl" onClick={e=>e.stopPropagation()}>
@@ -434,12 +480,12 @@
                                 <div key={st.id} className={`p-3 border rounded-2xl transition-all ${st.active ? 'border-[rgba(143,163,157,0.28)] bg-[rgba(143,163,157,0.1)]' : 'border-[rgba(200,204,199,0.3)] bg-[rgba(255,255,255,0.42)] opacity-60'}`}>
                                     <div className="flex justify-between items-center mb-2">
                                         <div className="flex items-center gap-2"><label className="switch scale-75"><input type="checkbox" checked={st.active} onChange={e=>updateStrategy(st.id, 'active', e.target.checked)}/><span className="slider"></span></label><input type="text" value={st.name} onChange={e=>updateStrategy(st.id, 'name', e.target.value)} className="font-bold text-slate-700 w-24 bg-transparent border-b border-transparent focus:border-slate-300 text-sm" /></div>
-                                        <div className="flex items-center gap-2"><div className="flex items-center"><input type="number" inputMode="decimal" value={st.rate} onChange={e=>updateStrategy(st.id, 'rate', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="w-10 text-right font-black text-[#6F827D] bg-transparent"/><span className="text-xs font-bold text-[#6F827D] ml-0.5">%</span></div><button onClick={()=>deleteStrategy(st.id)} className="text-[#B6B8B3] hover:text-[#B0726B]"><Icon name="trash" size={14}/></button></div>
+                                        <div className="flex items-center gap-2"><div className="flex items-center">{useMathKeypad ? <button type="button" onClick={()=>openStratKeypad(st.id,'rate',st.rate)} className={`w-10 text-right font-black bg-transparent ${isStratActive(st.id,'rate') ? 'text-[#B0726B]' : 'text-[#6F827D]'}`}>{isStratActive(st.id,'rate') ? (stratBuf||'0') : st.rate}</button> : <input type="number" inputMode="decimal" value={st.rate} onChange={e=>updateStrategy(st.id, 'rate', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="w-10 text-right font-black text-[#6F827D] bg-transparent"/>}<span className="text-xs font-bold text-[#6F827D] ml-0.5">%</span></div><button onClick={()=>deleteStrategy(st.id)} className="text-[#B6B8B3] hover:text-[#B0726B]"><Icon name="trash" size={14}/></button></div>
                                     </div>
                                     {st.active && (
                                         <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.capLabel}</span><button onClick={()=>updateStrategy(st.id, 'capUnit', st.capUnit==='twd'?'points':'twd')} className={`flex items-center gap-0.5 text-[8px] px-1 rounded border font-bold ${st.capUnit==='twd'?'bg-[rgba(255,255,255,0.7)] text-[#757573] border-white/60':'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border-[rgba(143,163,157,0.16)]'}`}><Icon name="swap" size={8}/> {st.capUnit==='twd' ? COPY.twdLabel : COPY.pointsLabel}</button></div><input type="number" inputMode="decimal" value={st.cap} onChange={e=>updateStrategy(st.id, 'cap', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
-                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.thresholdLabel}</span><button onClick={()=>updateStrategy(st.id, 'thresholdUnit', st.thresholdUnit==='foreign'?'twd':'foreign')} className="flex items-center gap-0.5 text-[8px] bg-[rgba(255,255,255,0.7)] px-1 rounded border border-white/60 text-[#757573] font-bold"><Icon name="swap" size={8}/> {st.thresholdUnit==='foreign' ? 'KRW' : COPY.twdLabel}</button></div><input type="number" inputMode="decimal" value={st.minSpend||0} onChange={e=>updateStrategy(st.id, 'minSpend', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/></div>
+                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.capLabel}</span><button onClick={()=>updateStrategy(st.id, 'capUnit', st.capUnit==='twd'?'points':'twd')} className={`flex items-center gap-0.5 text-[8px] px-1 rounded border font-bold ${st.capUnit==='twd'?'bg-[rgba(255,255,255,0.7)] text-[#757573] border-white/60':'bg-[rgba(143,163,157,0.12)] text-[#6F827D] border-[rgba(143,163,157,0.16)]'}`}><Icon name="swap" size={8}/> {st.capUnit==='twd' ? COPY.twdLabel : COPY.pointsLabel}</button></div>{useMathKeypad ? <button type="button" onClick={()=>openStratKeypad(st.id,'cap',st.cap)} className={`font-mono font-bold w-full text-left ${isStratActive(st.id,'cap') ? 'text-[#B0726B]' : 'text-[#2E2E2E]'}`}>{isStratActive(st.id,'cap') ? (stratBuf||'0') : st.cap}</button> : <input type="number" inputMode="decimal" value={st.cap} onChange={e=>updateStrategy(st.id, 'cap', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/>}</div>
+                                            <div className="bg-[rgba(255,255,255,0.72)] p-1.5 rounded-lg border border-white/60"><div className="flex justify-between items-center mb-0.5"><span className="text-[#B6B8B3]">{COPY.thresholdLabel}</span><button onClick={()=>updateStrategy(st.id, 'thresholdUnit', st.thresholdUnit==='foreign'?'twd':'foreign')} className="flex items-center gap-0.5 text-[8px] bg-[rgba(255,255,255,0.7)] px-1 rounded border border-white/60 text-[#757573] font-bold"><Icon name="swap" size={8}/> {st.thresholdUnit==='foreign' ? 'KRW' : COPY.twdLabel}</button></div>{useMathKeypad ? <button type="button" onClick={()=>openStratKeypad(st.id,'minSpend',st.minSpend||0)} className={`font-mono font-bold w-full text-left ${isStratActive(st.id,'minSpend') ? 'text-[#B0726B]' : 'text-[#2E2E2E]'}`}>{isStratActive(st.id,'minSpend') ? (stratBuf||'0') : (st.minSpend||0)}</button> : <input type="number" inputMode="decimal" value={st.minSpend||0} onChange={e=>updateStrategy(st.id, 'minSpend', isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value))} className="font-mono font-bold text-[#2E2E2E] w-full"/>}</div>
                                         </div>
                                     )}
                                 </div>
@@ -448,6 +494,16 @@
                         <button onClick={onClose} className="w-full mt-2 py-3 bg-[#2E2E2E] text-[#F4F5F2] rounded-[1.4rem] font-bold text-lg flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform hover:bg-[#484846]">{COPY.strategySave}</button>
                     </div>
                 </div>
+                {useMathKeypad && stratKeypadField !== null && ReactDOM.createPortal(
+                    <MathKeypad
+                        visible={true}
+                        onInsert={(token) => setStratBuf(s => s + token)}
+                        onBackspace={() => setStratBuf(s => s.slice(0, -1))}
+                        onClear={() => setStratBuf('')}
+                        onDone={commitStrat}
+                    />,
+                    document.body
+                )}
             );
         });
 
