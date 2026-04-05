@@ -80,7 +80,7 @@
                             className: `flex-1 flex items-center justify-end transition-all duration-500 ${showLongPressHint ? 'opacity-100' : 'opacity-0'}`
                         },
                             React.createElement('span', {
-                                className: 'text-[12px] font-bold text-[#7A7470] tracking-[0.06em]'
+                                className: 'text-[15px] font-bold text-[#5A5250] tracking-[0.04em]'
                             }, '長按退格鍵 清除全部')
                         ),
                         React.createElement('button', {
