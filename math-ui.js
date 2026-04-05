@@ -101,9 +101,10 @@
                             className: 'rounded-[1rem] border border-[rgba(201,166,161,0.38)] bg-[linear-gradient(180deg,rgba(219,196,190,0.32)_0%,rgba(201,166,161,0.26)_100%)] px-6 py-2 text-[0.88rem] font-black tracking-[0.12em] text-[#7A4A46] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_20px_rgba(185,148,142,0.14)] active:scale-[0.98]'
                         }, 'DONE')
                     ),
-                    React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-[rgba(210,204,200,0.48)] p-px' },
+                    React.createElement('div', { className: 'grid grid-cols-4 gap-px bg-[rgba(200,196,192,0.32)] p-px' },
                         rows.flat().map((key) => {
                             const isOperator = /[+\-×÷]/.test(key);
+                            const isDecimal = key === '.';
                             if (key === '⌫') {
                                 return React.createElement('button', {
                                     key,
@@ -111,7 +112,7 @@
                                     onPointerDown: handleBackspaceDown,
                                     onPointerUp: handleBackspaceUp,
                                     onPointerLeave: handleBackspaceLeave,
-                                    className: 'min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] flex items-center justify-center select-none'
+                                    className: 'min-h-[4.8rem] bg-[linear-gradient(180deg,rgba(219,196,190,0.22)_0%,rgba(201,166,161,0.16)_100%)] transition active:scale-[0.985] flex items-center justify-center select-none'
                                 },
                                     React.createElement('svg', {
                                         width: 44, height: 44, viewBox: '0 0 24 24',
@@ -128,7 +129,7 @@
                                 key,
                                 type: 'button',
                                 onClick: () => onInsert(key),
-                                className: `min-h-[4.4rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2.15rem] font-normal text-[#8A6A64]' : 'text-[2rem] font-medium text-[#1C1A18]'}`
+                                className: `min-h-[4.8rem] bg-[linear-gradient(180deg,rgba(250,249,246,0.99)_0%,rgba(242,240,236,0.95)_100%)] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.94)] active:scale-[0.985] ${isOperator ? 'text-[2rem] font-semibold text-[#9A7066]' : isDecimal ? 'text-[3rem] font-black text-[#1A1816] leading-none' : 'text-[2rem] font-semibold text-[#1A1816]'}`
                             }, key);
                         })
                     )
