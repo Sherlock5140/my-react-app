@@ -677,6 +677,12 @@
                                 <span className="text-[#10B981] font-bold text-lg">({savedPct}%)</span>
                             </div>
                         </div>
+                        {settings.mode === 'dutyfree' && inputVal && (
+                            <div className="flex justify-between items-center mb-1 pt-1">
+                                <span className="text-[11px] font-bold text-[#B6B8B3] uppercase tracking-[0.14em]">USD</span>
+                                <span className="text-[1.15rem] font-bold text-[#757573] tracking-[-0.02em] font-mono">$ {parseFloat(inputVal).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between items-end pt-1"><span className="font-bold text-[#2E2E2E] text-lg mb-1">{COPY.finalCostLabel}</span><span className="text-[3.5rem] font-black text-[#2E2E2E] tracking-tight leading-none font-sans">${finalCost.toLocaleString()}</span></div>
                     </div>
                 </div>
