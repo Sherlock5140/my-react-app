@@ -14,7 +14,7 @@
 | 任務 | 做法 |
 |------|------|
 | 複雜 bug / 多檔修改 / 架構 | `opusplan` → 自動進 Plan Mode |
-| 一行修正 / 版本 bump / typo | `--model haiku` 啟動 |
+| 版本 bump / typo / 文案改字 / log 更新 | `--model haiku` 啟動 |
 
 ## Plan Mode
 主動呼叫 `EnterPlanMode` 的時機：同時修改 2+ 檔案、功能重構、bug 根因不明、上次修法失敗。
@@ -26,6 +26,7 @@
 - 大檔讀取：用 Grep 找行號後，僅讀 `offset+limit` 範圍
   - `index.html`（1423 行）、`formulas.js`（764 行）、`math-ui.js`（147 行）
 - Key function 行號查 `PROJECT_CONTEXT.md` Code Navigation 表格（最高回報槓桿點）
+- 跨檔呼叫時追蹤完整呼叫鏈，不限於初始 Grep 行號範圍
 - Context ≥ 60% → `/compact`
 - Context ≥ 85% → `/clear`（先口頭摘要本輪關鍵決定再開新 session）
 - 不相關新任務 → `/clear` 開新 session
@@ -77,3 +78,4 @@ Gemini 用途：外部查詢與程式碼審查。本專案邏輯、修改程式�
 
 ## 回答原則
 分析類問題：結論 + 排序，不展開說明除非被要求。
+例外：bug 根因分析 / 架構決策 → 主動展開推理鏈。
