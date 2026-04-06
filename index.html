@@ -1144,9 +1144,12 @@
                         ref={(node) => { fieldRefs.current.payVal = node; }}
                         className="app-card relative scroll-mt-24 p-5"
                     >
-                        <label className="text-[9px] font-bold text-[#8FA39D] uppercase tracking-[0.28em] block mb-2">{COPY.dutyFreePaidLabel}</label>
-                        <div className="flex items-center min-h-[4.2rem]">
-                            <span className="text-2xl font-bold text-[#B6B8B3] mr-2 self-center">$</span>
+                        <div className="flex items-center gap-4">
+                            <div className="currency-badge flex items-center justify-center text-2xl flex-shrink-0">{COPY.currencies.usd.emoji}</div>
+                            <div className="flex-1">
+                        <label className="text-[10px] font-bold text-[#8FA39D] uppercase tracking-[0.32em] block pl-1 mb-1.5">{COPY.dutyFreePaidLabel}</label>
+                        <div className="flex items-center min-h-[3.4rem]">
+                            <span className="text-[1.85rem] font-black text-[#C8C7C2] mr-2 self-center">$</span>
                             <div className="flex-1 relative">
                                 {hasExpressionOperators(dfInput.payVal) && !isNaN(evaluateMathExpression(dfInput.payVal)) ? (
                                     useMathKeypad ? (
@@ -1200,7 +1203,9 @@
                                         />
                                     )
                                 )}
-                                {dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
+                                {!useMathKeypad && dfInput.payVal && <button onClick={()=>setDfInput({...dfInput, payVal: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
+                            </div>
+                        </div>
                             </div>
                         </div>
                         <div className="flex justify-between items-center mt-4 bg-[rgba(255,255,255,0.46)] p-2.5 rounded-[1.1rem] border border-white/50">
