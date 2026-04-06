@@ -37,14 +37,14 @@ Read this file before editing code, formulas, storage logic, or UI behavior.
 
 | 位置 | 行號 | 說明 |
 |------|------|------|
-| `index.html:368` | 368 | RateInput 元件 |
-| `index.html:450` | 450 | StrategySettings 元件 |
-| `index.html:513` | 513 | CardSettings 元件 |
-| `index.html:644` | 644 | BreakdownPanel 元件 |
-| `index.html:781` | 781 | GeneralMode 元件 |
-| `index.html:1004` | 1004 | DutyFreeMode 元件 |
-| `index.html:1248` | 1248 | App 元件 |
-| `index.html:1363` | 1363 | header JSX |
+| `index.html:407` | 407 | RateInput 元件 |
+| `index.html:489` | 489 | StrategySettings 元件 |
+| `index.html:552` | 552 | CardSettings 元件 |
+| `index.html:683` | 683 | BreakdownPanel 元件 |
+| `index.html:820` | 820 | GeneralMode 元件 |
+| `index.html:1042` | 1042 | DutyFreeMode 元件 |
+| `index.html:1296` | 1296 | App 元件 |
+| `index.html:1407` | 1407 | header JSX |
 | `formulas.js:2` | 2 | COPY 常數 |
 | `formulas.js:317` | 317 | estimateKoreaRefundKRW()（高風險）|
 | `formulas.js:487` | 487 | buildCalcResult()（高風險）|
