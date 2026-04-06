@@ -24,11 +24,14 @@
 
 ## Token 策略
 - 大檔讀取：用 Grep 找行號後，僅讀 `offset+limit` 範圍
-  - `index.html`（1423 行）、`formulas.js`（764 行）、`math-ui.js`（147 行）
+  - `index.html`（1468 行）、`formulas.js`（764 行）、`math-ui.js`（147 行）
 - Key function 行號查 `PROJECT_CONTEXT.md` Code Navigation 表格（最高回報槓桿點）
 - 跨檔呼叫時追蹤完整呼叫鏈，不限於初始 Grep 行號範圍
 - Context ≥ 60% → `/compact`
-- Context ≥ 85% → `/clear`（先口頭摘要本輪關鍵決定再開新 session）
+- Context ≥ 85% → `/clear`，移交摘要需包含：
+  - 本輪改了哪些檔案（路徑 + 行號）
+  - 未完成任務
+  - 當前 SW 版本號
 - 不相關新任務 → `/clear` 開新 session
 
 ---
@@ -39,9 +42,9 @@
 - 命名：camelCase 變數、PascalCase 元件
 - **JSX 多根節點：一律加 `<React.Fragment>` 包裹**（Babel Standalone 限制，缺少會白畫面）
 - SW：UI/邏輯修改皆 bump `CACHE_NAME`，遞增規則：
-  - Patch（`v43→v44`）：UI 微調、typo、文案
-  - Minor（`v43→v50`）：功能增減、bugfix
-  - Major（`v43→v100`）：架構變更、資料格式異動
+  - Patch（`v50→v51`）：UI 微調、typo、文案
+  - Minor（`v50→v60`）：功能增減、bugfix
+  - Major（`v50→v100`）：架構變更、資料格式異動
 - Commit：`feat/fix/chore/ui:` 前綴格式
 
 ---
