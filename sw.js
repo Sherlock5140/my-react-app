@@ -1,4 +1,6 @@
-const CACHE_NAME = '購黑皮-v46-20260406-1140';
+const CACHE_NAME = '購黑皮-v47-20260406-1200';
+const CDN_CACHE  = 'cdn-assets-v2';
+
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,15 +11,34 @@ const APP_SHELL = [
   './apple-touch-icon.png'
 ];
 
+// Versioned CDN URLs — safe to pre-cache at install time
+const CDN_RESOURCES = [
+  'https://unpkg.com/react@18/umd/react.production.min.js',
+  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
+  'https://unpkg.com/@babel/standalone/babel.min.js',
+];
+
+// CDN hosts to intercept in fetch handler (includes Tailwind non-versioned URL)
+const CDN_HOSTS = ['unpkg.com', 'cdn.tailwindcss.com'];
+
 const APP_SHELL_PATHS = new Set(
   APP_SHELL.map((p) => new URL(p, self.location.origin + self.location.pathname).pathname)
 );
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+    Promise.all([
+      // App shell — must succeed
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
+      // CDN resources — fail silently per resource
+      caches.open(CDN_CACHE).then((cache) =>
+        Promise.all(
+          CDN_RESOURCES.map((url) =>
+            cache.add(url).catch((err) => console.warn('[SW] CDN pre-cache failed:', url, err))
+          )
+        )
+      )
+    ]).then(() => self.skipWaiting())
   );
 });
 
@@ -25,7 +46,9 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        keys
+          .filter((k) => k !== CACHE_NAME && k !== CDN_CACHE)
+          .map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
@@ -60,13 +83,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // External origins (CDN, API) — let the browser handle them
-  if (requestUrl.origin !== self.location.origin) return;
+  // CDN hosts: cache-first, update in background
+  if (CDN_HOSTS.includes(requestUrl.hostname)) {
+    event.respondWith(
+      caches.open(CDN_CACHE).then((cache) =>
+        cache.match(request).then((cached) => {
+          if (cached) return cached;
+          return fetch(request).then((response) => {
+            if (response && response.ok) {
+              cache.put(request, response.clone())
+                .catch((err) => console.warn('[SW] CDN cache write failed', err));
+            }
+            return response;
+          });
+        })
+      )
+    );
+    return;
+  }
 
-  // Only intercept known app shell files
+  // Same-origin non-shell: skip
+  if (requestUrl.origin !== self.location.origin) return;
   if (!APP_SHELL_PATHS.has(requestUrl.pathname)) return;
 
-  // Cache-first, update in background
+  // App shell: cache-first, update in background
   event.respondWith(
     caches.match(request).then((cached) => {
       const networkFetch = fetch(request)
@@ -78,7 +118,6 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => cached || new Response('Service Unavailable', { status: 503, statusText: 'Service Unavailable' }));
-
       return cached || networkFetch;
     })
   );
