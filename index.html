@@ -918,7 +918,6 @@
 
             return (
                 <div className={`block space-y-4 ${useMathKeypad && activeField ? 'pb-[30rem]' : 'pb-2'}`}>
-                    {renderGeneralField('usd', 'decimal2', COPY.currencies.usd.label, COPY.currencies.usd.prefix, COPY.currencies.usd.emoji, 'text-[2.4rem]')}
                     {renderGeneralField('target', 'integer', COPY.currencies.target.label, COPY.currencies.target.prefix, COPY.currencies.target.emoji, 'text-[2.5rem]')}
                     {renderGeneralField('twd', 'integer', COPY.currencies.twd.label, COPY.currencies.twd.prefix, COPY.currencies.twd.emoji, 'text-[2.5rem]')}
                     
@@ -1121,7 +1120,7 @@
                                         />
                                     )
                                 )}
-                                {currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
+                                {!useMathKeypad && currentValue && <button onClick={()=>setDfInput({...dfInput, [field]: ''})} className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/50 bg-[rgba(255,255,255,0.76)] p-2 text-[#B6B8B3] shadow-[inset_0_1px_0_rgba(255,255,255,0.92)]"><Icon name="x" size={16}/></button>}
                             </div>
                         </div>
                     </div>
