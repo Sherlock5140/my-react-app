@@ -97,13 +97,9 @@
 
         return {
             rates,
-            setRates,
             customRates,
-            setCustomRates,
             lastUpdated,
-            setLastUpdated,
             isRefreshing,
-            editingInitialCustomRates: getEmptyCustomRates,
             fetchRates,
             handleCustomRate,
             effectiveRates

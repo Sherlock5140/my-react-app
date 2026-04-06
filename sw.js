@@ -1,4 +1,4 @@
-const CACHE_NAME = '購黑皮-v47-20260406-1200';
+const CACHE_NAME = '購黑皮-v50-20260406-1400';
 const CDN_CACHE  = 'cdn-assets-v2';
 
 const APP_SHELL = [
@@ -18,8 +18,9 @@ const CDN_RESOURCES = [
   'https://unpkg.com/@babel/standalone/babel.min.js',
 ];
 
-// CDN hosts to intercept in fetch handler (includes Tailwind non-versioned URL)
-const CDN_HOSTS = ['unpkg.com', 'cdn.tailwindcss.com'];
+// CDN hosts: versioned (cache-first) vs unversioned (stale-while-revalidate)
+const CDN_HOSTS_VERSIONED = ['unpkg.com'];
+const CDN_HOSTS_REVALIDATE = ['cdn.tailwindcss.com']; // unversioned URL → always revalidate
 
 const APP_SHELL_PATHS = new Set(
   APP_SHELL.map((p) => new URL(p, self.location.origin + self.location.pathname).pathname)
@@ -83,8 +84,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // CDN hosts: cache-first, update in background
-  if (CDN_HOSTS.includes(requestUrl.hostname)) {
+  // Versioned CDN (unpkg.com): cache-first, fetch on miss
+  if (CDN_HOSTS_VERSIONED.includes(requestUrl.hostname)) {
     event.respondWith(
       caches.open(CDN_CACHE).then((cache) =>
         cache.match(request).then((cached) => {
@@ -96,6 +97,25 @@ self.addEventListener('fetch', (event) => {
             }
             return response;
           });
+        })
+      )
+    );
+    return;
+  }
+
+  // Unversioned CDN (Tailwind): stale-while-revalidate — serve cache instantly, update in background
+  if (CDN_HOSTS_REVALIDATE.includes(requestUrl.hostname)) {
+    event.respondWith(
+      caches.open(CDN_CACHE).then((cache) =>
+        cache.match(request).then((cached) => {
+          const networkFetch = fetch(request).then((response) => {
+            if (response && response.ok) {
+              cache.put(request, response.clone())
+                .catch((err) => console.warn('[SW] Tailwind cache update failed', err));
+            }
+            return response;
+          }).catch(() => cached);
+          return cached || networkFetch;
         })
       )
     );

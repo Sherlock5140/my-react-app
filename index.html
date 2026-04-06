@@ -223,6 +223,9 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes sk-shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .sk { background:linear-gradient(90deg,rgba(218,219,216,.55) 25%,rgba(235,236,232,.85) 50%,rgba(218,219,216,.55) 75%);background-size:200% 100%;animation:sk-shimmer 1.5s ease-in-out infinite;border-radius:1rem; }
+        #app-skeleton { display:none;flex-direction:column;height:100%;width:100%;max-width:430px;margin:0 auto;overflow:hidden; }
         .math-inline-caret {
             display: inline-block;
             width: 2px;
@@ -301,7 +304,38 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div id="app-skeleton">
+            <!-- header skeleton -->
+            <div style="padding:max(env(safe-area-inset-top),12px) 1rem 1.5rem;background:rgba(244,239,236,0.9);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;padding-top:.75rem;">
+                    <div class="sk" style="width:9rem;height:1.5rem;border-radius:.5rem;"></div>
+                    <div style="display:flex;gap:.5rem;">
+                        <div class="sk" style="width:2.4rem;height:2.4rem;border-radius:50%;"></div>
+                        <div class="sk" style="width:2.4rem;height:2.4rem;border-radius:50%;"></div>
+                        <div class="sk" style="width:5rem;height:2.4rem;border-radius:2rem;"></div>
+                    </div>
+                </div>
+                <div class="sk" style="height:2.8rem;border-radius:1.45rem;margin-bottom:.5rem;"></div>
+                <div class="sk" style="height:5.5rem;border-radius:1.55rem;"></div>
+            </div>
+            <!-- main skeleton cards -->
+            <div style="flex:1;padding:1.25rem 1.25rem;background:rgba(236,237,234,.88);display:flex;flex-direction:column;gap:1rem;border-top:1px solid rgba(255,255,255,.7);border-radius:2.6rem 2.6rem 0 0;margin-top:-1.2rem;">
+                <div class="sk" style="height:7rem;border-radius:1.8rem;"></div>
+                <div class="sk" style="height:7rem;border-radius:1.8rem;"></div>
+                <div class="sk" style="height:5rem;border-radius:1.8rem;"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Show skeleton only on slow loads (>150ms), hide instantly on cached loads
+        requestAnimationFrame(function(){
+            setTimeout(function(){
+                var sk = document.getElementById('app-skeleton');
+                if(sk && document.getElementById('root').children.length === 1) sk.style.display='flex';
+            }, 150);
+        });
+    </script>
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback, useMemo, memo } = React;
         const {
@@ -1261,6 +1295,7 @@
         });
 
         const App = () => {
+            useEffect(() => { document.getElementById('app-skeleton')?.remove(); }, []);
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
             const [allStrategies, setAllStrategies] = useState(() => {
                 try {
@@ -1297,18 +1332,15 @@
             // Separate State for Memory Function
             const [genInput, setGenInput] = useState({ val: '', type: 'target' });
             const [dfInput, setDfInput] = useState({ payVal: '', tagPrice: '' });
-            // NEW: State to track which card is being edited in Strategy Settings
             const [editingStrategyCardId, setEditingStrategyCardId] = useState(null);
 
             useEffect(() => { safeSetStorage(STRATEGY_STORAGE_KEY, JSON.stringify(allStrategies)); }, [allStrategies]);
             
-            // NEW: Get strategies for the card currently being edited, or active if none specified (though modal logic ensures ID is set)
             const currentStrategies = useMemo(() => {
                 const targetId = editingStrategyCardId || settings.activePresetId;
                 return allStrategies[targetId] || [];
             }, [allStrategies, editingStrategyCardId, settings.activePresetId]);
 
-            // NEW: Update strategies for the specific card being edited
             const setCurrentStrategies = useCallback((newS) => { 
                 const targetId = editingStrategyCardId || settings.activePresetId;
                 setAllStrategies(prev => ({ 
@@ -1317,13 +1349,11 @@
                 })); 
             }, [editingStrategyCardId, settings.activePresetId]);
 
-            // NEW: Handler to open settings for a specific card
             const handleOpenStrategySettings = useCallback((cardId) => {
                 setEditingStrategyCardId(cardId);
                 setShowStrategySettings(true);
             }, []);
 
-            // NEW: Close handler to reset editing ID
             const handleCloseStrategySettings = useCallback(() => {
                 setShowStrategySettings(false);
                 setEditingStrategyCardId(null);
