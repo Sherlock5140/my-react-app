@@ -24,7 +24,7 @@
 
 ## Token 策略
 - 大檔讀取：用 Grep 找行號後，僅讀 `offset+limit` 範圍
-  - `index.html`（1468 行）、`formulas.js`（764 行）、`math-ui.js`（147 行）
+  - `index.html`（1196 行）、`formulas.js`（764 行）、`math-ui.js`（147 行）
 - Key function 行號查 `PROJECT_CONTEXT.md` Code Navigation 表格（最高回報槓桿點）
 - 跨檔呼叫時追蹤完整呼叫鏈，不限於初始 Grep 行號範圍
 - Context ≥ 60% → `/compact`

@@ -37,14 +37,14 @@ Read this file before editing code, formulas, storage logic, or UI behavior.
 
 | 位置 | 行號 | 說明 |
 |------|------|------|
-| `index.html:407` | 407 | RateInput 元件 |
-| `index.html:489` | 489 | StrategySettings 元件 |
-| `index.html:552` | 552 | CardSettings 元件 |
-| `index.html:683` | 683 | BreakdownPanel 元件 |
-| `index.html:820` | 820 | GeneralMode 元件 |
-| `index.html:1042` | 1042 | DutyFreeMode 元件 |
-| `index.html:1296` | 1296 | App 元件 |
-| `index.html:1407` | 1407 | header JSX |
+| `index.html:136` | 136 | RateInput 元件 |
+| `index.html:218` | 218 | StrategySettings 元件 |
+| `index.html:281` | 281 | CardSettings 元件 |
+| `index.html:412` | 412 | BreakdownPanel 元件 |
+| `index.html:549` | 549 | GeneralMode 元件 |
+| `index.html:771` | 771 | DutyFreeMode 元件 |
+| `index.html:1025` | 1025 | App 元件 |
+| `index.html:1136` | 1136 | header JSX |
 | `formulas.js:2` | 2 | COPY 常數 |
 | `formulas.js:317` | 317 | estimateKoreaRefundKRW()（高風險）|
 | `formulas.js:487` | 487 | buildCalcResult()（高風險）|
@@ -579,3 +579,10 @@ Entry format:
   Type: Bug Fix, UI
   Summary: 修正 iOS Safari 鍵盤被 header 截斷 + 捲動定位不準兩個根本問題。(1) z-index 截斷：<main> 帶有 backdrop-blur-sm，在 iOS Safari 成為 fixed 子元素的 containing block，導致 MathKeypad 頂部被 header 覆蓋。改用 ReactDOM.createPortal(_, document.body) 把鍵盤掛在 body 根層，完全跳出 main 的 stacking context。(2) 捲動定位：改用 getBoundingClientRect + 動態量測 #math-keypad.offsetHeight，只在欄位底部實際被鍵盤遮住時才觸發捲動（field.bottom > keypadTop - 8），精確讓被點擊欄位顯示在鍵盤正上方，模擬 iOS 原生鍵盤定位效果。SW bump v13。
   Files: `index.html`, `math-ui.js`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-04-06
+  Updated at: 2026-04-06 12:20 CST
+  Updated by: Claude Code
+  Type: Infra, Optimization
+  Summary: 將 index.html 內嵌的 272 行 <style> 區塊分離至獨立 styles.css 檔案。index.html 改以 <link rel="stylesheet"> 引入。sw.js APP_SHELL 加入 ./styles.css 預快取，CACHE_NAME bump 至 v52。CLAUDE.md 與 PROJECT_CONTEXT.md Code Navigation 行號同步更新（index.html 從 1468 行縮減至 1196 行）。
+  Files: `styles.css`（新增）, `index.html`, `sw.js`, `CLAUDE.md`, `PROJECT_CONTEXT.md`

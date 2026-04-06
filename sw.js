@@ -1,9 +1,10 @@
-const CACHE_NAME = '購黑皮-v51-20260406-1500';
+const CACHE_NAME = '購黑皮-v52-20260406-1700';
 const CDN_CACHE  = 'cdn-assets-v2';
 
 const APP_SHELL = [
   './',
   './index.html',
+  './styles.css',
   './formulas.js',
   './rate-manager.js',
   './math-ui.js',
