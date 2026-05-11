@@ -53,7 +53,7 @@
         chargedAmountLabel: '實際刷卡金額',
         refundErrorPrefix: '預估誤差: ±NT$',
         taxSettingsLabel: '退稅設定',
-        taxAutoHint: '自動模式會在背景綜合 Global Blue、Global Tax Free、Easy Tax Refund 與加權平均模型，自動輸出較穩定的估算值；實際金額仍以店家與退稅單為準。',
+        taxAutoHint: '自動模式 50 萬 KRW 以下以 Global Tax Free 收據表為基準，並用 Global Blue、Easy Tax Refund 與加權模型檢查偏差；50 萬 KRW 以上優先採用 Global Tax Free 收據表，避免用比例 fallback 低估。實際金額仍以店家與退稅單為準。',
         taxManualLabel: '手動退稅額',
         taxManualHint: '依退稅單或店家結帳畫面的實際退稅額輸入（KRW）。',
         taxModeOptions: [
@@ -154,7 +154,7 @@
         { max: 149999, refund: 8000 },
         { max: 174999, refund: 9000 },
         { max: 199999, refund: 10000 },
-        { max: 224999, refund: 12200 },
+        { max: 224999, refund: 12000 },
         { max: 249999, refund: 13000 },
         { max: 274999, refund: 15000 },
         { max: 299999, refund: 17000 },
@@ -165,7 +165,67 @@
         { max: 424999, refund: 27000 },
         { max: 449999, refund: 28000 },
         { max: 474999, refund: 30000 },
-        { max: 499999, refund: 32000 }
+        { max: 499999, refund: 32000 },
+        { max: 549999, refund: 35000 },
+        { max: 599999, refund: 37000 },
+        { max: 649999, refund: 41000 },
+        { max: 699999, refund: 45000 },
+        { max: 749999, refund: 50000 },
+        { max: 799999, refund: 53000 },
+        { max: 849999, refund: 57000 },
+        { max: 899999, refund: 60000 },
+        { max: 949999, refund: 65000 },
+        { max: 999999, refund: 68000 },
+        { max: 1099999, refund: 75000 },
+        { max: 1199999, refund: 80000 },
+        { max: 1299999, refund: 90000 },
+        { max: 1399999, refund: 95000 },
+        { max: 1499999, refund: 105000 },
+        { max: 1599999, refund: 110000 },
+        { max: 1699999, refund: 115000 },
+        { max: 1799999, refund: 127000 },
+        { max: 1899999, refund: 135000 },
+        { max: 1999999, refund: 140000 },
+        { max: 2099999, refund: 150000 },
+        { max: 2199999, refund: 155000 },
+        { max: 2299999, refund: 160000 },
+        { max: 2399999, refund: 170000 },
+        { max: 2499999, refund: 177000 },
+        { max: 2599999, refund: 185000 },
+        { max: 2699999, refund: 190000 },
+        { max: 2799999, refund: 200000 },
+        { max: 2899999, refund: 210000 },
+        { max: 2999999, refund: 215000 },
+        { max: 3099999, refund: 225000 },
+        { max: 3199999, refund: 230000 },
+        { max: 3299999, refund: 235000 },
+        { max: 3399999, refund: 240000 },
+        { max: 3499999, refund: 250000 },
+        { max: 3599999, refund: 260000 },
+        { max: 3699999, refund: 270000 },
+        { max: 3799999, refund: 280000 },
+        { max: 3899999, refund: 285000 },
+        { max: 3999999, refund: 290000 },
+        { max: 4099999, refund: 300000 },
+        { max: 4199999, refund: 310000 },
+        { max: 4299999, refund: 315000 },
+        { max: 4399999, refund: 320000 },
+        { max: 4499999, refund: 333000 },
+        { max: 4599999, refund: 340000 },
+        { max: 4699999, refund: 350000 },
+        { max: 4799999, refund: 360000 },
+        { max: 4899999, refund: 370000 },
+        { max: 4999999, refund: 380000 },
+        { max: 5099999, refund: 390000 },
+        { max: 5199999, refund: 400000 },
+        { max: 5299999, refund: 410000 },
+        { max: 5399999, refund: 420000 },
+        { max: 5499999, refund: 430000 },
+        { max: 5599999, refund: 440000 },
+        { max: 5699999, refund: 450000 },
+        { max: 5799999, refund: 460000 },
+        { max: 5899999, refund: 470000 },
+        { max: 5999999, refund: 480000 }
     ];
     const KOREA_REFUND_TABLE_EASY_TAX = [
         { max: 29999, refund: 1000 },
@@ -314,16 +374,31 @@
         return Math.round((amount * fallbackRate) / 100) * 100;
     }
 
+    function estimateGlobalTaxFreeRefundKRW(amount) {
+        if (!amount || amount < 15000) return 0;
+        const matched = KOREA_REFUND_TABLE_GLOBAL_TAX_FREE.find((row) => amount <= row.max);
+        if (matched) return matched.refund;
+        // Receipt rule: over 6,000,000 KRW refunds 90% of VAT, rounded down to 100 KRW.
+        const vatPortion = amount * (10 / 110);
+        return Math.floor((vatPortion * 0.9) / 100) * 100;
+    }
+
     function estimateKoreaRefundKRW(amount) {
         if (!amount || amount < 15000) return 0;
+        const globalTaxFreeRefund = estimateGlobalTaxFreeRefundKRW(amount);
+        if (amount > 499999) return globalTaxFreeRefund;
         const providerValues = [
             lookupRefundFromTable(amount, KOREA_REFUND_TABLE_GLOBAL_BLUE, 0.062),
-            lookupRefundFromTable(amount, KOREA_REFUND_TABLE_GLOBAL_TAX_FREE, 0.065),
+            globalTaxFreeRefund,
             lookupRefundFromTable(amount, KOREA_REFUND_TABLE_EASY_TAX, 0.064),
             lookupRefundFromTable(amount, KOREA_REFUND_TABLE_WEIGHTED, 0.064)
         ].sort((a, b) => a - b);
         const centerAverage = (providerValues[1] + providerValues[2]) / 2;
-        return Math.round(centerAverage / 100) * 100;
+        const consensusRefund = Math.round(centerAverage / 100) * 100;
+        const providerSpread = providerValues[providerValues.length - 1] - providerValues[0];
+        const isGlobalTaxFreeCloseToConsensus = Math.abs(globalTaxFreeRefund - consensusRefund) <= 500;
+        if (providerSpread <= 2500 && isGlobalTaxFreeCloseToConsensus) return globalTaxFreeRefund;
+        return consensusRefund;
     }
 
     function calcPercentReward(amount, rate) {
@@ -759,6 +834,7 @@
         adjustDutyFreeRebate,
         convertGeneralInputToDutyFreeTagPrice,
         fetchExchangeRates,
+        estimateGlobalTaxFreeRefundKRW,
         estimateKoreaRefundKRW
     });
 })();

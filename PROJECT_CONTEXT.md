@@ -46,9 +46,9 @@ Read this file before editing code, formulas, storage logic, or UI behavior.
 | `index.html:1025` | 1025 | App 元件 |
 | `index.html:1136` | 1136 | header JSX |
 | `formulas.js:2` | 2 | COPY 常數 |
-| `formulas.js:317` | 317 | estimateKoreaRefundKRW()（高風險）|
-| `formulas.js:487` | 487 | buildCalcResult()（高風險）|
-| `formulas.js:716` | 716 | fetchExchangeRates() |
+| `formulas.js:386` | 386 | estimateKoreaRefundKRW()（高風險）|
+| `formulas.js:558` | 558 | buildCalcResult()（高風險）|
+| `formulas.js:787` | 787 | fetchExchangeRates() |
 | `math-ui.js:4` | 4 | detectCoarsePointer() |
 | `math-ui.js:28` | 28 | MathKeypad 元件 |
 
@@ -586,3 +586,17 @@ Entry format:
   Type: Infra, Optimization
   Summary: 將 index.html 內嵌的 272 行 <style> 區塊分離至獨立 styles.css 檔案。index.html 改以 <link rel="stylesheet"> 引入。sw.js APP_SHELL 加入 ./styles.css 預快取，CACHE_NAME bump 至 v52。CLAUDE.md 與 PROJECT_CONTEXT.md Code Navigation 行號同步更新（index.html 從 1468 行縮減至 1196 行）。
   Files: `styles.css`（新增）, `index.html`, `sw.js`, `CLAUDE.md`, `PROJECT_CONTEXT.md`
+
+- 2026-05-11
+  Updated at: 2026-05-11 18:59 CST
+  Updated by: Codex
+  Type: Bug Fix, Data
+  Summary: 依 Global Tax Free 收據表重建韓國退稅級距，修正 200,000-224,999 KRW 退稅額為 12,000 KRW，補齊 500,000-5,999,999 KRW 級距，並加入 6,000,000 KRW 以上「VAT 的 90%，百元以下捨去」規則。Auto 模式 50 萬以下保留多業者加權中位估算，50 萬以上改優先使用 Global Tax Free 收據表，避免舊比例 fallback 明顯低估高額消費退稅；同步 bump SW 至 v53。
+  Files: `formulas.js`, `sw.js`, `PROJECT_CONTEXT.md`
+
+- 2026-05-11
+  Updated at: 2026-05-11 19:02 CST
+  Updated by: Codex
+  Type: Optimization, Data
+  Summary: 退稅 auto 模式再優化為 Global Tax Free 錨定演算法：50 萬 KRW 以下仍計算 Global Blue、Global Tax Free、Easy Tax Refund 與加權模型的共識值，但當 Global Tax Free 與共識差距在 500 KRW 內且業者 spread 未異常時，直接採用 Global Tax Free 收據表，讓小額退稅更貼近實際收據；SW bump 至 v54。
+  Files: `formulas.js`, `sw.js`, `PROJECT_CONTEXT.md`

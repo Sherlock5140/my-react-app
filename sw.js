@@ -1,4 +1,4 @@
-const CACHE_NAME = '購黑皮-v52-20260406-1700';
+const CACHE_NAME = '購黑皮-v54-20260511-1902';
 const CDN_CACHE  = 'cdn-assets-v2';
 
 const APP_SHELL = [
