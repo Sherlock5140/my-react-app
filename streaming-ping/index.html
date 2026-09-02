@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#eef0ed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="串流 Ping" />
+  <title>影音串流連線測試</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #eef0ed;
+      --card: rgba(255,255,255,.72);
+      --text: #202421;
+      --muted: #69716c;
+      --line: rgba(38,48,42,.10);
+      --good: #4f765d;
+      --fair: #9a7b43;
+      --slow: #9b5d57;
+      --idle: #7a817d;
+      --accent: #5e7466;
+      --shadow: 0 16px 45px rgba(48,58,51,.09);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171a18;
+        --card: rgba(37,42,39,.82);
+        --text: #edf1ee;
+        --muted: #a5ada8;
+        --line: rgba(255,255,255,.08);
+        --good: #8ab597;
+        --fair: #d3b274;
+        --slow: #d38e87;
+        --idle: #9ca39f;
+        --accent: #a8bcae;
+        --shadow: 0 16px 45px rgba(0,0,0,.22);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(166,183,171,.22), transparent 38%),
+        radial-gradient(circle at 100% 12%, rgba(199,189,175,.20), transparent 34%),
+        var(--bg);
+      color: var(--text);
+    }
+    .wrap { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: max(22px, env(safe-area-inset-top)) 0 48px; }
+    header { padding: 18px 4px 12px; }
+    h1 { font-size: clamp(28px, 5vw, 44px); letter-spacing: -.04em; margin: 0 0 8px; }
+    .subtitle { color: var(--muted); line-height: 1.6; font-size: 14px; max-width: 760px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 16px; }
+    button, select {
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 16px;
+      min-height: 44px;
+      padding: 0 16px;
+      font: inherit;
+      box-shadow: 0 3px 12px rgba(40,50,43,.04);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+    }
+    button { cursor: pointer; font-weight: 700; }
+    button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+    button:disabled { opacity: .48; cursor: default; }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .metric, .notice {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px) saturate(135%);
+      -webkit-backdrop-filter: blur(20px) saturate(135%);
+    }
+    .metric { padding: 14px 15px; }
+    .metric .label { color: var(--muted); font-size: 12px; }
+    .metric .value { font-size: 24px; font-weight: 800; margin-top: 3px; letter-spacing: -.03em; }
+    .notice { padding: 14px 16px; color: var(--muted); font-size: 13px; line-height: 1.55; margin-bottom: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px) saturate(135%);
+      -webkit-backdrop-filter: blur(20px) saturate(135%);
+    }
+    .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .service { font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+    .endpoint { color: var(--muted); font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .badge { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .result { display: flex; align-items: end; justify-content: space-between; margin-top: 18px; gap: 12px; }
+    .latency { font-size: 34px; font-weight: 850; letter-spacing: -.05em; }
+    .unit { font-size: 14px; color: var(--muted); margin-left: 4px; font-weight: 600; }
+    .status { font-size: 13px; font-weight: 750; text-align: right; }
+    .status.good { color: var(--good); }
+    .status.fair { color: var(--fair); }
+    .status.slow, .status.down { color: var(--slow); }
+    .status.idle, .status.running { color: var(--idle); }
+    .details { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .detail .k { color: var(--muted); font-size: 11px; }
+    .detail .v { font-weight: 750; margin-top: 2px; font-size: 13px; }
+    .progress { height: 4px; background: var(--line); border-radius: 999px; overflow: hidden; margin-top: 12px; }
+    .bar { height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+    .foot { color: var(--muted); font-size: 12px; line-height: 1.6; padding: 20px 4px 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .95em; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .wrap { width: min(100% - 18px, 980px); }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>影音串流連線測試</h1>
+      <div class="subtitle">從你目前這台裝置的瀏覽器直接發出 HTTPS probe，測量多輪 HTTP(S) 回應時間。適合觀察 VPN／Shadowrocket／Clash／Surge 分流後的實際路徑表現；這不是 ICMP Ping，也不代表 DRM、帳號權限或影片一定可播放。</div>
+    </header>
+
+    <div class="toolbar">
+      <button id="runAll" class="primary">開始全部測試</button>
+      <button id="stop" disabled>停止</button>
+      <select id="rounds" aria-label="測試輪數">
+        <option value="3">3 輪</option>
+        <option value="5" selected>5 輪</option>
+        <option value="7">7 輪</option>
+      </select>
+      <select id="timeout" aria-label="逾時">
+        <option value="3000">3 秒逾時</option>
+        <option value="5000" selected>5 秒逾時</option>
+        <option value="8000">8 秒逾時</option>
+      </select>
+    </div>
+
+    <section class="summary">
+      <div class="metric"><div class="label">完成</div><div class="value" id="doneCount">0/10</div></div>
+      <div class="metric"><div class="label">可達</div><div class="value" id="upCount">—</div></div>
+      <div class="metric"><div class="label">最快 Median</div><div class="value" id="bestValue">—</div></div>
+      <div class="metric"><div class="label">本輪狀態</div><div class="value" id="runState">待測</div></div>
+    </section>
+
+    <div class="notice">
+      <strong>端點標示規則：</strong>「官方入口」只代表該平台網站；「已觀察 CDN」代表目前能從官方頁面觀察到的靜態／圖片 CDN。沒有把未證實網域冒充成 Playback CDN。Hami Video 與 friDay影音因此各保留一個官方入口與一個已觀察 CDN 測點。
+    </div>
+
+    <section class="grid" id="grid"></section>
+
+    <div class="foot">
+      判讀：頁面以每個端點成功樣本的 <strong>Median</strong> 為主要數字，Jitter 使用樣本標準差，Loss 是逾時／失敗比例。顏色門檻只是介面提示（&lt;150 ms、150–400 ms、&gt;400 ms），不是影音 QoE 標準。瀏覽器可能重用 DNS、TCP、TLS 或 HTTP/2/3 連線，因此後續樣本通常較接近 warm-path latency。
+    </div>
+  </main>
+
+  <script>
+    const services = [
+      { id:'netflix', name:'Netflix', label:'官方入口', region:'Global', url:'https://www.netflix.com/favicon.ico' },
+      { id:'disney', name:'Disney+', label:'官方入口', region:'Global', url:'https://www.disneyplus.com/favicon.ico' },
+      { id:'max', name:'Max', label:'官方入口', region:'Global', url:'https://www.max.com/favicon.ico' },
+      { id:'prime', name:'Prime Video', label:'官方入口', region:'Global', url:'https://www.primevideo.com/favicon.ico' },
+      { id:'appletv', name:'Apple TV+', label:'官方入口', region:'Global', url:'https://tv.apple.com/favicon.ico' },
+      { id:'youtube', name:'YouTube', label:'官方入口', region:'Global', url:'https://www.youtube.com/favicon.ico' },
+      { id:'hami-web', name:'Hami Video', label:'官方入口', region:'TW', url:'https://hamivideo.hinet.net/' },
+      { id:'hami-cdn', name:'Hami Video CDN', label:'已觀察 CDN', region:'TW', url:'https://apl-hamivideo.cdn.hinet.net/' },
+      { id:'friday-web', name:'friDay影音', label:'官方入口', region:'TW', url:'https://video.friday.tw/' },
+      { id:'friday-cdn', name:'friDay影音 CDN', label:'已觀察 CDN', region:'TW', url:'https://vbmspic.video.friday.tw/' }
+    ];
+
+    const states = new Map();
+    let runGeneration = 0;
+    let activeControllers = new Set();
+
+    const $ = (s) => document.querySelector(s);
+    const median = arr => {
+      const x = [...arr].sort((a,b)=>a-b);
+      const m = Math.floor(x.length/2);
+      return x.length % 2 ? x[m] : (x[m-1] + x[m]) / 2;
+    };
+    const stdev = arr => {
+      if (arr.length < 2) return 0;
+      const mean = arr.reduce((a,b)=>a+b,0) / arr.length;
+      return Math.sqrt(arr.reduce((s,x)=>s + (x-mean)**2,0) / (arr.length - 1));
+    };
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const withBuster = url => {
+      const u = new URL(url);
+      u.searchParams.set('_probe', `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      return u.toString();
+    };
+
+    function quality(ms, ok, total) {
+      if (!ok) return ['down','無回應'];
+      if (ok < total) return ms < 400 ? ['fair','部分失敗'] : ['slow','不穩定'];
+      if (ms < 150) return ['good','良好'];
+      if (ms <= 400) return ['fair','普通'];
+      return ['slow','偏慢'];
+    }
+
+    function makeCard(s) {
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.id = `card-${s.id}`;
+      el.innerHTML = `
+        <div class="head">
+          <div>
+            <div class="service">${s.name}</div>
+            <div class="endpoint">${new URL(s.url).hostname}</div>
+          </div>
+          <div class="badges"><span class="badge">${s.region}</span><span class="badge">${s.label}</span></div>
+        </div>
+        <div class="result">
+          <div><span class="latency">—</span><span class="unit">ms</span></div>
+          <div class="status idle">待測</div>
+        </div>
+        <div class="details">
+          <div class="detail"><div class="k">Jitter</div><div class="v jitter">—</div></div>
+          <div class="detail"><div class="k">Loss</div><div class="v loss">—</div></div>
+          <div class="detail"><div class="k">Samples</div><div class="v samples">—</div></div>
+        </div>
+        <div class="progress"><div class="bar"></div></div>`;
+      return el;
+    }
+
+    function renderInitial() {
+      const grid = $('#grid');
+      grid.innerHTML = '';
+      services.forEach(s => grid.appendChild(makeCard(s)));
+      updateSummary();
+    }
+
+    function setCard(s, state) {
+      states.set(s.id, state);
+      const card = $(`#card-${s.id}`);
+      const lat = card.querySelector('.latency');
+      const status = card.querySelector('.status');
+      const jitter = card.querySelector('.jitter');
+      const loss = card.querySelector('.loss');
+      const samples = card.querySelector('.samples');
+      const bar = card.querySelector('.bar');
+
+      status.className = `status ${state.statusClass || 'idle'}`;
+      status.textContent = state.statusText || '待測';
+      lat.textContent = Number.isFinite(state.median) ? Math.round(state.median) : '—';
+      jitter.textContent = Number.isFinite(state.jitter) ? `${Math.round(state.jitter)} ms` : '—';
+      loss.textContent = state.total ? `${Math.round((state.failed/state.total)*100)}%` : '—';
+      samples.textContent = state.total ? `${state.ok}/${state.total}` : '—';
+      bar.style.width = state.total ? `${Math.min(100, (state.completed/state.total)*100)}%` : '0%';
+      updateSummary();
+    }
+
+    async function oneProbe(url, timeoutMs, generation) {
+      const controller = new AbortController();
+      activeControllers.add(controller);
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      const start = performance.now();
+      try {
+        await fetch(withBuster(url), {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-store',
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer',
+          signal: controller.signal
+        });
+        if (generation !== runGeneration) throw new DOMException('Cancelled','AbortError');
+        return performance.now() - start;
+      } finally {
+        clearTimeout(timer);
+        activeControllers.delete(controller);
+      }
+    }
+
+    async function testService(s, rounds, timeoutMs, generation) {
+      const values = [];
+      let failed = 0;
+      setCard(s, { statusClass:'running', statusText:'測試中…', completed:0, total:rounds, ok:0, failed:0 });
+
+      for (let i=0; i<rounds; i++) {
+        if (generation !== runGeneration) return;
+        try {
+          const ms = await oneProbe(s.url, timeoutMs, generation);
+          values.push(ms);
+        } catch (e) {
+          if (generation !== runGeneration) return;
+          failed++;
+        }
+        const med = values.length ? median(values) : null;
+        setCard(s, {
+          statusClass:'running', statusText:`測試中 ${i+1}/${rounds}`,
+          median: med, jitter: values.length ? stdev(values) : null,
+          completed:i+1, total:rounds, ok:values.length, failed
+        });
+        if (i < rounds-1) await sleep(140);
+      }
+
+      if (generation !== runGeneration) return;
+      const med = values.length ? median(values) : null;
+      const [statusClass,statusText] = quality(med, values.length, rounds);
+      setCard(s, {
+        statusClass, statusText,
+        median:med, jitter:values.length ? stdev(values) : null,
+        completed:rounds, total:rounds, ok:values.length, failed,
+        finished:true
+      });
+    }
+
+    function updateSummary() {
+      const list = [...states.values()];
+      const finished = list.filter(x => x.finished);
+      const reachable = finished.filter(x => x.ok > 0);
+      const meds = reachable.map(x=>x.median).filter(Number.isFinite);
+      $('#doneCount').textContent = `${finished.length}/${services.length}`;
+      $('#upCount').textContent = finished.length ? `${reachable.length}/${finished.length}` : '—';
+      $('#bestValue').textContent = meds.length ? `${Math.round(Math.min(...meds))} ms` : '—';
+    }
+
+    async function runAll() {
+      const generation = ++runGeneration;
+      activeControllers.forEach(c=>c.abort());
+      activeControllers.clear();
+      states.clear();
+      renderInitial();
+      $('#runAll').disabled = true;
+      $('#stop').disabled = false;
+      $('#runState').textContent = '測試中';
+      const rounds = Number($('#rounds').value);
+      const timeoutMs = Number($('#timeout').value);
+
+      await Promise.all(services.map(s => testService(s, rounds, timeoutMs, generation)));
+      if (generation !== runGeneration) return;
+      $('#runAll').disabled = false;
+      $('#stop').disabled = true;
+      $('#runState').textContent = '完成';
+      updateSummary();
+    }
+
+    function stopAll() {
+      runGeneration++;
+      activeControllers.forEach(c=>c.abort());
+      activeControllers.clear();
+      $('#runAll').disabled = false;
+      $('#stop').disabled = true;
+      $('#runState').textContent = '已停止';
+      document.querySelectorAll('.status.running').forEach(el => { el.className='status idle'; el.textContent='已停止'; });
+    }
+
+    $('#runAll').addEventListener('click', runAll);
+    $('#stop').addEventListener('click', stopAll);
+    renderInitial();
+  </script>
+</body>
+</html>
